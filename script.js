@@ -1,14 +1,13 @@
-// TODO: Switch from noteTimings to fill and back
 // TODO: Play two patterns at once
 
 // Initialize audio context for tone.js
 let synth;
 document.querySelector("#tone-js-init").addEventListener("click", async () => {
   await Tone.start();
-  console.log("audio is ready");
+  console.log("Audio is all set!");
   //create a synth and connect it to the main output (your speakers)
-  // synth = new Tone.MembraneSynth().toDestination();
-  synth = new Tone.Synth().toDestination();
+  synth = new Tone.MembraneSynth().toDestination();
+  //synth = new Tone.Synth().toDestination();
 });
 
 let startingPoint;
@@ -16,39 +15,40 @@ let loopReset = true;
 let loopRunning = false;
 let round = 0;
 let bar = 2000;
+let fillQueued = false;
+let fillPlaying = false;
 const lookAhead = 50;
 const buffer = 10;
 
-// const noteTimings = [0, 1500];
+const noteTimings = [0, 500, 1000, 1500];
+const fill = [0, 500, 1000, 1125, 1250, 1500, 1625, 1750];
 // const noteTimings = [0, 500, 1000, 1125, 1250, 1500, 1625, 1750];
 // const notes = ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"];
-// const notes = ["C1", "C1", "C1", "C1", "C1", "C1", "C1", "C1"];
+const notes = ["C1", "C1", "C1", "C1", "C1", "C1", "C1", "C1"];
 // const noteTimings = [
-//   0, 125, 250, 375, 500, 625, 750, 875, 1000, 1125, 1250, 1375, 1500, 1625,
-//   1750, 1875,
+//   0, 125, 300, 500, 625, 800, 1125, 1400, 1500, 1625, 1750, 1900,
 // ];
+// const fill = [0, 125, 250, 375, 625, 750, 1125, 1375, 1500, 1625, 1750, 1875];
 
-const noteTimings = [
-  0, 125, 300, 500, 625, 800, 1125, 1400, 1500, 1625, 1750, 1900,
-];
-
-const fill = [0, 125, 250, 375, 625, 750, 1125, 1375, 1500, 1625, 1750, 1875];
-
-// const notes, random notes in C dorian scale, same length as noteTimings
-const notes = [
-  "C4",
-  "D4",
-  "Eb4",
-  "F4",
-  "G4",
-  "Ab4",
-  "Bb4",
-  "C5",
-  "D5",
-  "Eb5",
-  "F5",
-  "G5",
-];
+// const notes, random notes in C dorian mode, 1 octave, 16 notes
+// const notes = [
+//   "C3",
+//   "D3",
+//   "Eb3",
+//   "F3",
+//   "G3",
+//   "Ab3",
+//   "Bb3",
+//   "C4",
+//   "D4",
+//   "Eb4",
+//   "F4",
+//   "G4",
+//   "Ab4",
+//   "Bb4",
+//   "C5",
+//   "D5",
+// ];
 
 const play = document.querySelector("#play");
 play.addEventListener("click", () => {
@@ -63,7 +63,7 @@ play.addEventListener("click", () => {
     // Play note
     synth.triggerAttackRelease(
       notes[index],
-      "0.25",
+      "8n",
       startingPoint / 1000 + delay / 1000
     );
     console.log(
@@ -92,16 +92,42 @@ function nextNote(pattern, index) {
   // Increment index
   index++;
 
+  // Check if fill is queued, if so switch to fill
+  if (fillQueued) {
+    pattern = fill;
+    // Get appropriate index for fill
+    for (let i = 0; i < pattern.length; i++) {
+      const fillStep = pattern[i];
+
+      // Check if fillStep is greater than current step (index - 1 because index has already been incremented)
+      if (fillStep > pattern[index - 1]) {
+        index = i;
+        break;
+      }
+    }
+
+    fillQueued = false;
+    fillPlaying = true;
+  }
+
   // If index is less than pattern length, pass next step to timer() or silentTimer()
   if (index < pattern.length) {
     const interval = startingPoint + pattern[index] - Tone.now() * 1000;
     timerFork(pattern, index, interval);
   }
 
+  // Reset loop
   // If index is greater than or equal to pattern length, restart loop by passing first step to timer() or silentTimer()
   if (index >= pattern.length) {
+    // If fill is playing, switch back to noteTimings
+
     const drift = Tone.now() * 1000 - (startingPoint + pattern[index - 1]);
     const interval = bar - pattern[index - 1] - drift + noteTimings[0];
+
+    if (fillPlaying) {
+      pattern = noteTimings;
+      fillPlaying = false;
+    }
 
     index = 0;
     // Update starting point
@@ -140,7 +166,7 @@ function timer(pattern, index, interval) {
     const delay = getDelay(pattern, index, now);
 
     // Play note
-    synth.triggerAttackRelease(notes[index], "0.25", now / 1000 + delay / 1000);
+    synth.triggerAttackRelease(notes[index], "8n", now / 1000 + delay / 1000);
     console.log(
       "Step: " +
         pattern[index] +
@@ -199,6 +225,11 @@ function silentTimer(pattern, index) {
 const stop = document.querySelector("#stop");
 stop.addEventListener("click", () => {
   loopRunning = false;
+});
+
+const fillButton = document.querySelector("#fill");
+fillButton.addEventListener("click", () => {
+  fillQueued = true;
 });
 
 function createBlock() {
