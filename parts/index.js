@@ -1,29 +1,34 @@
-// Initialize audio context for tone.js
 let kick;
 let snare;
 let hihat;
+let piano;
+let bass;
+let brass;
+let flute;
+let strings;
 
 let lowPass;
-let kickPart;
-let snarePart;
+let partA;
+let partB;
 
-const kickPattern = [
-  { time: "0:0:0", duration: "8n", note: "C1", velocity: 0.9 },
-  { time: "0:2:0", duration: "8n", note: "C1", velocity: 0.9 },
-  { time: "0:2:2", duration: "8n", note: "C1", velocity: 0.5 },
+const patternA = [
+  { time: "0:0:0", duration: "8n", note: "C3", velocity: 0.9 },
+  { time: "0:2:0", duration: "8n", note: "G3", velocity: 0.9 },
+  { time: "0:2:2", duration: "8n", note: "B3", velocity: 0.5 },
 ];
-const snarePattern = [
-  { time: "0:1:0", duration: "8n", velocity: 0.5 },
-  { time: "0:3:0", duration: "8n", velocity: 0.5 },
+const patternB = [
+  { time: "0:1:0", duration: "8n", note: "E2", velocity: 0.5 },
+  { time: "0:3:0", duration: "8n", note: "A2", velocity: 0.5 },
 ];
 
+// Initialize audio context for tone.js
 document.querySelector("#tone-js-init").addEventListener("click", async () => {
   await Tone.start();
   console.log("Audio is all set!");
 
   // Filter
   lowPass = new Tone.Filter({
-    frequency: 8000,
+    frequency: 800,
   }).toDestination();
 
   // Synths
@@ -63,14 +68,70 @@ document.querySelector("#tone-js-init").addEventListener("click", async () => {
     .connect(lowPass)
     .toDestination();
 
+  piano = new Tone.Synth({
+    oscillator: {
+      type: "sine",
+    },
+    envelope: {
+      attack: 0.005, // Attack time
+      decay: 0.1, // Decay time
+      sustain: 0.5, // Sustain level
+      release: 1, // Release time
+    },
+  }).toDestination();
+
+  bass = new Tone.MembraneSynth({
+    envelope: {
+      attack: 0.001, // Attack time
+      decay: 0.1, // Decay time
+      sustain: 0.2, // Sustain level
+      release: 1.6, // Release time
+    },
+  }).toDestination();
+
+  brass = new Tone.Synth({
+    oscillator: {
+      type: "sawtooth",
+    },
+    envelope: {
+      attack: 0.1, // Attack time
+      decay: 0.2, // Decay time
+      sustain: 0.7, // Sustain level
+      release: 0.5, // Release time
+    },
+  })
+    .connect(lowPass)
+    .toDestination();
+
+  flute = new Tone.Synth({
+    oscillator: {
+      type: "sine",
+    },
+    envelope: {
+      attack: 0.001, // Attack time
+      decay: 0.5, // Decay time
+      sustain: 0.5, // Sustain level
+      release: 1.6, // Release time
+    },
+  }).toDestination();
+
+  strings = new Tone.PolySynth(Tone.Synth, {
+    envelope: {
+      attack: 0.005, // Attack time
+      decay: 0.1, // Decay time
+      sustain: 0.5, // Sustain level
+      release: 1, // Release time
+    },
+  }).toDestination();
+
   // BPM
   Tone.Transport.bpm.value = 120;
 
   // PARTS
-  kickPart = createPart(kick, kickPattern);
-  snarePart = createPart(snare, snarePattern);
-  kickPart.loop = true;
-  snarePart.loop = true;
+  partA = createPart(piano, patternA);
+  partB = createPart(brass, patternB);
+  partA.loop = true;
+  partB.loop = true;
 });
 
 function createPart(instrument, pattern) {
@@ -83,7 +144,7 @@ function createPart(instrument, pattern) {
         " at " +
         parseInt(time * 1000)
     );
-    if (instrument === kick) {
+    if (instrument !== hihat && instrument !== snare) {
       instrument.triggerAttackRelease(
         note.note,
         note.duration,
@@ -102,8 +163,8 @@ function createPart(instrument, pattern) {
 const play = document.querySelector("#play");
 play.addEventListener("click", () => {
   Tone.Transport.start();
-  kickPart.start(0);
-  snarePart.start(0);
+  partA.start(0);
+  partB.start(0);
 });
 
 const stop = document.querySelector("#stop");
