@@ -1,7 +1,142 @@
-div.block {
-  background-color: hotpink;
-  width: 25px;
-  height: 25px;
-  margin: 5px;
+:root {
+  --background-blue: #2f3b4c;
+  --dark-blue: #161f27;
+  --darker-blue: #0e1b25;
+  --blue-gray: #283341;
+  --blue-lightgray: #3a4a5e;
+  --black: #000;
+  --cherry: rgb(128, 26, 77);
+  --gray: #f5f5f5;
+  --links: rgb(65, 173, 255);
+  --white: rgb(219, 219, 219);
+  --red: #ff0000;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background-blue);
+  color: var(--white);
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+button:hover {
+  color: var(--links);
+}
+
+div.step-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0px;
+}
+
+div.step {
+  width: 10px;
+  height: 36px;
+  border: 2px solid var(--darker-blue);
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 1px;
+}
+
+div.step:hover {
+  background-color: var(--black);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table td {
+  border: 1px solid #3f4f66;
+  width: 36px;
+  height: 48px;
+  cursor: pointer;
+}
+
+/* table td:nth-of-type(4n + 1):hover {
+  background-color: var(--black);
+} */
+
+.step-64n {
+  width: 9px;
+}
+
+.step-32n {
+  width: 18px;
+}
+
+.step-16n {
+  width: 36px;
+}
+
+.step-16t {
+  width: 12px;
+}
+
+.step-8n {
+  width: 72px;
+}
+
+.step-8t {
+  width: 24px;
+}
+
+.step-4n {
+  width: 144px;
+}
+
+.step-4t {
+  width: 48px;
+}
+
+.step-2n {
+  width: 288px;
+}
+
+.step-2t {
+  width: 96px;
+}
+
+.step-1n {
+  width: 576px;
+}
+
+.step-1t {
+  width: 192px;
+}
+
+.row-container {
+  margin-left: 64px;
+  display: grid;
+  grid-template-columns: repeat(64, 1fr);
+  gap: 0px 0px;
+  width: 1152px;
+}
+
+.row-container > div {
   display: inline-block;
+  height: 36px;
+  border: 1px solid var(--blue-lightgray);
+  gap: 0px 0px;
+  cursor: pointer;
+}
+.row-container:nth-of-type(1) {
+  margin-top: 64px;
+}
+.row-container:nth-of-type(1) > div {
+  text-align: center;
+  width: 36px;
+  font-size: 14px;
+  padding: 0;
 }
