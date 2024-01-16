@@ -33,13 +33,6 @@ button:hover {
   color: var(--links);
 }
 
-div.step-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 0px;
-}
-
 div.step {
   width: 10px;
   height: 36px;
@@ -53,27 +46,18 @@ div.step:hover {
   background-color: var(--black);
 }
 
-table {
-  border-collapse: collapse;
-}
-
-table td {
-  border: 1px solid #3f4f66;
-  width: 36px;
-  height: 48px;
-  cursor: pointer;
-}
-
-/* table td:nth-of-type(4n + 1):hover {
-  background-color: var(--black);
-} */
-
 .step-64n {
   width: 9px;
 }
 
+.step-32n-dot {
+  width: 27px;
+}
 .step-32n {
   width: 18px;
+}
+.step-16n-dot {
+  width: 54px;
 }
 
 .step-16n {
@@ -84,6 +68,10 @@ table td {
   width: 12px;
 }
 
+.step-8n-dot {
+  width: 108px;
+}
+
 .step-8n {
   width: 72px;
 }
@@ -92,12 +80,20 @@ table td {
   width: 24px;
 }
 
+.step-4n-dot {
+  width: 216px;
+}
+
 .step-4n {
   width: 144px;
 }
 
 .step-4t {
   width: 48px;
+}
+
+.step-2n-dot {
+  width: 432px;
 }
 
 .step-2n {
@@ -116,12 +112,17 @@ table td {
   width: 192px;
 }
 
+.step-1t2 {
+  width: 384px;
+}
+
 .row-container {
   margin-left: 64px;
-  display: grid;
-  grid-template-columns: repeat(64, 1fr);
-  gap: 0px 0px;
-  width: 1152px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0px;
+  justify-content: flex-start;
 }
 
 .row-container > div {
@@ -135,8 +136,15 @@ table td {
   margin-top: 64px;
 }
 .row-container:nth-of-type(1) > div {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--links);
   width: 36px;
   font-size: 14px;
   padding: 0;
+}
+
+.row-container:nth-of-type(1) > div:nth-of-type(4n + 1) {
+  background-color: var(--blue-gray);
 }

@@ -45,13 +45,73 @@ $(document).ready(function () {
     }
   });
 
-  // Plus and minus buttons
-  $("#plus").click(function () {
-    $(".step-container").append("<div class='step'></div>");
-  });
-  $("#minus").click(function () {
-    $(".step:last-of-type").remove();
-  });
+  // // Plus and minus buttons
+  // $("#plus").click(function () {
+  //   $(".step-container").append("<div class='step'></div>");
+  // });
+  // $("#minus").click(function () {
+  //   $(".step:last-of-type").remove();
+  // });
+
+  // Append 32 divs to first row-container
+  for (let i = 1; i <= 32; i++) {
+    $(".row-container:eq(0)").append("<div class='step-no'>" + i + "</div>");
+  }
+
+  // Append 32 divs to second row-container
+  for (let i = 1; i <= 32; i++) {
+    $(".row-container:eq(1)").append("<div class='step-16n'></div>");
+  }
+
+  // Matrix of legal note combinations
+  const addRulesMatrix = [
+    { addendA: "2n", addendB: "2n", sum: "1n" },
+    { addendA: "2n", addendB: "4n", sum: "2n-dot" },
+    { addendA: "4n", addendB: "2n", sum: "2n-dot" },
+    { addendA: "2n-dot", addendB: "4n", sum: "1n" },
+    { addendA: "4n", addendB: "2n-dot", sum: "1n" },
+
+    { addendA: "4n", addendB: "4n", sum: "2n" },
+    { addendA: "4n", addendB: "8n", sum: "4n-dot" },
+    { addendA: "8n", addendB: "4n", sum: "4n-dot" },
+    { addendA: "4n-dot", addendB: "8n", sum: "2n" },
+    { addendA: "8n", addendB: "4n-dot", sum: "2n" },
+
+    { addendA: "8n", addendB: "8n", sum: "4n" },
+    { addendA: "8n", addendB: "16n", sum: "8n-dot" },
+    { addendA: "16n", addendB: "8n", sum: "8n-dot" },
+    { addendA: "8n-dot", addendB: "16n", sum: "4n" },
+    { addendA: "16n", addendB: "8n-dot", sum: "4n" },
+
+    { addendA: "16n", addendB: "16n", sum: "8n" },
+    { addendA: "16n", addendB: "32n", sum: "16n-dot" },
+    { addendA: "32n", addendB: "16n", sum: "16n-dot" },
+    { addendA: "16n-dot", addendB: "32n", sum: "8n" },
+    { addendA: "32n", addendB: "16n-dot", sum: "8n" },
+
+    { addendA: "32n", addendB: "32n", sum: "16n" },
+    { addendA: "32n", addendB: "64n", sum: "32n-dot" },
+    { addendA: "64n", addendB: "32n", sum: "32n-dot" },
+    { addendA: "32n-dot", addendB: "64n", sum: "16n" },
+    { addendA: "64n", addendB: "32n-dot", sum: "16n" },
+    { addendA: "64n", addendB: "64n", sum: "32n" },
+
+    { addendA: "1t", addendB: "1t", sum: "1t2" },
+    { addendA: "1t2", addendB: "1t", sum: "1n" },
+    { addendA: "1t", addendB: "1t2", sum: "1n" },
+    { addendA: "2t", addendB: "2t", sum: "1t" },
+    { addendA: "2t", addendB: "1t", sum: "2n" },
+    { addendA: "1t", addendB: "2t", sum: "2n" },
+    { addendA: "4t", addendB: "4t", sum: "2t" },
+    { addendA: "4t", addendB: "2t", sum: "4n" },
+    { addendA: "2t", addendB: "4t", sum: "4n" },
+    { addendA: "8t", addendB: "8t", sum: "4t" },
+    { addendA: "8t", addendB: "4t", sum: "8n" },
+    { addendA: "4t", addendB: "8t", sum: "8n" },
+    { addendA: "16t", addendB: "16t", sum: "8t" },
+    { addendA: "16t", addendB: "8t", sum: "16n" },
+    { addendA: "8t", addendB: "16t", sum: "16n" },
+  ];
 
   let extendDivide = "divide";
   $("input[name='divide-or-extend']").click(function () {
@@ -69,7 +129,7 @@ $(document).ready(function () {
         "step-32n",
         "step-64n",
       ];
-      for (var i = 0; i < steps.length; i++) {
+      for (var i = 0; i < steps.length - 1; i++) {
         if ($(this).hasClass(steps[i])) {
           var newStep = steps[i + 1];
           $(this).removeClass(steps[i]);
@@ -81,85 +141,61 @@ $(document).ready(function () {
     }
 
     if (extendDivide == "divide-tri") {
-      var steps = ["step-16n", "step-8n", "step-4n", "step-2n", "step-1n"];
-      for (var i = 0; i < steps.length; i++) {
+      const steps = ["step-16n", "step-8n", "step-4n", "step-2n", "step-1n"];
+      const dotSteps = [
+        "step-32n-dot",
+        "step-16n-dot",
+        "step-8n-dot",
+        "step-4n-dot",
+        "step-2n-dot",
+      ];
+      for (let i = 0; i < steps.length; i++) {
         if ($(this).hasClass(steps[i])) {
-          var newStep = steps[i].replace(/n$/, "t");
+          let newStep = steps[i].replace(/n$/, "t");
           $(this).removeClass(steps[i]);
           $(this).addClass(newStep);
-          var cells = "";
-          for (var j = 0; j < 2; j++) {
-            cells += "<div class='" + newStep + "'></div>";
+          let divs = "";
+          for (let j = 0; j < 2; j++) {
+            divs += "<div class='" + newStep + "'></div>";
           }
-          $(this).after(cells);
+          $(this).after(divs);
+          break;
+        } else if ($(this).hasClass(dotSteps[i])) {
+          let newStep = dotSteps[i].replace(/^step-/, "").replace(/n-dot$/, "");
+          newStep = parseInt(newStep * 2);
+          newStep = "step-" + newStep + "n";
+          console.log(newStep);
+          $(this).removeClass(dotSteps[i]);
+          $(this).addClass(newStep);
+          let divs = "";
+          for (let j = 0; j < 2; j++) {
+            divs += "<div class='" + newStep + "'></div>";
+          }
+          $(this).after(divs);
           break;
         }
       }
     }
 
     if (extendDivide == "extend") {
-      if ($(this).hasClass("step-64n")) {
-        $(this).removeClass("step-64n");
-        $(this).addClass("step-32n");
-        $(this).next().remove();
-      } else if ($(this).hasClass("step-32n")) {
-        $(this).removeClass("step-32n");
-        $(this).addClass("step-16n");
-        $(this).next().remove();
-      } else if ($(this).hasClass("step-16n")) {
-        $(this).removeClass("step-16n");
-        $(this).addClass("step-8n");
-        $(this).next().remove();
-      } else if ($(this).hasClass("step-8n")) {
-        $(this).removeClass("step-8n");
-        $(this).addClass("step-4n");
-        $(this).next().remove();
-        $(this).next().remove();
-      } else if ($(this).hasClass("step-4n")) {
-        $(this).removeClass("step-4n");
-        $(this).addClass("step-2n");
-        for (let i = 0; i < 4; i++) {
-          $(this).next().remove();
-        }
-      } else if ($(this).hasClass("step-2n")) {
-        $(this).removeClass("step-2n");
-        $(this).addClass("step-1n");
-        for (let i = 0; i < 8; i++) {
-          $(this).next().remove();
-        }
-      }
-    }
+      // Get class of clicked div and remove "step-" from class name
+      let clickedDivClass = $(this).attr("class");
+      clickedDivClass = clickedDivClass.replace("step-", "");
+      // Get class of next div and remove "step-" from class name
+      let nextDivClass = $(this).next().attr("class");
+      nextDivClass = nextDivClass.replace("step-", "");
 
-    if (extendDivide == "extend-tri") {
-      if ($(this).hasClass("step-16t")) {
-        $(this).removeClass("step-16t");
-        $(this).addClass("step-16n");
+      let rule = addRulesMatrix.find(
+        (rule) =>
+          rule.addendA === clickedDivClass && rule.addendB === nextDivClass
+      );
+
+      if (rule) {
+        $(this).removeClass("step-" + clickedDivClass);
+        $(this).addClass("step-" + rule.sum);
         $(this).next().remove();
-        $(this).next().remove();
-      } else if ($(this).hasClass("step-8t")) {
-        $(this).removeClass("step-8t");
-        $(this).addClass("step-8n");
-        for (let i = 0; i < 2; i++) {
-          $(this).next().remove();
-        }
-      } else if ($(this).hasClass("step-4t")) {
-        $(this).removeClass("step-4t");
-        $(this).addClass("step-4n");
-        for (let i = 0; i < 2; i++) {
-          $(this).next().remove();
-        }
-      } else if ($(this).hasClass("step-2t")) {
-        $(this).removeClass("step-2t");
-        $(this).addClass("step-2n");
-        for (let i = 0; i < 2; i++) {
-          $(this).next().remove();
-        }
-      } else if ($(this).hasClass("step-1t")) {
-        $(this).removeClass("step-1t");
-        $(this).addClass("step-1n");
-        for (let i = 0; i < 2; i++) {
-          $(this).next().remove();
-        }
+      } else {
+        console.log("Illegal combination!");
       }
     }
   });
