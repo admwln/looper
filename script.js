@@ -54,12 +54,12 @@ $(document).ready(function () {
   // });
 
   // Append 32 divs to first row-container
-  for (let i = 1; i <= 32; i++) {
+  for (let i = 1; i <= 16; i++) {
     $(".row-container:eq(0)").append("<div class='step-no'>" + i + "</div>");
   }
 
   // Append 32 divs to second row-container
-  for (let i = 1; i <= 32; i++) {
+  for (let i = 1; i <= 16; i++) {
     $(".row-container:eq(1)").append("<div class='step-16n'></div>");
   }
 

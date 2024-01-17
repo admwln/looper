@@ -47,77 +47,77 @@ div.step:hover {
 }
 
 .step-64n {
-  width: 9px;
+  width: 21px;
 }
 
 .step-32n-dot {
-  width: 27px;
+  width: 63px;
 }
 .step-32n {
-  width: 18px;
+  width: 42px;
 }
 .step-16n-dot {
-  width: 54px;
+  width: 126px;
 }
 
 .step-16n {
-  width: 36px;
+  width: 84px;
 }
 
 .step-16t {
-  width: 12px;
+  width: 28px;
 }
 
 .step-8n-dot {
-  width: 108px;
+  width: 252px;
 }
 
 .step-8n {
-  width: 72px;
+  width: 168px;
 }
 
 .step-8t {
-  width: 24px;
+  width: 56px;
 }
 
 .step-4n-dot {
-  width: 216px;
+  width: 504px;
 }
 
 .step-4n {
-  width: 144px;
+  width: 336px;
 }
 
 .step-4t {
-  width: 48px;
+  width: 112px;
 }
 
 .step-2n-dot {
-  width: 432px;
+  width: 1008px;
 }
 
 .step-2n {
-  width: 288px;
+  width: 672px;
 }
 
 .step-2t {
-  width: 96px;
+  width: 224px;
 }
 
 .step-1n {
-  width: 576px;
+  width: 1344px;
 }
 
 .step-1t {
-  width: 192px;
+  width: 448px;
 }
 
 .step-1t2 {
-  width: 384px;
+  width: 896px;
 }
 
 .row-container {
-  margin-left: 64px;
+  margin-left: 24px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -127,7 +127,7 @@ div.step:hover {
 
 .row-container > div {
   display: inline-block;
-  height: 36px;
+  height: 84px;
   border: 1px solid var(--blue-lightgray);
   gap: 0px 0px;
   cursor: pointer;
@@ -140,7 +140,7 @@ div.step:hover {
   justify-content: center;
   align-items: center;
   color: var(--links);
-  width: 36px;
+  width: 84px;
   font-size: 14px;
   padding: 0;
 }
