@@ -113,7 +113,7 @@ $(document).ready(function () {
     { addendA: "8t", addendB: "16t", sum: "16n" },
   ];
 
-  let extendDivide = "divide";
+  let extendDivide = "extend";
   $("input[name='divide-or-extend']").click(function () {
     extendDivide = $(this).val();
   });
