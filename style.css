@@ -22,6 +22,7 @@
 body {
   background-color: var(--background-blue);
   color: var(--white);
+  padding: 24px 64px;
 }
 
 button {
@@ -116,8 +117,25 @@ div.step:hover {
   width: 896px;
 }
 
+.row-frame {
+  width: 1344px;
+  overflow-x: scroll;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+  scroll-snap-type: mandatory;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.row-frame::-webkit-scrollbar {
+  display: none;
+}
+
 .row-container {
-  margin-left: 24px;
+  height: 84px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -134,8 +152,10 @@ div.step:hover {
 }
 .row-container:nth-of-type(1) {
   margin-top: 64px;
+  height: 42px;
 }
 .row-container:nth-of-type(1) > div {
+  height: 42px;
   display: flex;
   justify-content: center;
   align-items: center;

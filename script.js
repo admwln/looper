@@ -45,22 +45,98 @@ $(document).ready(function () {
     }
   });
 
-  // // Plus and minus buttons
-  // $("#plus").click(function () {
-  //   $(".step-container").append("<div class='step'></div>");
-  // });
-  // $("#minus").click(function () {
-  //   $(".step:last-of-type").remove();
-  // });
-
   // Append 32 divs to first row-container
   for (let i = 1; i <= 16; i++) {
     $(".row-container:eq(0)").append("<div class='step-no'>" + i + "</div>");
   }
 
   // Append 32 divs to second row-container
-  for (let i = 1; i <= 16; i++) {
-    $(".row-container:eq(1)").append("<div class='step-16n'></div>");
+  // for (let i = 1; i <= 16; i++) {
+  //   $(".row-container:eq(1)").append("<div class='step-16n'></div>");
+  // }
+
+  class Pattern {
+    constructor(name) {
+      this.name = name;
+      this.steps = [];
+      this.subpatterns = [];
+    }
+  }
+
+  class Subpattern extends Pattern {
+    constructor(name, parentStep) {
+      super(name);
+      this.parentStep = parentStep; // Maybe call this offset instead. Tying it to a parent step may cause problems, as the parent step may be deleted or changed
+    }
+  }
+
+  // Create new pattern
+  let myPattern = new Pattern("01-00");
+
+  // Step class
+  class Step {
+    constructor(note, pitch, velocity) {
+      this.note = note;
+      this.pitch = pitch;
+      this.velocity = velocity;
+      this.state = false;
+    }
+
+    pushStep() {
+      myPattern.steps.push(this);
+    }
+
+    appendDiv(rowIdx) {
+      $(".row-container:eq(" + rowIdx + ")").append(
+        `<div class="step-${this.note}"></div>`
+      );
+      // If no of steps exceeds length of step-no's, scroll right
+      if (
+        $(".row-container:eq(" + rowIdx + ") div").length >
+        $(".row-container:eq(0) div").length
+      ) {
+        scrollRight(0);
+
+        // If rowIdx is 1, append step-no divs to row-container 0
+        if (rowIdx == 1) {
+          $(".row-container:eq(0)").append(
+            `<div class="step-no">${
+              $(".row-container:eq(0) div").length + 1
+            }</div>`
+          );
+        }
+      }
+    }
+  }
+
+  // // Plus and minus buttons
+  $("#plus").click(function () {
+    const step = new Step("16n", 60, 100);
+    step.appendDiv(1);
+    step.pushStep();
+    //console.log(myPattern);
+  });
+  // $("#minus").click(function () {
+  //   $(".step:last-of-type").remove();
+  // });
+
+  // Scroll arrows
+  $(".scroll-row.right").click(function () {
+    const myIndex = $(".scroll-row.right").index(this);
+    scrollRight(0);
+  });
+
+  $(".scroll-row.left").click(function () {
+    const myIndex = $(".scroll-row.left").index(this);
+    scrollLeft(0);
+  });
+
+  function scrollRight(idx) {
+    $(".row-frame:eq(" + idx + ")").animate({ scrollLeft: "+=1344px" }, 0);
+  }
+
+  function scrollLeft(idx) {
+    $(".row-frame:eq(" + idx + ")").animate({ scrollLeft: "-=1344px" }, 0);
   }
 
   // Matrix of legal note combinations
@@ -119,6 +195,9 @@ $(document).ready(function () {
   });
 
   $(document).on("click", ".row-container > div", function () {
+    const rowIdx = $(".row-container").index($(this).parent());
+    const stepIdx = $(".row-container:eq(" + rowIdx + ") > div").index(this);
+
     if (extendDivide == "divide") {
       var steps = [
         "step-1n",
@@ -178,22 +257,24 @@ $(document).ready(function () {
     }
 
     if (extendDivide == "extend") {
-      // Get class of clicked div and remove "step-" from class name
-      let clickedDivClass = $(this).attr("class");
-      clickedDivClass = clickedDivClass.replace("step-", "");
-      // Get class of next div and remove "step-" from class name
-      let nextDivClass = $(this).next().attr("class");
-      nextDivClass = nextDivClass.replace("step-", "");
+      // Console log myPattern.steps[stepIdx]
+      const addendA = myPattern.steps[stepIdx].note;
+      const addendB = myPattern.steps[stepIdx + 1].note;
 
       let rule = addRulesMatrix.find(
-        (rule) =>
-          rule.addendA === clickedDivClass && rule.addendB === nextDivClass
+        (rule) => rule.addendA === addendA && rule.addendB === addendB
       );
 
       if (rule) {
-        $(this).removeClass("step-" + clickedDivClass);
+        // Change note of clicked step to sum of addendA and addendB
+        myPattern.steps[stepIdx].note = rule.sum;
+        // Remove following step from myPattern.steps
+        myPattern.steps.splice(stepIdx + 1, 1);
+        // Update DOM to reflect changes
+        $(this).removeClass("step-" + addendA);
         $(this).addClass("step-" + rule.sum);
         $(this).next().remove();
+        console.log(myPattern);
       } else {
         console.log("Illegal combination!");
       }
