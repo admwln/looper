@@ -16,6 +16,11 @@
 // parent step + subpattern duration. This will allow for more complex patterns to be created,
 // and will allow for fills or alternate patterns to be queued mid-pattern.
 
+// TODO: Add ability to turn on individual steps, ie change its state from false to true and adding color to step.
+// TODO: Add ability to turn off individual steps, ie change its state from true to false.
+// TODO: Add ability to cycle througn a few velocity values for each step, changing its color/opacity.
+// TODO: Divide by 2 and 3 should affect pattern object as well as DOM.
+
 $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
@@ -283,3 +288,25 @@ $(document).ready(function () {
 
   // End of document.ready()
 });
+
+// Note values, if 64n = 12
+// 64n = 12
+// 64t = 4
+// 32n. = 36
+// 32n = 24
+// 32t = 8
+// 16n. = 72
+// 16n = 48
+// 16t = 16
+// 8n. = 144
+// 8n = 96
+// 8t = 32
+// 4n. = 288
+// 4n = 192
+// 4t = 64
+// 2n. = 576
+// 2n = 384
+// 2t = 128
+// 1n. = 1152
+// 1n = 768
+// 1t = 256
