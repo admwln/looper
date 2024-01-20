@@ -20,6 +20,7 @@
 // TODO: Add ability to turn off individual steps, ie change its state from true to false.
 // TODO: Add ability to cycle througn a few velocity values for each step, changing its color/opacity.
 // TODO: Divide by 2 and 3 should affect pattern object as well as DOM.
+// TODO: Step number can be clicked to highlight group of steps, which can then be manipulated
 
 $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
@@ -50,82 +51,231 @@ $(document).ready(function () {
     }
   });
 
-  // Append 32 divs to first row-container
-  for (let i = 1; i <= 16; i++) {
-    $(".row-container:eq(0)").append("<div class='step-no'>" + i + "</div>");
+  // Global variables
+  let tempo = 120;
+  let top = 4;
+  let bottom = 4;
+  let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
+  const defaultStepWidth = 84;
+  let measureWidth = defaultStepWidth * measureLength;
+
+  // Change scrollgroup width to accomodate measure length, will have to be done on a
+  // scrollgroup-by-scrollgroup basis later
+  $(".scrollgroup").css("width", measureWidth);
+
+  let noteMap = new Map([
+    [21, "64n"],
+    [63, "32n."],
+    [42, "32n"],
+    [126, "16n."],
+    [84, "16n"],
+    [28, "16t"],
+    [252, "8n."],
+    [168, "8n"],
+    [56, "8t"],
+    [504, "4n."],
+    [336, "4n"],
+    [112, "4t"],
+    [1008, "2n."],
+    [672, "2n"],
+    [224, "2t"],
+    [1344, "1n"],
+    [448, "1t"],
+  ]);
+
+  function getNoteName(pixelValue) {
+    return noteMap.get(pixelValue);
   }
 
-  // Append 32 divs to second row-container
-  // for (let i = 1; i <= 16; i++) {
-  //   $(".row-container:eq(1)").append("<div class='step-16n'></div>");
-  // }
+  // Class definitions
+
+  class stepNoIndicator {
+    constructor() {
+      this.stepNos = [];
+    }
+    initStepNoIndicator() {
+      for (let i = 1; i <= measureLength; i++) {
+        this.stepNos.push(i);
+        $(".step-no-indicator:eq(0)").append(
+          "<div class='step-no'>" + i + "</div>"
+        );
+      }
+    }
+
+    addStepNo() {
+      this.stepNos.push($(".step-no-indicator:eq(0) > div").length + 1);
+      $(".step-no-indicator:eq(0)").append(
+        "<div class='step-no'>" +
+          ($(".step-no-indicator:eq(0) > div").length + 1) +
+          "</div>"
+      );
+      console.log(scrollgroup);
+    }
+  }
+
+  class Scrollgroup {
+    constructor() {
+      this.stepNoIndicator = new stepNoIndicator();
+      this.patterns = [];
+    }
+  }
 
   class Pattern {
     constructor(name) {
       this.name = name;
       this.steps = [];
-      this.subpatterns = [];
+      //this.subpatterns = [];
     }
-  }
-
-  class Subpattern extends Pattern {
-    constructor(name, parentStep) {
-      super(name);
-      this.parentStep = parentStep; // Maybe call this offset instead. Tying it to a parent step may cause problems, as the parent step may be deleted or changed
-    }
-  }
-
-  // Create new pattern
-  let myPattern = new Pattern("01-00");
-
-  // Step class
-  class Step {
-    constructor(note, pitch, velocity) {
-      this.note = note;
-      this.pitch = pitch;
-      this.velocity = velocity;
-      this.state = false;
+    pushPattern(scrollgroup) {
+      scrollgroup.patterns.push(this);
     }
 
-    pushStep() {
-      myPattern.steps.push(this);
-    }
-
-    appendDiv(rowIdx) {
-      $(".row-container:eq(" + rowIdx + ")").append(
-        `<div class="step-${this.note}"></div>`
-      );
-      // If no of steps exceeds length of step-no's, scroll right
-      if (
-        $(".row-container:eq(" + rowIdx + ") div").length >
-        $(".row-container:eq(0) div").length
-      ) {
-        scrollRight(0);
-
-        // If rowIdx is 1, append step-no divs to row-container 0
-        if (rowIdx == 1) {
-          $(".row-container:eq(0)").append(
-            `<div class="step-no">${
-              $(".row-container:eq(0) div").length + 1
-            }</div>`
-          );
-        }
+    initSteps() {
+      for (let i = 1; i <= measureLength; i++) {
+        const step = new Step("16n", 84, 60, 100, "off");
+        step.pushStep(this);
+        step.drawNewStep();
       }
     }
   }
 
-  // // Plus and minus buttons
-  $("#plus").click(function () {
-    const step = new Step("16n", 60, 100);
-    step.appendDiv(1);
-    step.pushStep();
-    //console.log(myPattern);
-  });
-  // $("#minus").click(function () {
-  //   $(".step:last-of-type").remove();
-  // });
+  class Step {
+    constructor(noteName, pixelValue, pitch, velocity, state) {
+      // eg. "16n", 84, 60, 100, "on"
+      this.noteName = noteName;
+      this.pixelValue = pixelValue;
+      this.pitch = pitch;
+      this.velocity = velocity;
+      this.state = state;
+    }
 
-  // Scroll arrows
+    pushStep(pattern) {
+      pattern.steps.push(this);
+    }
+
+    drawNewStep() {
+      $(".pattern:eq(0)").append(
+        `<div class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+      );
+    }
+
+    insertNewStep(stepIndex) {
+      $(".pattern:eq(0) > div:eq(" + stepIndex + ")").after(
+        `<div class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+      );
+    }
+
+    updateStep(stepIndex) {
+      $(".step:eq(" + stepIndex + ")").css("width", this.pixelValue);
+      $(".step:eq(" + stepIndex + ")").attr("data", this.noteName);
+    }
+
+    splitStep(stepIndex, splitBy) {
+      // Calculate pixel value for new steps
+      this.pixelValue = this.pixelValue / splitBy;
+      // Get note name for new steps
+      this.noteName = getNoteName(this.pixelValue);
+      this.updateStep(stepIndex);
+      console.log(this.state);
+
+      // Create new step(s)
+      for (let i = 1; i < splitBy; i++) {
+        const newStep = new Step(
+          this.noteName,
+          this.pixelValue,
+          this.pitch,
+          this.velocity,
+          this.state
+        );
+        // Insert new step into pattern.steps array
+        pattern.steps.splice(stepIndex + 1, 0, newStep);
+        // Insert new step into DOM
+        newStep.insertNewStep(stepIndex);
+      }
+    }
+
+    joinStep(stepIndex) {
+      // Get pixel value of subsequent step
+      const nextStepPixelValue = pattern.steps[stepIndex + 1].pixelValue;
+      // Calculate pixel value for extended step
+      this.pixelValue = this.pixelValue + nextStepPixelValue;
+      // Get note name for extended step
+      this.noteName = getNoteName(this.pixelValue);
+      // Update step in DOM
+      this.updateStep(stepIndex);
+      // Remove subsequent step from pattern.steps array
+      pattern.steps.splice(stepIndex + 1, 1);
+      // Remove subsequent step from DOM
+      $(".step:eq(" + (stepIndex + 1) + ")").remove();
+    }
+  }
+
+  const scrollgroup = new Scrollgroup();
+  scrollgroup.stepNoIndicator.initStepNoIndicator();
+  const pattern = new Pattern("percussion");
+  pattern.initSteps();
+  pattern.pushPattern(scrollgroup);
+
+  $("#plus").click(function () {
+    const step = new Step("16n", 84, 60, 100, "off");
+    step.pushStep(pattern);
+    step.drawNewStep();
+    scrollgroup.stepNoIndicator.addStepNo();
+    // Scroll right if necessary
+    // If number of steps is greater than number of 16th notes in a measure, scroll right
+    if (scrollgroup.stepNoIndicator.stepNos.length > measureLength) {
+      scrollRight(0);
+    }
+  });
+
+  $("#minus").click(function () {
+    console.log(scrollgroup);
+  });
+
+  let editMode = "pencil";
+  $("input[name='edit-mode']").click(function () {
+    editMode = $(this).val();
+  });
+
+  $(document).on("click", ".pattern:eq(0) > div", function () {
+    // Get index of clicked step relative to its parent row-container
+    const stepIndex = $(".pattern:eq(0) > div").index($(this));
+    const step = pattern.steps[stepIndex];
+
+    // Pencil
+    if (editMode == "pencil") {
+      // Toggle step state TODO: make into step method
+      if (step.state == "off") {
+        step.state = "on";
+        $(this).removeClass("off").addClass("on");
+      } else {
+        step.state = "off";
+        $(this).removeClass("on").addClass("off");
+      }
+    }
+
+    // Split by 2
+    if (editMode == "split") {
+      step.splitStep(stepIndex, 2);
+    }
+
+    // Split by 3
+    if (editMode == "split-3") {
+      step.splitStep(stepIndex, 3);
+    }
+
+    // Split by 3
+    if (editMode == "split-4") {
+      step.splitStep(stepIndex, 4);
+    }
+
+    // Join step
+    if (editMode == "join") {
+      step.joinStep(stepIndex);
+    }
+  });
+
+  // Scrollgroup arrows
   $(".scroll-row.right").click(function () {
     const myIndex = $(".scroll-row.right").index(this);
     scrollRight(0);
@@ -137,176 +287,18 @@ $(document).ready(function () {
   });
 
   function scrollRight(idx) {
-    $(".row-frame:eq(" + idx + ")").animate({ scrollLeft: "+=1344px" }, 0);
+    $(".scrollgroup:eq(" + idx + ")").animate(
+      { scrollLeft: `+=${measureWidth}px` },
+      0
+    );
   }
 
   function scrollLeft(idx) {
-    $(".row-frame:eq(" + idx + ")").animate({ scrollLeft: "-=1344px" }, 0);
+    $(".scrollgroup:eq(" + idx + ")").animate(
+      { scrollLeft: `-=${measureWidth}px` },
+      0
+    );
   }
 
-  // Matrix of legal note combinations
-  const addRulesMatrix = [
-    { addendA: "2n", addendB: "2n", sum: "1n" },
-    { addendA: "2n", addendB: "4n", sum: "2n-dot" },
-    { addendA: "4n", addendB: "2n", sum: "2n-dot" },
-    { addendA: "2n-dot", addendB: "4n", sum: "1n" },
-    { addendA: "4n", addendB: "2n-dot", sum: "1n" },
-
-    { addendA: "4n", addendB: "4n", sum: "2n" },
-    { addendA: "4n", addendB: "8n", sum: "4n-dot" },
-    { addendA: "8n", addendB: "4n", sum: "4n-dot" },
-    { addendA: "4n-dot", addendB: "8n", sum: "2n" },
-    { addendA: "8n", addendB: "4n-dot", sum: "2n" },
-
-    { addendA: "8n", addendB: "8n", sum: "4n" },
-    { addendA: "8n", addendB: "16n", sum: "8n-dot" },
-    { addendA: "16n", addendB: "8n", sum: "8n-dot" },
-    { addendA: "8n-dot", addendB: "16n", sum: "4n" },
-    { addendA: "16n", addendB: "8n-dot", sum: "4n" },
-
-    { addendA: "16n", addendB: "16n", sum: "8n" },
-    { addendA: "16n", addendB: "32n", sum: "16n-dot" },
-    { addendA: "32n", addendB: "16n", sum: "16n-dot" },
-    { addendA: "16n-dot", addendB: "32n", sum: "8n" },
-    { addendA: "32n", addendB: "16n-dot", sum: "8n" },
-
-    { addendA: "32n", addendB: "32n", sum: "16n" },
-    { addendA: "32n", addendB: "64n", sum: "32n-dot" },
-    { addendA: "64n", addendB: "32n", sum: "32n-dot" },
-    { addendA: "32n-dot", addendB: "64n", sum: "16n" },
-    { addendA: "64n", addendB: "32n-dot", sum: "16n" },
-    { addendA: "64n", addendB: "64n", sum: "32n" },
-
-    { addendA: "1t", addendB: "1t", sum: "1t2" },
-    { addendA: "1t2", addendB: "1t", sum: "1n" },
-    { addendA: "1t", addendB: "1t2", sum: "1n" },
-    { addendA: "2t", addendB: "2t", sum: "1t" },
-    { addendA: "2t", addendB: "1t", sum: "2n" },
-    { addendA: "1t", addendB: "2t", sum: "2n" },
-    { addendA: "4t", addendB: "4t", sum: "2t" },
-    { addendA: "4t", addendB: "2t", sum: "4n" },
-    { addendA: "2t", addendB: "4t", sum: "4n" },
-    { addendA: "8t", addendB: "8t", sum: "4t" },
-    { addendA: "8t", addendB: "4t", sum: "8n" },
-    { addendA: "4t", addendB: "8t", sum: "8n" },
-    { addendA: "16t", addendB: "16t", sum: "8t" },
-    { addendA: "16t", addendB: "8t", sum: "16n" },
-    { addendA: "8t", addendB: "16t", sum: "16n" },
-  ];
-
-  let extendDivide = "extend";
-  $("input[name='divide-or-extend']").click(function () {
-    extendDivide = $(this).val();
-  });
-
-  $(document).on("click", ".row-container > div", function () {
-    const rowIdx = $(".row-container").index($(this).parent());
-    const stepIdx = $(".row-container:eq(" + rowIdx + ") > div").index(this);
-
-    if (extendDivide == "divide") {
-      var steps = [
-        "step-1n",
-        "step-2n",
-        "step-4n",
-        "step-8n",
-        "step-16n",
-        "step-32n",
-        "step-64n",
-      ];
-      for (var i = 0; i < steps.length - 1; i++) {
-        if ($(this).hasClass(steps[i])) {
-          var newStep = steps[i + 1];
-          $(this).removeClass(steps[i]);
-          $(this).addClass(newStep);
-          $(this).after("<div class='" + newStep + "'></div>");
-          break;
-        }
-      }
-    }
-
-    if (extendDivide == "divide-tri") {
-      const steps = ["step-16n", "step-8n", "step-4n", "step-2n", "step-1n"];
-      const dotSteps = [
-        "step-32n-dot",
-        "step-16n-dot",
-        "step-8n-dot",
-        "step-4n-dot",
-        "step-2n-dot",
-      ];
-      for (let i = 0; i < steps.length; i++) {
-        if ($(this).hasClass(steps[i])) {
-          let newStep = steps[i].replace(/n$/, "t");
-          $(this).removeClass(steps[i]);
-          $(this).addClass(newStep);
-          let divs = "";
-          for (let j = 0; j < 2; j++) {
-            divs += "<div class='" + newStep + "'></div>";
-          }
-          $(this).after(divs);
-          break;
-        } else if ($(this).hasClass(dotSteps[i])) {
-          let newStep = dotSteps[i].replace(/^step-/, "").replace(/n-dot$/, "");
-          newStep = parseInt(newStep * 2);
-          newStep = "step-" + newStep + "n";
-          console.log(newStep);
-          $(this).removeClass(dotSteps[i]);
-          $(this).addClass(newStep);
-          let divs = "";
-          for (let j = 0; j < 2; j++) {
-            divs += "<div class='" + newStep + "'></div>";
-          }
-          $(this).after(divs);
-          break;
-        }
-      }
-    }
-
-    if (extendDivide == "extend") {
-      // Console log myPattern.steps[stepIdx]
-      const addendA = myPattern.steps[stepIdx].note;
-      const addendB = myPattern.steps[stepIdx + 1].note;
-
-      let rule = addRulesMatrix.find(
-        (rule) => rule.addendA === addendA && rule.addendB === addendB
-      );
-
-      if (rule) {
-        // Change note of clicked step to sum of addendA and addendB
-        myPattern.steps[stepIdx].note = rule.sum;
-        // Remove following step from myPattern.steps
-        myPattern.steps.splice(stepIdx + 1, 1);
-        // Update DOM to reflect changes
-        $(this).removeClass("step-" + addendA);
-        $(this).addClass("step-" + rule.sum);
-        $(this).next().remove();
-        console.log(myPattern);
-      } else {
-        console.log("Illegal combination!");
-      }
-    }
-  });
-
-  // End of document.ready()
+  // End document.ready
 });
-
-// Note values, if 64n = 12
-// 64n = 12
-// 64t = 4
-// 32n. = 36
-// 32n = 24
-// 32t = 8
-// 16n. = 72
-// 16n = 48
-// 16t = 16
-// 8n. = 144
-// 8n = 96
-// 8t = 32
-// 4n. = 288
-// 4n = 192
-// 4t = 64
-// 2n. = 576
-// 2n = 384
-// 2t = 128
-// 1n. = 1152
-// 1n = 768
-// 1t = 256

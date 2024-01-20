@@ -34,7 +34,90 @@ button:hover {
   color: var(--links);
 }
 
-.scrollgroup {
+div.step {
+  width: 10px;
+  height: 36px;
+  border: 2px solid var(--darker-blue);
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 1px;
+}
+
+div.step:hover {
+  background-color: var(--black);
+}
+
+.step-64n {
+  width: 21px;
+}
+
+.step-32n-dot {
+  width: 63px;
+}
+.step-32n {
+  width: 42px;
+}
+.step-16n-dot {
+  width: 126px;
+}
+
+.step-16n {
+  width: 84px;
+}
+
+.step-16t {
+  width: 28px;
+}
+
+.step-8n-dot {
+  width: 252px;
+}
+
+.step-8n {
+  width: 168px;
+}
+
+.step-8t {
+  width: 56px;
+}
+
+.step-4n-dot {
+  width: 504px;
+}
+
+.step-4n {
+  width: 336px;
+}
+
+.step-4t {
+  width: 112px;
+}
+
+.step-2n-dot {
+  width: 1008px;
+}
+
+.step-2n {
+  width: 672px;
+}
+
+.step-2t {
+  width: 224px;
+}
+
+.step-1n {
+  width: 1344px;
+}
+
+.step-1t {
+  width: 448px;
+}
+
+.step-1t2 {
+  width: 896px;
+}
+
+.row-frame {
   width: 1344px;
   overflow-x: scroll;
   scrollbar-color: transparent transparent;
@@ -47,12 +130,11 @@ button:hover {
   align-items: flex-start;
 }
 
-.scrollgroup::-webkit-scrollbar {
+.row-frame::-webkit-scrollbar {
   display: none;
 }
 
-.step-no-indicator,
-.pattern {
+.row-container {
   height: 84px;
   display: flex;
   flex-direction: row;
@@ -61,13 +143,18 @@ button:hover {
   justify-content: flex-start;
 }
 
-.step-no-indicator {
+.row-container > div {
+  display: inline-block;
+  height: 84px;
+  border: 1px solid var(--blue-lightgray);
+  gap: 0px 0px;
+  cursor: pointer;
+}
+.row-container:nth-of-type(1) {
   margin-top: 64px;
   height: 42px;
 }
-
-.step-no-indicator > div {
-  border: 1px solid var(--blue-lightgray);
+.row-container:nth-of-type(1) > div {
   height: 42px;
   display: flex;
   justify-content: center;
@@ -78,22 +165,6 @@ button:hover {
   padding: 0;
 }
 
-.step-no-indicator > div:nth-of-type(4n + 1) {
+.row-container:nth-of-type(1) > div:nth-of-type(4n + 1) {
   background-color: var(--blue-gray);
-}
-
-.step {
-  display: inline-block;
-  height: 84px;
-  border: 1px solid var(--blue-lightgray);
-  gap: 0px 0px;
-  cursor: pointer;
-}
-
-.step.off {
-  background-color: transparent;
-}
-
-.step.on {
-  background-color: var(--darker-blue);
 }
