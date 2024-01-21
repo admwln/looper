@@ -89,34 +89,36 @@ $(document).ready(function () {
 
   // Class definitions
 
-  class stepNoIndicator {
+  class StepNoIndicator {
     constructor() {
       this.stepNos = [];
     }
-    initStepNoIndicator() {
+    initStepNoIndicator(indicatorIndex) {
       for (let i = 1; i <= measureLength; i++) {
         this.stepNos.push(i);
-        $(".step-no-indicator:eq(0)").append(
+        $(".step-no-indicator:eq(" + indicatorIndex + ")").append(
           "<div class='step-no'>" + i + "</div>"
         );
       }
     }
 
-    addStepNo() {
-      this.stepNos.push($(".step-no-indicator:eq(0) > div").length + 1);
-      $(".step-no-indicator:eq(0)").append(
+    addStepNo(indicatorIndex) {
+      this.stepNos.push(
+        $(".step-no-indicator:eq(" + indicatorIndex + ") > div").length + 1
+      );
+      $(".step-no-indicator:eq(" + indicatorIndex + ")").append(
         "<div class='step-no'>" +
-          ($(".step-no-indicator:eq(0) > div").length + 1) +
+          ($(".step-no-indicator:eq(" + indicatorIndex + ") > div").length +
+            1) +
           "</div>"
       );
-      console.log(scrollgroup);
     }
   }
 
-  class Scrollgroup {
+  class ScrollGroup {
     constructor() {
-      this.stepNoIndicator = new stepNoIndicator();
-      this.patterns = [];
+      this.patterns = [new ControllerTrack("CC")];
+      this.stepNoIndicator = new StepNoIndicator();
     }
   }
 
@@ -134,7 +136,7 @@ $(document).ready(function () {
       for (let i = 1; i <= measureLength; i++) {
         const step = new Step("16n", 84, 60, 100, "off");
         step.pushStep(this);
-        step.drawNewStep();
+        step.drawNewStep(0);
       }
     }
   }
@@ -153,8 +155,8 @@ $(document).ready(function () {
       pattern.steps.push(this);
     }
 
-    drawNewStep() {
-      $(".pattern:eq(0)").append(
+    drawNewStep(patternIndex) {
+      $(".pattern:eq(" + patternIndex + ")").append(
         `<div class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
       );
     }
@@ -176,7 +178,6 @@ $(document).ready(function () {
       // Get note name for new steps
       this.noteName = getNoteName(this.pixelValue);
       this.updateStep(stepIndex);
-      console.log(this.state);
 
       // Create new step(s)
       for (let i = 1; i < splitBy; i++) {
@@ -194,24 +195,59 @@ $(document).ready(function () {
       }
     }
 
-    joinStep(stepIndex) {
+    joinStep(stepContainer, stepIndex) {
       // Get pixel value of subsequent step
-      const nextStepPixelValue = pattern.steps[stepIndex + 1].pixelValue;
+      const nextStepPixelValue = stepContainer.steps[stepIndex + 1].pixelValue;
       // Calculate pixel value for extended step
       this.pixelValue = this.pixelValue + nextStepPixelValue;
       // Get note name for extended step
       this.noteName = getNoteName(this.pixelValue);
       // Update step in DOM
       this.updateStep(stepIndex);
-      // Remove subsequent step from pattern.steps array
-      pattern.steps.splice(stepIndex + 1, 1);
+      // Remove subsequent step from stepContainer.steps array
+      stepContainer.steps.splice(stepIndex + 1, 1);
       // Remove subsequent step from DOM
       $(".step:eq(" + (stepIndex + 1) + ")").remove();
     }
   }
 
-  const scrollgroup = new Scrollgroup();
-  scrollgroup.stepNoIndicator.initStepNoIndicator();
+  class ControllerStep extends Step {
+    constructor(noteName, pixelValue, pitch = [], velocity = [], state) {
+      super(noteName, pixelValue, pitch, velocity, state);
+    }
+
+    pushCcStep(controllerTrack) {
+      controllerTrack.steps.push(this);
+    }
+
+    drawNewCcStep(scrollGroupIndex) {
+      $(".controller-track:eq(" + scrollGroupIndex + ")").append(
+        `<div class="step cc ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+      );
+    }
+  }
+
+  class ControllerTrack extends Pattern {
+    constructor(name) {
+      super(name);
+      this.steps = [];
+      this.state = "off";
+    }
+
+    initControllerTrack(scrollGroupIndex) {
+      for (let i = 1; i <= measureLength; i++) {
+        const ccStep = new ControllerStep("16n", 84, [], [], "off");
+        ccStep.pushCcStep(this);
+        ccStep.drawNewCcStep(scrollGroupIndex);
+      }
+    }
+  }
+
+  // Instantiate objects
+  const scrollgroup = new ScrollGroup();
+  scrollgroup.stepNoIndicator.initStepNoIndicator(0); // 0 is the DOM index of the scrollgroup
+  const controllerTrack = scrollgroup.patterns[0];
+  controllerTrack.initControllerTrack(0); // 0 is the DOM index of the scrollgroup
   const pattern = new Pattern("percussion");
   pattern.initSteps();
   pattern.pushPattern(scrollgroup);
@@ -219,8 +255,12 @@ $(document).ready(function () {
   $("#plus").click(function () {
     const step = new Step("16n", 84, 60, 100, "off");
     step.pushStep(pattern);
-    step.drawNewStep();
-    scrollgroup.stepNoIndicator.addStepNo();
+    step.drawNewStep(0); // 0 is the index of the pattern
+    const ccStep = new ControllerStep("16n", 84, [], [], "off");
+    ccStep.pushCcStep(scrollgroup.patterns[0]); // 0 is the index of the controller track
+    ccStep.drawNewCcStep(0); // 0 is the index of the scrollgroup
+
+    scrollgroup.stepNoIndicator.addStepNo(0); // 0 is the index of the scrollgroup
     // Scroll right if necessary
     // If number of steps is greater than number of 16th notes in a measure, scroll right
     if (scrollgroup.stepNoIndicator.stepNos.length > measureLength) {
@@ -237,10 +277,19 @@ $(document).ready(function () {
     editMode = $(this).val();
   });
 
-  $(document).on("click", ".pattern:eq(0) > div", function () {
-    // Get index of clicked step relative to its parent row-container
-    const stepIndex = $(".pattern:eq(0) > div").index($(this));
-    const step = pattern.steps[stepIndex];
+  $(document).on("click", ".step", function () {
+    // Get index of clicked step, relative to its siblings
+    const stepIndex = $(this).index();
+    // Global index of clicked step, relative to all steps
+    const globalStepIndex = $(".step").index(this);
+    // Get data attribute of parent of clicked step, ie the pattern name or controller track name
+    const parentName = $(this).parent().attr("data");
+    // Find corresponding pattern or controller track object
+    const stepContainer = scrollgroup.patterns.find((pattern) => {
+      return pattern.name == parentName;
+    });
+
+    const step = stepContainer.steps[stepIndex];
 
     // Pencil
     if (editMode == "pencil") {
@@ -254,6 +303,7 @@ $(document).ready(function () {
       }
     }
 
+    // TODO: pass in stepContainer as argument and modify splitStep() and dependent methods to use it
     // Split by 2
     if (editMode == "split") {
       step.splitStep(stepIndex, 2);
@@ -271,7 +321,7 @@ $(document).ready(function () {
 
     // Join step
     if (editMode == "join") {
-      step.joinStep(stepIndex);
+      step.joinStep(stepContainer, stepIndex);
     }
   });
 

@@ -52,7 +52,8 @@ button:hover {
 }
 
 .step-no-indicator,
-.pattern {
+.pattern,
+.controller-track {
   height: 84px;
   display: flex;
   flex-direction: row;
@@ -86,7 +87,6 @@ button:hover {
   display: inline-block;
   height: 84px;
   border: 1px solid var(--blue-lightgray);
-  gap: 0px 0px;
   cursor: pointer;
 }
 
@@ -96,4 +96,11 @@ button:hover {
 
 .step.on {
   background-color: var(--darker-blue);
+}
+
+.step.cc {
+  display: inline-block;
+  height: 42px;
+  border: 1px solid var(--blue-lightgray);
+  cursor: pointer;
 }
