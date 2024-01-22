@@ -1,5 +1,6 @@
 :root {
   --background-blue: #2f3b4c;
+  --section-blue: #374659;
   --dark-blue: #161f27;
   --darker-blue: #0e1b25;
   --blue-gray: #283341;
@@ -15,26 +16,37 @@
 * {
   box-sizing: border-box;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  margin: 0;
   padding: 0;
 }
 
 body {
   background-color: var(--background-blue);
   color: var(--white);
-  padding: 24px 64px;
+  padding: 24px;
 }
 
 button {
   all: unset;
   cursor: pointer;
-}
-
-button:hover {
   color: var(--links);
 }
 
-.scrollgroup {
+button:hover {
+  color: hotpink;
+}
+
+.section,
+.group {
+  margin: 6px 0;
+}
+
+.instrument {
+  background-color: var(--blue-lightgray);
+  margin-bottom: 24px;
+  border-radius: 6px;
+}
+
+.scroll-container {
   width: 1344px;
   overflow-x: scroll;
   scrollbar-color: transparent transparent;
@@ -47,7 +59,7 @@ button:hover {
   align-items: flex-start;
 }
 
-.scrollgroup::-webkit-scrollbar {
+.scroll-container::-webkit-scrollbar {
   display: none;
 }
 
