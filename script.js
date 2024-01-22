@@ -1,27 +1,3 @@
-// Webmidi.js will be used to send midi data to DAW.
-// Time-keeping will be handled by a series of self-calling, self-adjusting setTimeout() functions.
-// Tone.js will not be used for time-keeping, only for audio synthesis, and possibly for converting note
-// durations to seconds a la Tone.Time("4n").toSeconds()
-
-// PHP or equivalent may be used in future to save patterns to database or local file,
-// but for now patterns will be saved to localStorage. JSONs will be used to store pattern data,
-// and can be imported/exported as strings as needed.
-
-// Patterns cannot be switched mid-pattern, only queued to start after current pattern ends.
-// This holds true for fills as well. Differce is that fills will queue original pattern to start after
-// fill ends, while patterns will repeat indefinitely.
-
-// Alternatively, patterns will contain one or more subpatterns. A subpattern uses its parent step position
-// as a jumping-off point, and will, if queued, play for its duration, then return to parent pattern at
-// parent step + subpattern duration. This will allow for more complex patterns to be created,
-// and will allow for fills or alternate patterns to be queued mid-pattern.
-
-// TODO: Add ability to turn on individual steps, ie change its state from false to true and adding color to step.
-// TODO: Add ability to turn off individual steps, ie change its state from true to false.
-// TODO: Add ability to cycle througn a few velocity values for each step, changing its color/opacity.
-// TODO: Divide by 2 and 3 should affect pattern object as well as DOM.
-// TODO: Step number can be clicked to highlight group of steps, which can then be manipulated
-
 $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
@@ -58,10 +34,11 @@ $(document).ready(function () {
   let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
   const defaultStepWidth = 84;
   let measureWidth = defaultStepWidth * measureLength;
+  let project = {};
 
   // Change scrollgroup width to accomodate measure length, will have to be done on a
   // scrollgroup-by-scrollgroup basis later
-  $(".scrollgroup").css("width", measureWidth);
+  //$(".scrollgroup").css("width", measureWidth);
 
   let noteMap = new Map([
     [21, "64n"],
@@ -88,241 +65,121 @@ $(document).ready(function () {
   }
 
   // Class definitions
-
-  class StepNoIndicator {
-    constructor() {
-      this.stepNos = [];
-    }
-    initStepNoIndicator(indicatorIndex) {
-      for (let i = 1; i <= measureLength; i++) {
-        this.stepNos.push(i);
-        $(".step-no-indicator:eq(" + indicatorIndex + ")").append(
-          "<div class='step-no'>" + i + "</div>"
-        );
-      }
-    }
-
-    addStepNo(indicatorIndex) {
-      this.stepNos.push(
-        $(".step-no-indicator:eq(" + indicatorIndex + ") > div").length + 1
-      );
-      $(".step-no-indicator:eq(" + indicatorIndex + ")").append(
-        "<div class='step-no'>" +
-          ($(".step-no-indicator:eq(" + indicatorIndex + ") > div").length +
-            1) +
-          "</div>"
-      );
-    }
-  }
-
-  class ScrollGroup {
-    constructor() {
-      this.patterns = [new ControllerTrack("CC")];
-      this.stepNoIndicator = new StepNoIndicator();
-    }
-  }
-
-  class Pattern {
+  class Project {
     constructor(name) {
       this.name = name;
-      this.steps = [];
-      //this.subpatterns = [];
-    }
-    pushPattern(scrollgroup) {
-      scrollgroup.patterns.push(this);
+      this.instruments = [];
+      this.displayProject();
+      console.log(this);
     }
 
-    initSteps() {
-      for (let i = 1; i <= measureLength; i++) {
-        const step = new Step("16n", 84, 60, 100, "off");
-        step.pushStep(this);
-        step.drawNewStep(0);
-      }
-    }
-  }
-
-  class Step {
-    constructor(noteName, pixelValue, pitch, velocity, state) {
-      // eg. "16n", 84, 60, 100, "on"
-      this.noteName = noteName;
-      this.pixelValue = pixelValue;
-      this.pitch = pitch;
-      this.velocity = velocity;
-      this.state = state;
-    }
-
-    pushStep(pattern) {
-      pattern.steps.push(this);
-    }
-
-    drawNewStep(patternIndex) {
-      $(".pattern:eq(" + patternIndex + ")").append(
-        `<div class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
-      );
-    }
-
-    insertNewStep(stepIndex) {
-      $(".pattern:eq(0) > div:eq(" + stepIndex + ")").after(
-        `<div class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
-      );
-    }
-
-    updateStep(stepIndex) {
-      $(".step:eq(" + stepIndex + ")").css("width", this.pixelValue);
-      $(".step:eq(" + stepIndex + ")").attr("data", this.noteName);
-    }
-
-    splitStep(stepIndex, splitBy) {
-      // Calculate pixel value for new steps
-      this.pixelValue = this.pixelValue / splitBy;
-      // Get note name for new steps
-      this.noteName = getNoteName(this.pixelValue);
-      this.updateStep(stepIndex);
-
-      // Create new step(s)
-      for (let i = 1; i < splitBy; i++) {
-        const newStep = new Step(
-          this.noteName,
-          this.pixelValue,
-          this.pitch,
-          this.velocity,
-          this.state
-        );
-        // Insert new step into pattern.steps array
-        pattern.steps.splice(stepIndex + 1, 0, newStep);
-        // Insert new step into DOM
-        newStep.insertNewStep(stepIndex);
-      }
-    }
-
-    joinStep(stepContainer, stepIndex) {
-      // Get pixel value of subsequent step
-      const nextStepPixelValue = stepContainer.steps[stepIndex + 1].pixelValue;
-      // Calculate pixel value for extended step
-      this.pixelValue = this.pixelValue + nextStepPixelValue;
-      // Get note name for extended step
-      this.noteName = getNoteName(this.pixelValue);
-      // Update step in DOM
-      this.updateStep(stepIndex);
-      // Remove subsequent step from stepContainer.steps array
-      stepContainer.steps.splice(stepIndex + 1, 1);
-      // Remove subsequent step from DOM
-      $(".step:eq(" + (stepIndex + 1) + ")").remove();
-    }
-  }
-
-  class ControllerStep extends Step {
-    constructor(noteName, pixelValue, pitch = [], velocity = [], state) {
-      super(noteName, pixelValue, pitch, velocity, state);
-    }
-
-    pushCcStep(controllerTrack) {
-      controllerTrack.steps.push(this);
-    }
-
-    drawNewCcStep(scrollGroupIndex) {
-      $(".controller-track:eq(" + scrollGroupIndex + ")").append(
-        `<div class="step cc ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+    displayProject() {
+      $("body").append(
+        `<main class='project'><h1>${this.name}</h1><div><button id='add-instrument'><i class="fa-solid fa-guitar"></i> Add instrument</button></div><input type='text' id='instrument-name' name='instrument-name' placeholder='Instrument name' /></main>`
       );
     }
   }
 
-  class ControllerTrack extends Pattern {
+  class Instrument {
     constructor(name) {
-      super(name);
-      this.steps = [];
-      this.state = "off";
+      this.name = name;
+      this.output = "midi output goes here";
+      this.sections = [];
+      project.instruments.push(this);
+      this.displayInstrument();
+      console.log(project);
     }
 
-    initControllerTrack(scrollGroupIndex) {
-      for (let i = 1; i <= measureLength; i++) {
-        const ccStep = new ControllerStep("16n", 84, [], [], "off");
-        ccStep.pushCcStep(this);
-        ccStep.drawNewCcStep(scrollGroupIndex);
-      }
+    displayInstrument() {
+      $(".project").append(
+        `<section class="instrument"><h2>${this.name}</h2><div><button class='add-section'><i class="fa-solid fa-puzzle-piece"></i> Add section</button></div><input type='text' class='section-name' name='section-name' placeholder='Section name' /></section>`
+      );
     }
   }
 
-  // Instantiate objects
-  const scrollgroup = new ScrollGroup();
-  scrollgroup.stepNoIndicator.initStepNoIndicator(0); // 0 is the DOM index of the scrollgroup
-  const controllerTrack = scrollgroup.patterns[0];
-  controllerTrack.initControllerTrack(0); // 0 is the DOM index of the scrollgroup
-  const pattern = new Pattern("percussion");
-  pattern.initSteps();
-  pattern.pushPattern(scrollgroup);
-
-  $("#plus").click(function () {
-    const step = new Step("16n", 84, 60, 100, "off");
-    step.pushStep(pattern);
-    step.drawNewStep(0); // 0 is the index of the pattern
-    const ccStep = new ControllerStep("16n", 84, [], [], "off");
-    ccStep.pushCcStep(scrollgroup.patterns[0]); // 0 is the index of the controller track
-    ccStep.drawNewCcStep(0); // 0 is the index of the scrollgroup
-
-    scrollgroup.stepNoIndicator.addStepNo(0); // 0 is the index of the scrollgroup
-    // Scroll right if necessary
-    // If number of steps is greater than number of 16th notes in a measure, scroll right
-    if (scrollgroup.stepNoIndicator.stepNos.length > measureLength) {
-      scrollRight(0);
+  class Section {
+    constructor(name, instrumentIndex) {
+      this.name = name;
+      this.groups = [];
+      project.instruments[instrumentIndex].sections.push(this);
+      this.displayInstrument(instrumentIndex);
+      console.log(project);
     }
+
+    displayInstrument(instrumentIndex) {
+      $(".instrument:eq(" + instrumentIndex + ")").append(
+        `<section class="section"><h3>${this.name}</h3><div><button class='add-group'><i class="fa-solid fa-plus"></i> Add group</button></div></section>`
+      );
+    }
+  }
+
+  class Group {
+    constructor(instrumentIndex, sectionIndex) {
+      this.stepNoIndicator = []; // new StepNoIndicator();
+      this.patterns = []; // new Pattern();
+      project.instruments[instrumentIndex].sections[sectionIndex].groups.push(
+        this
+      );
+      this.displayGroup(instrumentIndex, sectionIndex);
+      console.log(project);
+    }
+
+    displayGroup(instrumentIndex, sectionIndex) {
+      $(
+        ".instrument:eq(" +
+          instrumentIndex +
+          ") > .section:eq(" +
+          sectionIndex +
+          ")"
+      ).append(`<section class='group'>This is a group</section>`);
+    }
+  }
+
+  // New project button
+  $("#new-project").click(() => {
+    const name =
+      $("#new-project-name").val() == ""
+        ? "untitled project"
+        : $("#new-project-name").val();
+    // Create a new project
+    project = new Project(name);
   });
 
-  $("#minus").click(function () {
-    console.log(scrollgroup);
+  // Add instrument
+  let instrumentCount = 1;
+  $(document).on("click", "#add-instrument", function () {
+    const name =
+      $("#instrument-name").val() == ""
+        ? "instrument " + instrumentCount
+        : $("#instrument-name").val();
+    new Instrument(name);
+    instrumentCount++;
   });
 
-  let editMode = "pencil";
-  $("input[name='edit-mode']").click(function () {
-    editMode = $(this).val();
+  // Add section
+  let sectionCount = 1;
+  $(document).on("click", ".add-section", function () {
+    const instrumentIndex = $(".instrument").index(
+      $(this).closest(".instrument")
+    );
+    //TODO make sure name is picked from correct input field
+    const name =
+      $(".section-name").val() == ""
+        ? "section " + instrumentCount
+        : $(".section-name").val();
+    new Section(name, instrumentIndex);
+    sectionCount++;
   });
 
-  $(document).on("click", ".step", function () {
-    // Get index of clicked step, relative to its siblings
-    const stepIndex = $(this).index();
-    // Global index of clicked step, relative to all steps
-    const globalStepIndex = $(".step").index(this);
-    // Get data attribute of parent of clicked step, ie the pattern name or controller track name
-    const parentName = $(this).parent().attr("data");
-    // Find corresponding pattern or controller track object
-    const stepContainer = scrollgroup.patterns.find((pattern) => {
-      return pattern.name == parentName;
-    });
-
-    const step = stepContainer.steps[stepIndex];
-
-    // Pencil
-    if (editMode == "pencil") {
-      // Toggle step state TODO: make into step method
-      if (step.state == "off") {
-        step.state = "on";
-        $(this).removeClass("off").addClass("on");
-      } else {
-        step.state = "off";
-        $(this).removeClass("on").addClass("off");
-      }
-    }
-
-    // TODO: pass in stepContainer as argument and modify splitStep() and dependent methods to use it
-    // Split by 2
-    if (editMode == "split") {
-      step.splitStep(stepIndex, 2);
-    }
-
-    // Split by 3
-    if (editMode == "split-3") {
-      step.splitStep(stepIndex, 3);
-    }
-
-    // Split by 3
-    if (editMode == "split-4") {
-      step.splitStep(stepIndex, 4);
-    }
-
-    // Join step
-    if (editMode == "join") {
-      step.joinStep(stepContainer, stepIndex);
-    }
+  // Add group
+  $(document).on("click", ".add-group", function () {
+    const closestInstrument = $(this).closest(".instrument");
+    const instrumentIndex = $(".instrument").index(closestInstrument);
+    const sectionIndex = $(
+      ".instrument:eq(" + instrumentIndex + ") .section"
+    ).index($(this).closest(".section"));
+    console.log("sectionIndex", sectionIndex);
+    new Group(instrumentIndex, sectionIndex);
   });
 
   // Scrollgroup arrows
