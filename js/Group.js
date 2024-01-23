@@ -2,10 +2,9 @@ import StepNoSeq from "./StepNoSeq.js";
 import { getProject, setIdCounter, getIdCounter } from "./setter-functions.js";
 
 export default class Group {
-  constructor(sectionId) {
+  constructor(sectionId, measureLength) {
     this.id = "grp" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
-    this.sequences = [new StepNoSeq()]; // As default, create a new StepNoSequence, NoteSequence and ControllerSequence ... new NoteSeq(), new ControllerSeq()
     // Find section object in project.instruments array by id
     const project = getProject();
     const section = project.instruments
@@ -13,8 +12,9 @@ export default class Group {
       .flat()
       .find((section) => section.id === sectionId);
     section.groups.push(this);
-
     this.displayGroup(sectionId);
+    this.sequences = [new StepNoSeq(this.id, measureLength)]; // As default, create a new StepNoSequence, NoteSequence and ControllerSequence ... new NoteSeq(), new ControllerSeq()
+    // nota bene: NoteSeq() and ControllerSeq() may have to be paired with each other.
     console.log(`Group created`, getProject());
   }
 

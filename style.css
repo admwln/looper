@@ -35,15 +35,23 @@ button:hover {
   color: hotpink;
 }
 
-.section,
-.group {
+h2 {
+  margin: 0;
+  padding: 0;
+}
+
+.section {
   margin: 6px 0;
 }
 
+.group {
+  margin: 24px 0;
+  background-color: var(--background-blue);
+}
+
 .instrument {
-  background-color: var(--blue-lightgray);
-  margin-bottom: 24px;
-  border-radius: 6px;
+  margin: 24px 0;
+  border-top: 4px solid var(--blue-lightgray);
 }
 
 .scroll-container {
@@ -63,7 +71,7 @@ button:hover {
   display: none;
 }
 
-.step-no-indicator,
+.step-no-seq,
 .pattern,
 .controller-track {
   height: 84px;
@@ -74,25 +82,8 @@ button:hover {
   justify-content: flex-start;
 }
 
-.step-no-indicator {
-  margin-top: 64px;
+.step-no-seq {
   height: 42px;
-}
-
-.step-no-indicator > div {
-  border: 1px solid var(--blue-lightgray);
-  height: 42px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--links);
-  width: 84px;
-  font-size: 14px;
-  padding: 0;
-}
-
-.step-no-indicator > div:nth-of-type(4n + 1) {
-  background-color: var(--blue-gray);
 }
 
 .step {
@@ -115,4 +106,20 @@ button:hover {
   height: 42px;
   border: 1px solid var(--blue-lightgray);
   cursor: pointer;
+}
+
+.step-no-seq > .step {
+  border: 1px solid var(--blue-lightgray);
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--links);
+  width: 84px;
+  font-size: 14px;
+  padding: 0;
+}
+
+.step-no-seq > div:nth-of-type(4n + 1) {
+  background-color: var(--blue-gray);
 }

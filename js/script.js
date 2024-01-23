@@ -69,90 +69,6 @@ $(document).ready(function () {
     return noteMap.get(pixelValue);
   }
 
-  // Class definitions
-
-  // class Project {
-  //   constructor(name) {
-  //     this.name = name;
-  //     this.instruments = [];
-  //     this.displayProject();
-  //     console.log(this);
-  //   }
-
-  //   displayProject() {
-  //     projectElement = `<main class='project'><h1>${this.name}</h1><div><button id='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button></div><input type='text' id='instrument-name' name='instrument-name' placeholder='Instrument name' /></main>`;
-  //     $("body").append(projectElement);
-  //     projectElement = $(".project");
-  //   }
-  // }
-
-  // class Instrument {
-  //   constructor(name) {
-  //     this.id = "ins" + idCounter++;
-  //     this.name = name;
-  //     this.output = "midi output goes here";
-  //     this.sections = [];
-  //     project.instruments.push(this);
-  //     this.displayInstrument();
-  //     console.log(project);
-  //   }
-
-  //   displayInstrument() {
-  //     $(".project").append(
-  //       `<section class="instrument" id='${this.id}'><h2>${this.name}</h2><div><button class='add-section'><i class="fa-solid fa-plus"></i> Section</button></div><input type='text' class='section-name' name='section-name' placeholder='Section name' /></section>`
-  //     );
-  //   }
-  // }
-
-  // class Section {
-  //   // constructor(name, instrumentIndex) {
-  //   constructor(name, instrumentId) {
-  //     this.id = "sec" + idCounter++;
-  //     this.name = name;
-  //     this.groups = [];
-  //     //project.instruments[instrumentIndex].sections.push(this);
-  //     // Find instrument object in project.instruments array by id
-  //     const instrument = project.instruments.find(
-  //       (instrument) => instrument.id === instrumentId
-  //     );
-  //     instrument.sections.push(this);
-  //     // this.displayInstrument(instrumentIndex);
-  //     this.displaySection(SectionId);
-  //     console.log(project);
-  //   }
-
-  //   displaySection(instrumentId) {
-  //     $("#" + instrumentId).append(
-  //       `<section class="section" id='${this.id}'><h3>${this.name}</h3><div><button class='add-group'><i class="fa-solid fa-plus"></i> Group</button></div></section>`
-  //     );
-  //   }
-  // }
-
-  // class Group {
-  //   constructor(sectionId) {
-  //     this.id = "grp" + idCounter++;
-  //     this.sequences = []; // As default, create a new NoteNoSequence, NoteSequence and ControllerSequence
-  //     // project.instruments[instrumentIndex].sections[sectionIndex].groups.push(
-  //     //   this
-  //     // );
-  //     // Find section object in project.instruments array by id
-  //     const section = project.instruments
-  //       .map((instrument) => instrument.sections)
-  //       .flat()
-  //       .find((section) => section.id === sectionId);
-  //     section.groups.push(this);
-
-  //     this.displayGroup(sectionId);
-  //     console.log(project);
-  //   }
-
-  //   displayGroup(sectionId) {
-  //     $("#" + sectionId).append(
-  //       `<section class='group' id='${this.id}'><div class='scroll-container'></div><div><button class='scroll-row left'><i class='fa-solid fa-chevron-left'></i></button><button class='scroll-row right'><i class='fa-solid fa-chevron-right'></i></button></div></section>`
-  //     );
-  //   }
-  // }
-
   // Create main class Sequence and extend it to NoteSequence, ControllerSequence, NoteNoSequence?
   // Create main class Step and extend it to NoteStep, ControllerStep, NoteNoStep?
 
@@ -177,28 +93,18 @@ $(document).ready(function () {
 
   // Add section
   $(document).on("click", ".add-section", function () {
-    // const instrumentIndex = $(".instrument").index(
-    //   $(this).closest(".instrument")
-    // );
     const instrumentId = $(this).closest(".instrument").attr("id");
     const name =
       $("#" + instrumentId + " .section-name").val() == ""
         ? "section"
         : $("#" + instrumentId + " .section-name").val();
-    // new Section(name, instrumentIndex);
     new Section(name, instrumentId);
   });
 
   // Add group
   $(document).on("click", ".add-group", function () {
     const sectionId = $(this).closest(".section").attr("id");
-    // const closestInstrument = $(this).closest(".instrument");
-    // const instrumentIndex = $(".instrument").index(closestInstrument);
-    // const sectionIndex = $(
-    //   ".instrument:eq(" + instrumentIndex + ") .section"
-    // ).index($(this).closest(".section"));
-    // new Group(instrumentIndex, sectionIndex);
-    new Group(sectionId);
+    new Group(sectionId, measureLength);
   });
 
   // Scrollgroup arrows
