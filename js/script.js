@@ -1,3 +1,17 @@
+// Import modules and variables
+import Project from "./Project.js";
+import Instrument from "./Instrument.js";
+import Section from "./Section.js";
+import Group from "./Group.js";
+
+// Global variables
+let tempo = 120;
+let top = 4;
+let bottom = 4;
+let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
+const defaultStepWidth = 84;
+let measureWidth = defaultStepWidth * measureLength;
+
 $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
@@ -26,17 +40,6 @@ $(document).ready(function () {
       }
     }
   });
-
-  // Global variables
-  let tempo = 120;
-  let top = 4;
-  let bottom = 4;
-  let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
-  const defaultStepWidth = 84;
-  let measureWidth = defaultStepWidth * measureLength;
-  let project = {};
-  let projectElement;
-  let idCounter = 0;
 
   // Change scrollgroup width to accomodate measure length, will have to be done on a
   // scrollgroup-by-scrollgroup basis later
@@ -67,87 +70,88 @@ $(document).ready(function () {
   }
 
   // Class definitions
-  class Project {
-    constructor(name) {
-      this.name = name;
-      this.instruments = [];
-      this.displayProject();
-      console.log(this);
-    }
 
-    displayProject() {
-      projectElement = `<main class='project'><h1>${this.name}</h1><div><button id='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button></div><input type='text' id='instrument-name' name='instrument-name' placeholder='Instrument name' /></main>`;
-      $("body").append(projectElement);
-      projectElement = $(".project");
-    }
-  }
+  // class Project {
+  //   constructor(name) {
+  //     this.name = name;
+  //     this.instruments = [];
+  //     this.displayProject();
+  //     console.log(this);
+  //   }
 
-  class Instrument {
-    constructor(name) {
-      this.id = "ins" + idCounter++;
-      this.name = name;
-      this.output = "midi output goes here";
-      this.sections = [];
-      project.instruments.push(this);
-      this.displayInstrument();
-      console.log(project);
-    }
+  //   displayProject() {
+  //     projectElement = `<main class='project'><h1>${this.name}</h1><div><button id='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button></div><input type='text' id='instrument-name' name='instrument-name' placeholder='Instrument name' /></main>`;
+  //     $("body").append(projectElement);
+  //     projectElement = $(".project");
+  //   }
+  // }
 
-    displayInstrument() {
-      $(projectElement).append(
-        `<section class="instrument" id='${this.id}'><h2>${this.name}</h2><div><button class='add-section'><i class="fa-solid fa-plus"></i> Section</button></div><input type='text' class='section-name' name='section-name' placeholder='Section name' /></section>`
-      );
-    }
-  }
+  // class Instrument {
+  //   constructor(name) {
+  //     this.id = "ins" + idCounter++;
+  //     this.name = name;
+  //     this.output = "midi output goes here";
+  //     this.sections = [];
+  //     project.instruments.push(this);
+  //     this.displayInstrument();
+  //     console.log(project);
+  //   }
 
-  class Section {
-    // constructor(name, instrumentIndex) {
-    constructor(name, instrumentId) {
-      this.id = "sec" + idCounter++;
-      this.name = name;
-      this.groups = [];
-      //project.instruments[instrumentIndex].sections.push(this);
-      // Find instrument object in project.instruments array by id
-      const instrument = project.instruments.find(
-        (instrument) => instrument.id === instrumentId
-      );
-      instrument.sections.push(this);
-      // this.displayInstrument(instrumentIndex);
-      this.displayInstrument(instrumentId);
-      console.log(project);
-    }
+  //   displayInstrument() {
+  //     $(".project").append(
+  //       `<section class="instrument" id='${this.id}'><h2>${this.name}</h2><div><button class='add-section'><i class="fa-solid fa-plus"></i> Section</button></div><input type='text' class='section-name' name='section-name' placeholder='Section name' /></section>`
+  //     );
+  //   }
+  // }
 
-    displayInstrument(instrumentId) {
-      $("#" + instrumentId).append(
-        `<section class="section" id='${this.id}'><h3>${this.name}</h3><div><button class='add-group'><i class="fa-solid fa-plus"></i> Group</button></div></section>`
-      );
-    }
-  }
+  // class Section {
+  //   // constructor(name, instrumentIndex) {
+  //   constructor(name, instrumentId) {
+  //     this.id = "sec" + idCounter++;
+  //     this.name = name;
+  //     this.groups = [];
+  //     //project.instruments[instrumentIndex].sections.push(this);
+  //     // Find instrument object in project.instruments array by id
+  //     const instrument = project.instruments.find(
+  //       (instrument) => instrument.id === instrumentId
+  //     );
+  //     instrument.sections.push(this);
+  //     // this.displayInstrument(instrumentIndex);
+  //     this.displaySection(SectionId);
+  //     console.log(project);
+  //   }
 
-  class Group {
-    constructor(sectionId) {
-      this.id = "grp" + idCounter++;
-      this.sequences = []; // As default, create a new NoteNoSequence, NoteSequence and ControllerSequence
-      // project.instruments[instrumentIndex].sections[sectionIndex].groups.push(
-      //   this
-      // );
-      // Find section object in project.instruments array by id
-      const section = project.instruments
-        .map((instrument) => instrument.sections)
-        .flat()
-        .find((section) => section.id === sectionId);
-      section.groups.push(this);
+  //   displaySection(instrumentId) {
+  //     $("#" + instrumentId).append(
+  //       `<section class="section" id='${this.id}'><h3>${this.name}</h3><div><button class='add-group'><i class="fa-solid fa-plus"></i> Group</button></div></section>`
+  //     );
+  //   }
+  // }
 
-      this.displayGroup(sectionId);
-      console.log(project);
-    }
+  // class Group {
+  //   constructor(sectionId) {
+  //     this.id = "grp" + idCounter++;
+  //     this.sequences = []; // As default, create a new NoteNoSequence, NoteSequence and ControllerSequence
+  //     // project.instruments[instrumentIndex].sections[sectionIndex].groups.push(
+  //     //   this
+  //     // );
+  //     // Find section object in project.instruments array by id
+  //     const section = project.instruments
+  //       .map((instrument) => instrument.sections)
+  //       .flat()
+  //       .find((section) => section.id === sectionId);
+  //     section.groups.push(this);
 
-    displayGroup(sectionId) {
-      $("#" + sectionId).append(
-        `<section class='group' id='${this.id}'><div class='scroll-container'></div><div><button class='scroll-row left'><i class='fa-solid fa-chevron-left'></i></button><button class='scroll-row right'><i class='fa-solid fa-chevron-right'></i></button></div></section>`
-      );
-    }
-  }
+  //     this.displayGroup(sectionId);
+  //     console.log(project);
+  //   }
+
+  //   displayGroup(sectionId) {
+  //     $("#" + sectionId).append(
+  //       `<section class='group' id='${this.id}'><div class='scroll-container'></div><div><button class='scroll-row left'><i class='fa-solid fa-chevron-left'></i></button><button class='scroll-row right'><i class='fa-solid fa-chevron-right'></i></button></div></section>`
+  //     );
+  //   }
+  // }
 
   // Create main class Sequence and extend it to NoteSequence, ControllerSequence, NoteNoSequence?
   // Create main class Step and extend it to NoteStep, ControllerStep, NoteNoStep?
@@ -159,7 +163,7 @@ $(document).ready(function () {
         ? "untitled project"
         : $("#new-project-name").val();
     // Create a new project
-    project = new Project(name);
+    new Project(name);
   });
 
   // Add instrument
