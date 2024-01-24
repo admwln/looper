@@ -1,5 +1,9 @@
 import Step from "./Step.js";
-// import { getProject, setIdCounter, getIdCounter } from "./setter-functions.js";
+import {
+  getProject,
+  findAllNestedProps,
+  findNestedProp,
+} from "./setter-functions.js";
 
 export default class NoteStep extends Step {
   constructor(noteName, pixelValue, pitch, velocity, stepSeqId) {
@@ -8,7 +12,10 @@ export default class NoteStep extends Step {
     this.state = "off";
     this.velocity = velocity;
     this.forks = [];
-    this.displayNoteStep(stepSeqId);
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    // Add step to step sequence
+    stepSeq.noteSteps.push(this);
   }
 
   displayNoteStep(stepSeqId) {

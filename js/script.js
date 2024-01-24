@@ -4,6 +4,12 @@ import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
+import NoteStep from "./NoteStep.js";
+import {
+  getProject,
+  findAllNestedProps,
+  findNestedProp,
+} from "./setter-functions.js";
 
 // Global variables
 let tempo = 120;
@@ -111,11 +117,23 @@ $(document).ready(function () {
     new Group(instrumentId, measureLength);
   });
 
-  // Add step sequence
+  // Add step sequence to group
   $(document).on("click", ".add-step-seq", function () {
     const groupId = $(this).closest(".group").attr("id");
     const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
     new StepSeq(groupId, sequenceLength);
+  });
+
+  // Extend group with one step
+  $(document).on("click", ".add-step", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    // How many steps are there in this group?
+    const stepCount = $("#" + groupId + " .step-no-seq > .step").length;
+    // Find group object in project
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    // Call method to extend group by one step
+    group.extendGroup(1, stepCount);
   });
 
   // Scrollgroup arrows

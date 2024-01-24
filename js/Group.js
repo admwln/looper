@@ -1,5 +1,8 @@
 import StepNoSeq from "./StepNoSeq.js";
 import StepSeq from "./StepSeq.js";
+import StepNo from "./StepNo.js";
+import NoteStep from "./NoteStep.js";
+import ControllerStep from "./ControllerStep.js";
 import {
   getProject,
   setIdCounter,
@@ -16,10 +19,7 @@ export default class Group {
     this.midiChannel = 1;
     this.sequences = [];
     const instruments = findAllNestedProps(getProject(), "instruments");
-    console.log("instruments array", instruments);
     const instrument = findNestedProp(instruments, instrumentId);
-    console.log("instrument object", instrument);
-    console.log("isntrument groups", instrument.groups);
     // Add group to instrument
     instrument.groups.push(this);
 
@@ -44,5 +44,33 @@ export default class Group {
       </section>
       `
     );
+  }
+
+  // Extend group by x number of steps
+  extendGroup(steps, stepCount) {
+    for (let i = 1; i <= steps; i++) {
+      // There is always just one StepNoSeq per group, add one StepNo to it
+      const stepNoSeqId = this.sequences[0].id;
+      const newStepNo = new StepNo("16n", 84, stepCount + i, stepNoSeqId);
+      //this.sequences[0].steps.push(newStepNo);
+      newStepNo.displayStepNo(stepNoSeqId);
+
+      // How many sequences of the kind StepSeq are there in this group?
+      const stepSeqs = this.sequences.filter(
+        (sequence) => sequence.constructor.name === "StepSeq"
+      ).length;
+      for (let j = 0; j < stepSeqs; j++) {
+        // For each step sequence, add a noteStep
+        const stepSeqId = this.sequences[j + 1].id;
+        const newNoteStep = new NoteStep("16n", 84, 60, 100, stepSeqId);
+        //this.sequences[j + 1].noteSteps.push(newNoteStep);
+        newNoteStep.displayNoteStep(stepSeqId);
+        // For each step sequence, add a controllerStep
+        const newControllerStep = new ControllerStep("16n", 84, stepSeqId);
+        //this.sequences[j + 1].controllerSteps.push(newControllerStep);
+        newControllerStep.displayControllerStep(stepSeqId);
+      }
+    }
+    console.log(`Group extended`, getProject());
   }
 }

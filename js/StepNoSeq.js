@@ -27,7 +27,8 @@ export default class StepNoSeq {
 
     for (let i = 1; i <= measureLength; i++) {
       const stepNo = new StepNo("16n", 84, i, this.id);
-      this.steps.push(stepNo);
+      //this.steps.push(stepNo);
+      stepNo.displayStepNo(this.id);
     }
 
     console.log(`Step no seq created`, getProject());

@@ -29,9 +29,11 @@ export default class StepSeq {
 
     for (let i = 1; i <= sequenceLength; i++) {
       const noteStep = new NoteStep("16n", 84, 60, 100, this.id);
-      this.noteSteps.push(noteStep);
+      //this.noteSteps.push(noteStep);
+      noteStep.displayNoteStep(this.id);
       const controllerStep = new ControllerStep("16n", 84, this.id);
-      this.controllerSteps.push(controllerStep);
+      //this.controllerSteps.push(controllerStep);
+      controllerStep.displayControllerStep(this.id);
     }
 
     console.log(`Step seq created`, getProject());
