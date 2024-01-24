@@ -45,6 +45,9 @@ $(document).ready(function () {
   // scrollgroup-by-scrollgroup basis later
   //$(".scrollgroup").css("width", measureWidth);
 
+  // Maybe make getNoteName() and getPixelValue() a method of Step or some
+  // kind of globally accessible function. This would mean that each step would
+  // only have to have a noteName - the pixelValue would be calculated as needed.
   let noteMap = new Map([
     [21, "64n"],
     [63, "32n."],

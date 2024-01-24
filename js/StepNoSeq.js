@@ -7,8 +7,6 @@ export default class StepNoSeq {
     setIdCounter(getIdCounter() + 1);
     this.steps = [];
     this.initStepNoSeq(groupId, measureLength);
-    // On construction, this.steps[] should be populated with 16n steps * current measure length
-    // We may have to pass the current measure length as an argument to the constructor
   }
 
   initStepNoSeq(groupId, measureLength) {
