@@ -3,6 +3,13 @@ import Project from "./Project.js";
 import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
+import StepSeq from "./StepSeq.js";
+import NoteStep from "./NoteStep.js";
+import {
+  getProject,
+  findAllNestedProps,
+  findNestedProp,
+} from "./setter-functions.js";
 
 // Global variables
 let tempo = 120;
@@ -85,29 +92,48 @@ $(document).ready(function () {
     new Project(name);
   });
 
-  // Add instrument
-  $(document).on("click", "#add-instrument", function () {
-    const name =
-      $("#instrument-name").val() == ""
-        ? "instrument"
-        : $("#instrument-name").val();
-    new Instrument(name);
-  });
-
   // Add section
   $(document).on("click", ".add-section", function () {
-    const instrumentId = $(this).closest(".instrument").attr("id");
     const name =
-      $("#" + instrumentId + " .section-name").val() == ""
-        ? "section"
-        : $("#" + instrumentId + " .section-name").val();
-    new Section(name, instrumentId);
+      $("#section-name").val() == "" ? "section" : $("#section-name").val();
+    new Section(name);
+    $("#section-name").val("");
+  });
+
+  // Add instrument
+  $(document).on("click", "#add-instrument", function () {
+    const sectionId = $(this).closest(".section").attr("id");
+    const name =
+      $("#" + sectionId + " .instrument-name").val() == ""
+        ? "instrument"
+        : $("#" + sectionId + " .instrument-name").val();
+    new Instrument(name, sectionId);
+    $("#" + sectionId + " .instrument-name").val("");
   });
 
   // Add group
   $(document).on("click", ".add-group", function () {
-    const sectionId = $(this).closest(".section").attr("id");
-    new Group(sectionId, measureLength);
+    const instrumentId = $(this).closest(".instrument").attr("id");
+    new Group(instrumentId, measureLength);
+  });
+
+  // Add step sequence to group
+  $(document).on("click", ".add-step-seq", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
+    new StepSeq(groupId, sequenceLength);
+  });
+
+  // Extend group with one step
+  $(document).on("click", ".add-step", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    // How many steps are there in this group?
+    const stepCount = $("#" + groupId + " .step-no-seq > .step").length;
+    // Find group object in project
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    // Call method to extend group by one step
+    group.extendGroup(1, stepCount);
   });
 
   // Scrollgroup arrows
