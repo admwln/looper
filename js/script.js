@@ -3,6 +3,7 @@ import Project from "./Project.js";
 import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
+import StepSeq from "./StepSeq.js";
 
 // Global variables
 let tempo = 120;
@@ -89,8 +90,8 @@ $(document).ready(function () {
   $(document).on("click", ".add-section", function () {
     const name =
       $("#section-name").val() == "" ? "section" : $("#section-name").val();
-
     new Section(name);
+    $("#section-name").val("");
   });
 
   // Add instrument
@@ -101,13 +102,20 @@ $(document).ready(function () {
         ? "instrument"
         : $("#" + sectionId + " .instrument-name").val();
     new Instrument(name, sectionId);
+    $("#" + sectionId + " .instrument-name").val("");
   });
 
   // Add group
   $(document).on("click", ".add-group", function () {
-    const sectionId = $(this).closest(".section").attr("id");
     const instrumentId = $(this).closest(".instrument").attr("id");
-    new Group(sectionId, instrumentId, measureLength);
+    new Group(instrumentId, measureLength);
+  });
+
+  // Add step sequence
+  $(document).on("click", ".add-step-seq", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
+    new StepSeq(groupId, sequenceLength);
   });
 
   // Scrollgroup arrows

@@ -1,27 +1,31 @@
 import StepNoSeq from "./StepNoSeq.js";
 import StepSeq from "./StepSeq.js";
-import { getProject, setIdCounter, getIdCounter } from "./setter-functions.js";
+import {
+  getProject,
+  setIdCounter,
+  getIdCounter,
+  findAllNestedProps,
+  findNestedProp,
+} from "./setter-functions.js";
 
 export default class Group {
-  constructor(sectionId, instrumentId, measureLength) {
+  constructor(instrumentId, measureLength) {
     this.id = "grp" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     // Groups default to midi channel 1 on their respective instrument's output
     this.midiChannel = 1;
-    const project = getProject();
-    // Find instrument object by id
-    const section = project.sections.find(
-      (section) => section.id === sectionId
-    );
-    const instrument = section.instruments.find(
-      (instrument) => instrument.id === instrumentId
-    );
+    this.sequences = [];
+    const instruments = findAllNestedProps(getProject(), "instruments");
+    console.log("instruments array", instruments);
+    const instrument = findNestedProp(instruments, instrumentId);
+    console.log("instrument object", instrument);
+    console.log("isntrument groups", instrument.groups);
+    // Add group to instrument
     instrument.groups.push(this);
+
     this.displayGroup(instrumentId);
-    this.sequences = [
-      new StepNoSeq(this.id, measureLength),
-      new StepSeq(this.id, measureLength),
-    ];
+    new StepNoSeq(this.id, measureLength);
+    new StepSeq(this.id, measureLength);
     console.log(`Group created`, getProject());
   }
 
