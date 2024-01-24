@@ -5,7 +5,7 @@ export default class Instrument {
     this.id = "ins" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     this.name = name;
-    this.output = "midi output goes here";
+    this.midiOut = "midi output goes here";
     this.sections = [];
     const project = getProject();
     project.instruments.push(this);

@@ -72,8 +72,8 @@ h2 {
 }
 
 .step-no-seq,
-.pattern,
-.controller-track {
+.note-seq,
+.controller-seq {
   height: 84px;
   display: flex;
   flex-direction: row;
@@ -84,6 +84,10 @@ h2 {
 
 .step-no-seq {
   height: 42px;
+}
+
+.controller-seq {
+  height: 14px;
 }
 
 .step {
@@ -122,4 +126,8 @@ h2 {
 
 .step-no-seq > div:nth-of-type(4n + 1) {
   background-color: var(--blue-gray);
+}
+
+.controller-seq > .step {
+  height: 14px;
 }
