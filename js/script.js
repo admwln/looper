@@ -85,29 +85,29 @@ $(document).ready(function () {
     new Project(name);
   });
 
-  // Add instrument
-  $(document).on("click", "#add-instrument", function () {
-    const name =
-      $("#instrument-name").val() == ""
-        ? "instrument"
-        : $("#instrument-name").val();
-    new Instrument(name);
-  });
-
   // Add section
   $(document).on("click", ".add-section", function () {
-    const instrumentId = $(this).closest(".instrument").attr("id");
     const name =
-      $("#" + instrumentId + " .section-name").val() == ""
-        ? "section"
-        : $("#" + instrumentId + " .section-name").val();
-    new Section(name, instrumentId);
+      $("#section-name").val() == "" ? "section" : $("#section-name").val();
+
+    new Section(name);
+  });
+
+  // Add instrument
+  $(document).on("click", "#add-instrument", function () {
+    const sectionId = $(this).closest(".section").attr("id");
+    const name =
+      $("#" + sectionId + " .instrument-name").val() == ""
+        ? "instrument"
+        : $("#" + sectionId + " .instrument-name").val();
+    new Instrument(name, sectionId);
   });
 
   // Add group
   $(document).on("click", ".add-group", function () {
     const sectionId = $(this).closest(".section").attr("id");
-    new Group(sectionId, measureLength);
+    const instrumentId = $(this).closest(".instrument").attr("id");
+    new Group(sectionId, instrumentId, measureLength);
   });
 
   // Scrollgroup arrows
