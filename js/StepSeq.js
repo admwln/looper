@@ -36,6 +36,6 @@ export default class StepSeq {
       controllerStep.displayControllerStep(this.id);
     }
 
-    console.log(`Step seq created`, getProject());
+    console.log(`Step seq created`);
   }
 }

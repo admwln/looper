@@ -16,7 +16,7 @@ export default class Instrument {
     // Add instrument to section.instruments array
     section.instruments.push(this);
     this.displayInstrument(sectionId);
-    console.log(`Instrument "${this.name}" created`, getProject());
+    console.log(`Instrument "${this.name}" created`);
   }
 
   displayInstrument(sectionId) {

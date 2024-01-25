@@ -6,5 +6,20 @@ export default class Step {
     setIdCounter(getIdCounter() + 1);
     this.noteName = noteName;
     this.pixelValue = pixelValue;
+    this.state = "off";
+  }
+
+  toggleState() {
+    if (this.state == "off") {
+      this.state = "on";
+      $("#" + this.id)
+        .removeClass("off")
+        .addClass("on");
+    } else {
+      this.state = "off";
+      $("#" + this.id)
+        .removeClass("on")
+        .addClass("off");
+    }
   }
 }

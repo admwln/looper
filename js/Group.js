@@ -26,7 +26,7 @@ export default class Group {
     this.displayGroup(instrumentId);
     new StepNoSeq(this.id, measureLength);
     new StepSeq(this.id, measureLength);
-    console.log(`Group created`, getProject());
+    console.log(`Group created`);
   }
 
   displayGroup(instrumentId) {
@@ -71,6 +71,6 @@ export default class Group {
         newControllerStep.displayControllerStep(stepSeqId);
       }
     }
-    console.log(`Group extended`, getProject());
+    console.log(`Group extended`);
   }
 }

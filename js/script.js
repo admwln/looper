@@ -158,5 +158,71 @@ $(document).ready(function () {
     $(group).animate({ scrollLeft: `-=${measureWidth}px` }, 0);
   }
 
+  // Edit
+  let editMode = "pencil";
+  $("input[name='edit-mode']").click(function () {
+    editMode = $(this).val();
+  });
+
+  // Click noteStep or controllerStep (not stepNo)
+  $(document).on("click", ".step-seq .step", function () {
+    // // Get index of clicked step, relative to its siblings
+    // const stepIndex = $(this).index();
+    // // Global index of clicked step, relative to all steps
+    // const globalStepIndex = $(".step").index(this);
+    // // Get data attribute of parent of clicked step, ie the pattern name or controller track name
+    // const parentName = $(this).parent().attr("data");
+    // // Find corresponding pattern or controller track object
+    // const stepContainer = scrollgroup.patterns.find((pattern) => {
+    //   return pattern.name == parentName;
+    // });
+
+    //const step = stepContainer.steps[stepIndex];
+    const stepId = $(this).attr("id");
+    // Get class of parent to $(this)
+    const parentSeqType = $(this).parent().attr("class");
+
+    // Both StepNos and NoteSteps are nested in StepSeqs
+    // To find the correct step object, we need to determine the type of the parent
+    let steps;
+    if (parentSeqType == "note-seq") {
+      steps = findAllNestedProps(getProject(), "noteSteps");
+    }
+    if (parentSeqType == "controller-seq") {
+      steps = findAllNestedProps(getProject(), "controllerSteps");
+    }
+    const step = findNestedProp(steps, stepId);
+
+    // Pencil
+    if (editMode == "pencil") {
+      // Toggle step state
+      step.toggleState();
+    }
+
+    // Split by 2
+    if (editMode == "split-2") {
+      step.splitStep(stepIndex, 2);
+    }
+
+    // Split by 3
+    if (editMode == "split-3") {
+      step.splitStep(stepIndex, 3);
+    }
+
+    // Split by 3
+    if (editMode == "split-4") {
+      step.splitStep(stepIndex, 4);
+    }
+
+    // Join step
+    if (editMode == "join") {
+      step.joinStep(stepContainer, stepIndex);
+    }
+  });
+
+  $(document).on("click", "#log-project", function () {
+    console.log(getProject());
+  });
+
   // End document.ready
 });

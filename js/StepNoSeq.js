@@ -31,6 +31,6 @@ export default class StepNoSeq {
       stepNo.displayStepNo(this.id);
     }
 
-    console.log(`Step no seq created`, getProject());
+    console.log(`Step no seq created`);
   }
 }

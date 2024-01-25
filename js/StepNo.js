@@ -1,8 +1,6 @@
 import Step from "./Step.js";
 import {
   getProject,
-  setIdCounter,
-  getIdCounter,
   findAllNestedProps,
   findNestedProp,
 } from "./setter-functions.js";
