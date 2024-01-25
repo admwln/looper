@@ -35,8 +35,8 @@ export default class Group {
       <section class='group' id='${this.id}'>
         <div class='scroll-container'></div>
         <div>
-          <button class='scroll-row left'><i class='fa-solid fa-chevron-left'></i></button>
-          <button class='scroll-row right'><i class='fa-solid fa-chevron-right'></i></button>
+          <button class='scroll-group left'><i class='fa-solid fa-chevron-left'></i></button>
+          <button class='scroll-group right'><i class='fa-solid fa-chevron-right'></i></button>
           <button class="add-step"><i class='fa-solid fa-plus'></i> Step</button>
           <button class="add-step-seq"><i class='fa-solid fa-plus'></i> Sequence</button>
           <button class="toggle-cc">CC</button>
