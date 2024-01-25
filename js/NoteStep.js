@@ -21,7 +21,7 @@ export default class NoteStep extends Step {
   // These two methods could be combined into one method
   displayNoteStep(stepSeqId) {
     $("#" + stepSeqId + " .note-seq").append(
-      `<div id="${this.id}" class="step" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+      `<div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
     );
   }
 
@@ -41,28 +41,50 @@ export default class NoteStep extends Step {
         this.velocity
       );
       newStep.state = this.state;
-      newStep.spliceNoteStep(this.id);
-      newStep.insertNewNoteStep(this.id);
+      newStep.insertNoteStep(this.id, i);
     }
   }
 
-  // Add this into right place in stepSeq.noteSteps
-  spliceNoteStep(originalStepId) {
+  // Splice this into right place in stepSeq.noteSteps, and add into DOM
+  insertNoteStep(originalStepId, i) {
     const stepSeqId = $("#" + originalStepId)
       .parent()
       .parent()
       .attr("id");
     const sequences = findAllNestedProps(getProject(), "sequences");
     const stepSeq = findNestedProp(sequences, stepSeqId);
+    // Original step index
     const stepIndex = stepSeq.noteSteps.findIndex(
       (step) => step.id == originalStepId
     );
-    stepSeq.noteSteps.splice(stepIndex, 0, this);
-  }
-  // Maybe join method above and below into one method
-  insertNewNoteStep(originalStepId) {
-    $("#" + originalStepId).after(
+    // i is added to stepIndex to account for the new step(s) that have been added
+    stepSeq.noteSteps.splice(stepIndex + i, 0, this);
+    // Add this into DOM
+    // i needs to be subtracted by 1 to account for the original step, which is still in the DOM
+    $(
+      "#" + stepSeqId + " .note-seq .step:eq(" + (stepIndex + i - 1) + ")"
+    ).after(
       `<div id="${this.id}" class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
     );
+  }
+
+  joinNoteStep(stepIndex, stepSeqId) {
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+
+    // Get pixel value of subsequent step
+    const nextStepPixelValue = stepSeq.noteSteps[stepIndex + 1].pixelValue;
+    // Calculate pixel value for extended step
+    this.pixelValue = this.pixelValue + nextStepPixelValue;
+    // Get note name for extended step
+    this.noteName = getNoteName(this.pixelValue);
+    // Update step in DOM
+    this.updateStep();
+    // Remove subsequent step from noteSteps array
+    stepSeq.noteSteps.splice(stepIndex + 1, 1);
+    // Remove subsequent step from DOM
+    $(
+      "#" + stepSeqId + " .note-seq .step:eq(" + (stepIndex + 1) + ")"
+    ).remove();
   }
 }

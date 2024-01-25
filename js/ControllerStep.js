@@ -33,35 +33,53 @@ export default class ControllerStep extends Step {
     // Create new step(s)
     for (let i = 1; i < splitBy; i++) {
       // Get id of parent StepSeq
-      const stepSeqId = $("#" + this.id)
-        .parent()
-        .parent()
-        .attr("id");
-
       const newStep = new ControllerStep(this.noteName, this.pixelValue);
       newStep.state = this.state;
-      newStep.spliceControllerStep(this.id);
-      newStep.insertNewControllerStep(this.id);
+      newStep.insertControllerStep(this.id, i);
     }
   }
 
-  // Name splice could be ambiguous because it could also mean to remove an element
-  spliceControllerStep(originalStepId) {
+  // Splice this into right place in stepSeq.noteSteps, and add into DOM
+  insertControllerStep(originalStepId, i) {
     const stepSeqId = $("#" + originalStepId)
       .parent()
       .parent()
       .attr("id");
     const sequences = findAllNestedProps(getProject(), "sequences");
     const stepSeq = findNestedProp(sequences, stepSeqId);
+    // Original step index
     const stepIndex = stepSeq.controllerSteps.findIndex(
       (step) => step.id == originalStepId
     );
-    stepSeq.controllerSteps.splice(stepIndex, 0, this);
-  }
-  // Maybe join method above and below into one method
-  insertNewControllerStep(originalStepId) {
-    $("#" + originalStepId).after(
+    // i is added to stepIndex to account for the new step(s) that have been added
+    stepSeq.controllerSteps.splice(stepIndex + i, 0, this);
+    // Add this into DOM
+    // i needs to be subtracted by
+    $(
+      "#" + stepSeqId + " .controller-seq .step:eq(" + (stepIndex + i - 1) + ")"
+    ).after(
       `<div id="${this.id}" class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
     );
+  }
+
+  joinControllerStep(stepIndex, stepSeqId) {
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+
+    // Get pixel value of subsequent step
+    const nextStepPixelValue =
+      stepSeq.controllerSteps[stepIndex + 1].pixelValue;
+    // Calculate pixel value for extended step
+    this.pixelValue = this.pixelValue + nextStepPixelValue;
+    // Get note name for extended step
+    this.noteName = getNoteName(this.pixelValue);
+    // Update step in DOM
+    this.updateStep();
+    // Remove subsequent step from controllerSteps array
+    stepSeq.controllerSteps.splice(stepIndex + 1, 1);
+    // Remove subsequent step from DOM
+    $(
+      "#" + stepSeqId + " .controller-seq .step:eq(" + (stepIndex + 1) + ")"
+    ).remove();
   }
 }

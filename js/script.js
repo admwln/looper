@@ -174,13 +174,38 @@ $(document).ready(function () {
       }
     }
 
-    // TODO: update this and update relevant method(s)
     // Join step
     if (editMode == "join") {
-      step.joinStep(stepContainer, stepIndex);
+      // Get index of clicked step, relative to its siblings
+      const stepIndex = $(this).index();
+      const stepSeqId = $(this).parent().parent().attr("id");
+      join(stepIndex, stepSeqId);
+    }
+
+    function join(stepIndex, stepSeqId) {
+      if (parentSeqType == "note-seq") {
+        step.joinNoteStep(stepIndex, stepSeqId);
+      }
+      if (parentSeqType == "controller-seq") {
+        step.joinControllerStep(stepIndex, stepSeqId);
+      }
     }
   });
 
+  // Toggle CC visibility button
+  $(document).on("click", ".toggle-cc", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    const controllerSeqs = $("#" + groupId + " .controller-seq");
+    console.log(
+      "This button will toggle controller sequence visibility for current group",
+      controllerSeqs
+    );
+    // First click hide all empty controller sequences
+    // Second click hide all controller sequences
+    // Third click show all controller sequences
+  });
+
+  // Console log project object
   $(document).on("click", "#log-project", function () {
     console.log(getProject());
   });
