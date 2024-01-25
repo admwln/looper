@@ -4,7 +4,7 @@ import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
-import NoteStep from "./NoteStep.js";
+
 import {
   getProject,
   findAllNestedProps,
@@ -51,33 +51,6 @@ $(document).ready(function () {
   // Change scrollgroup width to accomodate measure length, will have to be done on a
   // scrollgroup-by-scrollgroup basis later
   //$(".scrollgroup").css("width", measureWidth);
-
-  // Maybe make getNoteName() and getPixelValue() a method of Step or some
-  // kind of globally accessible function. This would mean that each step would
-  // only have to have a noteName - the pixelValue would be calculated as needed.
-  let noteMap = new Map([
-    [21, "64n"],
-    [63, "32n."],
-    [42, "32n"],
-    [126, "16n."],
-    [84, "16n"],
-    [28, "16t"],
-    [252, "8n."],
-    [168, "8n"],
-    [56, "8t"],
-    [504, "4n."],
-    [336, "4n"],
-    [112, "4t"],
-    [1008, "2n."],
-    [672, "2n"],
-    [224, "2t"],
-    [1344, "1n"],
-    [448, "1t"],
-  ]);
-
-  function getNoteName(pixelValue) {
-    return noteMap.get(pixelValue);
-  }
 
   // Create main class Sequence and extend it to NoteSequence, ControllerSequence, NoteNoSequence?
   // Create main class Step and extend it to NoteStep, ControllerStep, NoteNoStep?
@@ -166,18 +139,6 @@ $(document).ready(function () {
 
   // Click noteStep or controllerStep (not stepNo)
   $(document).on("click", ".step-seq .step", function () {
-    // // Get index of clicked step, relative to its siblings
-    // const stepIndex = $(this).index();
-    // // Global index of clicked step, relative to all steps
-    // const globalStepIndex = $(".step").index(this);
-    // // Get data attribute of parent of clicked step, ie the pattern name or controller track name
-    // const parentName = $(this).parent().attr("data");
-    // // Find corresponding pattern or controller track object
-    // const stepContainer = scrollgroup.patterns.find((pattern) => {
-    //   return pattern.name == parentName;
-    // });
-
-    //const step = stepContainer.steps[stepIndex];
     const stepId = $(this).attr("id");
     // Get class of parent to $(this)
     const parentSeqType = $(this).parent().attr("class");
@@ -199,21 +160,21 @@ $(document).ready(function () {
       step.toggleState();
     }
 
-    // Split by 2
-    if (editMode == "split-2") {
-      step.splitStep(stepIndex, 2);
+    // Split
+    if (editMode > 0 && editMode < 5) {
+      split(editMode, parentSeqType);
     }
 
-    // Split by 3
-    if (editMode == "split-3") {
-      step.splitStep(stepIndex, 3);
+    function split(editMode, parentSeqType) {
+      if (parentSeqType == "note-seq") {
+        step.splitNoteStep(editMode);
+      }
+      if (parentSeqType == "controller-seq") {
+        step.splitControllerStep(editMode);
+      }
     }
 
-    // Split by 3
-    if (editMode == "split-4") {
-      step.splitStep(stepIndex, 4);
-    }
-
+    // TODO: update this and update relevant method(s)
     // Join step
     if (editMode == "join") {
       step.joinStep(stepContainer, stepIndex);

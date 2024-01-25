@@ -22,4 +22,9 @@ export default class Step {
         .addClass("off");
     }
   }
+
+  updateStep() {
+    $("#" + this.id).css("width", this.pixelValue);
+    $("#" + this.id).attr("data", this.noteName);
+  }
 }
