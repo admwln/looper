@@ -7,7 +7,7 @@ export default class Project {
     this.eventSeq = []; // new EventSeq() for chords, switching sections, etc.
     this.displayProject();
     setProject(this);
-    console.log(`Project "${this.name}" created`, getProject());
+    console.log(`Project "${this.name}" created`);
   }
 
   displayProject() {

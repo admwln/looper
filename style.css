@@ -35,6 +35,10 @@ button:hover {
   color: hotpink;
 }
 
+label {
+  cursor: pointer;
+}
+
 h2,
 h3 {
   margin: 12px 0 6px 0;

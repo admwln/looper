@@ -11,7 +11,7 @@ export default class Section {
     project.sections.push(this);
     // this.displayInstrument(instrumentIndex);
     this.displaySection();
-    console.log(`Section "${this.name}" created`, getProject());
+    console.log(`Section "${this.name}" created`);
   }
 
   displaySection() {

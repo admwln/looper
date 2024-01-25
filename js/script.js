@@ -4,7 +4,7 @@ import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
-import NoteStep from "./NoteStep.js";
+
 import {
   getProject,
   findAllNestedProps,
@@ -52,33 +52,6 @@ $(document).ready(function () {
   // scrollgroup-by-scrollgroup basis later
   //$(".scrollgroup").css("width", measureWidth);
 
-  // Maybe make getNoteName() and getPixelValue() a method of Step or some
-  // kind of globally accessible function. This would mean that each step would
-  // only have to have a noteName - the pixelValue would be calculated as needed.
-  let noteMap = new Map([
-    [21, "64n"],
-    [63, "32n."],
-    [42, "32n"],
-    [126, "16n."],
-    [84, "16n"],
-    [28, "16t"],
-    [252, "8n."],
-    [168, "8n"],
-    [56, "8t"],
-    [504, "4n."],
-    [336, "4n"],
-    [112, "4t"],
-    [1008, "2n."],
-    [672, "2n"],
-    [224, "2t"],
-    [1344, "1n"],
-    [448, "1t"],
-  ]);
-
-  function getNoteName(pixelValue) {
-    return noteMap.get(pixelValue);
-  }
-
   // Create main class Sequence and extend it to NoteSequence, ControllerSequence, NoteNoSequence?
   // Create main class Step and extend it to NoteStep, ControllerStep, NoteNoStep?
 
@@ -124,7 +97,7 @@ $(document).ready(function () {
     new StepSeq(groupId, sequenceLength);
   });
 
-  // Extend group with one step
+  // Extend group with (x) step(s)
   $(document).on("click", ".add-step", function () {
     const groupId = $(this).closest(".group").attr("id");
     // How many steps are there in this group?
@@ -133,33 +106,109 @@ $(document).ready(function () {
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
     // Call method to extend group by one step
-    group.extendGroup(1, stepCount);
+    group.extendGroup(16, stepCount);
+    // If number of steps is greater than number of 16th notes in a measure, scroll right
+    // sequences[0] is always the StepNoSeq
+    if (group.sequences[0].steps.length > measureLength) {
+      const group = $("#" + groupId + " .scroll-container");
+      scrollRight(group);
+    }
   });
 
   // Scrollgroup arrows
-  $(".scroll-row.right").click(function () {
-    const myIndex = $(".scroll-row.right").index(this);
-    scrollRight(0);
+  $(document).on("click", ".scroll-group", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    const group = $("#" + groupId + " .scroll-container");
+    if ($(this).hasClass("right")) scrollRight(group);
+    if ($(this).hasClass("left")) scrollLeft(group);
   });
 
-  $(".scroll-row.left").click(function () {
-    const myIndex = $(".scroll-row.left").index(this);
-    scrollLeft(0);
+  function scrollRight(group) {
+    $(group).animate({ scrollLeft: `+=${measureWidth}px` }, 0);
+  }
+
+  function scrollLeft(group) {
+    $(group).animate({ scrollLeft: `-=${measureWidth}px` }, 0);
+  }
+
+  // Edit
+  let editMode = "pencil";
+  $("input[name='edit-mode']").click(function () {
+    editMode = $(this).val();
   });
 
-  function scrollRight(idx) {
-    $(".scrollgroup:eq(" + idx + ")").animate(
-      { scrollLeft: `+=${measureWidth}px` },
-      0
-    );
-  }
+  // Click noteStep or controllerStep (not stepNo)
+  $(document).on("click", ".step-seq .step", function () {
+    const stepId = $(this).attr("id");
+    // Get class of parent to $(this)
+    const parentSeqType = $(this).parent().attr("class");
 
-  function scrollLeft(idx) {
-    $(".scrollgroup:eq(" + idx + ")").animate(
-      { scrollLeft: `-=${measureWidth}px` },
-      0
+    // Both StepNos and NoteSteps are nested in StepSeqs
+    // To find the correct step object, we need to determine the type of the parent
+    let steps;
+    if (parentSeqType == "note-seq") {
+      steps = findAllNestedProps(getProject(), "noteSteps");
+    }
+    if (parentSeqType == "controller-seq") {
+      steps = findAllNestedProps(getProject(), "controllerSteps");
+    }
+    const step = findNestedProp(steps, stepId);
+
+    // Pencil
+    if (editMode == "pencil") {
+      // Toggle step state
+      step.toggleState();
+    }
+
+    // Split
+    if (editMode > 0 && editMode < 5) {
+      split(editMode, parentSeqType);
+    }
+
+    function split(editMode, parentSeqType) {
+      if (parentSeqType == "note-seq") {
+        step.splitNoteStep(editMode);
+      }
+      if (parentSeqType == "controller-seq") {
+        step.splitControllerStep(editMode);
+      }
+    }
+
+    // Join step
+    if (editMode == "join") {
+      // Get index of clicked step, relative to its siblings
+      const stepIndex = $(this).index();
+      const stepSeqId = $(this).parent().parent().attr("id");
+      join(stepIndex, stepSeqId);
+    }
+
+    function join(stepIndex, stepSeqId) {
+      if (parentSeqType == "note-seq") {
+        step.joinNoteStep(stepIndex, stepSeqId);
+      }
+      if (parentSeqType == "controller-seq") {
+        step.joinControllerStep(stepIndex, stepSeqId);
+      }
+    }
+  });
+
+  // Toggle CC visibility button
+  $(document).on("click", ".toggle-cc", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    const controllerSeqs = $("#" + groupId + " .controller-seq");
+    console.log(
+      "This button will toggle controller sequence visibility for current group",
+      controllerSeqs
     );
-  }
+    // First click hide all empty controller sequences
+    // Second click hide all controller sequences
+    // Third click show all controller sequences
+  });
+
+  // Console log project object
+  $(document).on("click", "#log-project", function () {
+    console.log(getProject());
+  });
 
   // End document.ready
 });

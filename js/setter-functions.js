@@ -41,3 +41,30 @@ export function findNestedProp(haystack, id) {
   }
   return object;
 }
+
+// Maybe make getNoteName() and getPixelValue() a method of Step or some
+// kind of globally accessible function. This would mean that each step would
+// only have to have a noteName - the pixelValue would be calculated as needed.
+let noteMap = new Map([
+  [21, "64n"],
+  [63, "32n."],
+  [42, "32n"],
+  [126, "16n."],
+  [84, "16n"],
+  [28, "16t"],
+  [252, "8n."],
+  [168, "8n"],
+  [56, "8t"],
+  [504, "4n."],
+  [336, "4n"],
+  [112, "4t"],
+  [1008, "2n."],
+  [672, "2n"],
+  [224, "2t"],
+  [1344, "1n"],
+  [448, "1t"],
+]);
+
+export function getNoteName(pixelValue) {
+  return noteMap.get(pixelValue);
+}

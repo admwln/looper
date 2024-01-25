@@ -26,7 +26,7 @@ export default class Group {
     this.displayGroup(instrumentId);
     new StepNoSeq(this.id, measureLength);
     new StepSeq(this.id, measureLength);
-    console.log(`Group created`, getProject());
+    console.log(`Group created`);
   }
 
   displayGroup(instrumentId) {
@@ -35,9 +35,9 @@ export default class Group {
       <section class='group' id='${this.id}'>
         <div class='scroll-container'></div>
         <div>
-          <button class='scroll-row left'><i class='fa-solid fa-chevron-left'></i></button>
-          <button class='scroll-row right'><i class='fa-solid fa-chevron-right'></i></button>
-          <button class="add-step"><i class='fa-solid fa-plus'></i> Step</button>
+          <button class='scroll-group left'><i class='fa-solid fa-chevron-left'></i></button>
+          <button class='scroll-group right'><i class='fa-solid fa-chevron-right'></i></button>
+          <button class="add-step"><i class='fa-solid fa-plus'></i> Bar</button>
           <button class="add-step-seq"><i class='fa-solid fa-plus'></i> Sequence</button>
           <button class="toggle-cc">CC</button>
         </div>
@@ -63,14 +63,21 @@ export default class Group {
         // For each step sequence, add a noteStep
         const stepSeqId = this.sequences[j + 1].id;
         const newNoteStep = new NoteStep("16n", 84, 60, 100, stepSeqId);
-        //this.sequences[j + 1].noteSteps.push(newNoteStep);
+        // Find the stepSeq object in project by using stepSeqId
+        const sequences = findAllNestedProps(getProject(), "sequences");
+        const stepSeq = findNestedProp(sequences, stepSeqId);
+        // Push newNoteStep into stepSeq.noteSteps
+        newNoteStep.pushNoteStep(stepSeq);
+        // Show newNoteStep in DOM
         newNoteStep.displayNoteStep(stepSeqId);
         // For each step sequence, add a controllerStep
         const newControllerStep = new ControllerStep("16n", 84, stepSeqId);
-        //this.sequences[j + 1].controllerSteps.push(newControllerStep);
+        // Push newControllerStep into stepSeq.controllerSteps
+        newControllerStep.pushControllerStep(stepSeq);
+        // Show newControllerStep in DOM
         newControllerStep.displayControllerStep(stepSeqId);
       }
     }
-    console.log(`Group extended`, getProject());
+    console.log(`Group extended`);
   }
 }
