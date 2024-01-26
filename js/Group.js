@@ -37,8 +37,11 @@ export default class Group {
         <div>
           <button class='scroll-group left'><i class='fa-solid fa-chevron-left'></i></button>
           <button class='scroll-group right'><i class='fa-solid fa-chevron-right'></i></button>
-          <button class="add-step"><i class='fa-solid fa-plus'></i> Bar</button>
-          <button class="add-step-seq"><i class='fa-solid fa-plus'></i> Sequence</button>
+          <button class="add-step" style="margin-left:24px"><i class='fa-solid fa-plus'></i> Step</button>
+          <button class="delete-step" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
+          <button class="add-bar"><i class='fa-solid fa-plus'></i> Bar</button>
+          <button class="delete-bar" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
+          <button class="add-step-seq" style="margin-right:24px"><i class='fa-solid fa-plus'></i> Sequence</button>
           <button class="toggle-cc">CC</button>
         </div>
       </section>
