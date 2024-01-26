@@ -52,9 +52,6 @@ $(document).ready(function () {
   // scrollgroup-by-scrollgroup basis later
   //$(".scrollgroup").css("width", measureWidth);
 
-  // Create main class Sequence and extend it to NoteSequence, ControllerSequence, NoteNoSequence?
-  // Create main class Step and extend it to NoteStep, ControllerStep, NoteNoStep?
-
   // New project button
   $("#new-project").click(() => {
     const name =
@@ -95,6 +92,20 @@ $(document).ready(function () {
     const groupId = $(this).closest(".group").attr("id");
     const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
     new StepSeq(groupId, sequenceLength);
+  });
+
+  // Delete last step sequence from group
+  // Replace this with unique button for deleting each step sequence
+  $(document).on("click", ".delete-step-seq", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    // Find group object in project
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    // Find index of last seq
+    const seqIndex = $("#" + groupId + " > div > div")
+      .last()
+      .index();
+    group.deleteLastSeq(seqIndex);
   });
 
   // Extend group with (x) step(s)

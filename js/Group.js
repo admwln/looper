@@ -41,7 +41,8 @@ export default class Group {
           <button class="delete-step" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
           <button class="add-bar"><i class='fa-solid fa-plus'></i> Bar</button>
           <button class="delete-bar" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
-          <button class="add-step-seq" style="margin-right:24px"><i class='fa-solid fa-plus'></i> Sequence</button>
+          <button class="add-step-seq"><i class='fa-solid fa-plus'></i> Sequence</button>
+          <button class="delete-step-seq" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
           <button class="toggle-cc">CC</button>
         </div>
       </section>
@@ -50,8 +51,8 @@ export default class Group {
   }
 
   // Extend group by x number of steps
-  extendGroup(steps, stepCount) {
-    for (let i = 1; i <= steps; i++) {
+  extendGroup(stepsToAdd, stepCount) {
+    for (let i = 1; i <= stepsToAdd; i++) {
       // There is always just one StepNoSeq per group, add one StepNo to it
       const stepNoSeqId = this.sequences[0].id;
       const newStepNo = new StepNo("16n", 84, stepCount + i, stepNoSeqId);
@@ -81,17 +82,20 @@ export default class Group {
         newControllerStep.displayControllerStep(stepSeqId);
       }
     }
-    console.log(`Group extended`);
+    console.log(`Group extended by ${stepsToAdd} steps`);
   }
 
-  // Extend group by x number of steps
-  shortenGroup(steps, stepCount) {
-    for (let i = 1; i <= steps; i++) {
+  // Shorten group by x number of steps
+  shortenGroup(stepsToDelete, stepCount) {
+    // Check if stepsToDelete is greater than stepCount, if so, set stepsToDelete to stepCount,
+    // this in order to avoid negative values
+    stepsToDelete > stepCount ? (stepsToDelete = stepCount) : null;
+
+    for (let i = 1; i <= stepsToDelete; i++) {
       // There is always just one StepNoSeq per group, remove one StepNo from it
       const stepNoSeqId = this.sequences[0].id;
       // Get last stepNo in stepNoSeq
       const stepNoToRemove = this.sequences[0].steps[stepCount - i];
-      console.log("step to remove: ", stepNoToRemove);
       stepNoToRemove.deleteStepNo(stepNoSeqId);
 
       // How many sequences of the kind StepSeq are there in this group?
@@ -112,6 +116,11 @@ export default class Group {
         controllerStepToRemove.deleteControllerStep(stepSeqId);
       }
     }
-    console.log(`Group extended`);
+    console.log(`Group shortened by ${stepsToDelete} steps`);
+  }
+
+  deleteLastSeq(seqIndex) {
+    this.sequences.pop();
+    $("#" + this.id + " >div > div:eq(" + seqIndex + ")").remove();
   }
 }
