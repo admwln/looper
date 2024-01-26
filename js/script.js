@@ -98,26 +98,36 @@ $(document).ready(function () {
   });
 
   // Extend group with (x) step(s)
-  $(document).on("click", ".add-step, .add-bar", function () {
-    // Get class of button
-    const buttonClass = $(this).attr("class");
-    const groupId = $(this).closest(".group").attr("id");
-    // How many steps are there in this group?
-    const stepCount = $("#" + groupId + " .step-no-seq > .step").length;
-    // Find group object in project
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
-    // Call method to extend group by one step or bar
-    if (buttonClass == "add-step") group.extendGroup(1, stepCount);
-    if (buttonClass == "add-bar") group.extendGroup(measureLength, stepCount);
+  $(document).on(
+    "click",
+    ".add-step, .delete-step, .add-bar, .delete-bar",
+    function () {
+      // Get class of button
+      const buttonClass = $(this).attr("class");
+      const groupId = $(this).closest(".group").attr("id");
+      // How many steps are there in this group?
+      const stepCount = $("#" + groupId + " .step-no-seq > .step").length;
+      // Find group object in project
+      const groups = findAllNestedProps(getProject(), "groups");
+      const group = findNestedProp(groups, groupId);
 
-    // If number of steps is greater than number of 16th notes in a measure, scroll right
-    // sequences[0] is always the StepNoSeq
-    if (group.sequences[0].steps.length > measureLength) {
-      const group = $("#" + groupId + " .scroll-container");
-      scrollRight(group);
+      // Call method to extend group by one step or bar
+      if (buttonClass == "add-step") group.extendGroup(1, stepCount);
+      if (buttonClass == "add-bar") group.extendGroup(measureLength, stepCount);
+      if (buttonClass == "delete-step") group.shortenGroup(1, stepCount);
+      if (buttonClass == "delete-bar")
+        group.shortenGroup(measureLength, stepCount);
+
+      // If number of steps is greater than number of 16th notes in a measure, scroll right
+      // sequences[0] is always the StepNoSeq
+      // Nota bene: will only have desired effect if group is scrolled all the way to the right
+      // when expand button is clicked
+      if (group.sequences[0].steps.length > measureLength) {
+        const group = $("#" + groupId + " .scroll-container");
+        scrollRight(group);
+      }
     }
-  });
+  );
 
   // Scrollgroup arrows
   $(document).on("click", ".scroll-group", function () {

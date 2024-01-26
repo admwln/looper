@@ -83,4 +83,35 @@ export default class Group {
     }
     console.log(`Group extended`);
   }
+
+  // Extend group by x number of steps
+  shortenGroup(steps, stepCount) {
+    for (let i = 1; i <= steps; i++) {
+      // There is always just one StepNoSeq per group, remove one StepNo from it
+      const stepNoSeqId = this.sequences[0].id;
+      // Get last stepNo in stepNoSeq
+      const stepNoToRemove = this.sequences[0].steps[stepCount - i];
+      console.log("step to remove: ", stepNoToRemove);
+      stepNoToRemove.deleteStepNo(stepNoSeqId);
+
+      // How many sequences of the kind StepSeq are there in this group?
+      const stepSeqs = this.sequences.filter(
+        (sequence) => sequence.constructor.name === "StepSeq"
+      ).length;
+      for (let j = 0; j < stepSeqs; j++) {
+        // For each step sequence, remove a noteStep
+        const stepSeqId = this.sequences[j + 1].id;
+        // Find the stepSeq object in project by using stepSeqId
+        const sequences = findAllNestedProps(getProject(), "sequences");
+        const stepSeq = findNestedProp(sequences, stepSeqId);
+        // Delete last noteStep from stepSeq.noteSteps
+        const noteStepToRemove = stepSeq.noteSteps[stepCount - i];
+        noteStepToRemove.deleteNoteStep(stepSeqId);
+        // Delete last controllerStep from stepSeq.controllerSteps
+        const controllerStepToRemove = stepSeq.controllerSteps[stepCount - i];
+        controllerStepToRemove.deleteControllerStep(stepSeqId);
+      }
+    }
+    console.log(`Group extended`);
+  }
 }
