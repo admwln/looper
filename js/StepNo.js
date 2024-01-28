@@ -20,4 +20,13 @@ export default class StepNo extends Step {
       `<div id="${this.id}" class="step">${this.stepNo}</div>`
     );
   }
+
+  // Remove stepNo from parent stepNoSeq
+  deleteStepNo(stepNoSeqId) {
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepNoSeq = findNestedProp(sequences, stepNoSeqId);
+    const stepNoIndex = stepNoSeq.steps.indexOf(this);
+    stepNoSeq.steps.splice(stepNoIndex, 1);
+    $("#" + this.id).remove();
+  }
 }

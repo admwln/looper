@@ -82,4 +82,15 @@ export default class ControllerStep extends Step {
       "#" + stepSeqId + " .controller-seq .step:eq(" + (stepIndex + 1) + ")"
     ).remove();
   }
+
+  // Delete controllerStep stepSeq.controllerSteps
+  deleteControllerStep(stepSeqId) {
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepIndex = stepSeq.controllerSteps.findIndex(
+      (step) => step.id == this.id
+    );
+    stepSeq.controllerSteps.splice(stepIndex, 1);
+    $("#" + this.id).remove();
+  }
 }
