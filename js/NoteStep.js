@@ -21,6 +21,9 @@ export default class NoteStep extends Step {
   }
   // These two methods could be combined into one method
   displayNoteStep(stepSeqId) {
+    // const velocity = this.velocity;
+    // let opacity = velocity / 127;
+
     $("#" + stepSeqId + " .note-seq").append(
       `
       <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
@@ -112,9 +115,12 @@ export default class NoteStep extends Step {
   }
 
   displayActiveNoteStep() {
-    let velocity = this.velocity;
-    velocity = velocity / 127;
-    $("#" + this.id).css("opacity", velocity);
+    const velocity = this.velocity;
+    let opacity = velocity / 127;
+    $("#" + this.id).css(
+      "background-color",
+      "rgba(14, 27, 37," + opacity + ")"
+    );
     const html = `
       <div>
         <button class="note-step-btn velocity-btn"><i class="fa-solid fa-plus"></i></button>
@@ -130,6 +136,7 @@ export default class NoteStep extends Step {
 
   removeActiveNoteStep() {
     $("#" + this.id + " > div").remove();
+    $("#" + this.id).css("background-color", "transparent");
   }
 
   pitchUp() {
@@ -148,6 +155,9 @@ export default class NoteStep extends Step {
     const currentIndex = this.velocityRange.indexOf(this.velocity);
     const nextIndex = (currentIndex + 1) % this.velocityRange.length;
     this.velocity = this.velocityRange[nextIndex];
-    $("#" + this.id).css("opacity", this.velocity / 127);
+    $("#" + this.id).css(
+      "background-color",
+      "rgba(14, 27, 37," + this.velocity / 127 + ")"
+    );
   }
 }
