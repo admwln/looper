@@ -67,7 +67,7 @@ export default class Group {
       for (let j = 0; j < stepSeqs; j++) {
         // For each step sequence, add a noteStep
         const stepSeqId = this.sequences[j + 1].id;
-        const newNoteStep = new NoteStep("16n", 84, 60, 100, stepSeqId);
+        const newNoteStep = new NoteStep("16n", 84, 1, 80, stepSeqId);
         // Find the stepSeq object in project by using stepSeqId
         const sequences = findAllNestedProps(getProject(), "sequences");
         const stepSeq = findNestedProp(sequences, stepSeqId);

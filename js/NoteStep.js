@@ -12,7 +12,7 @@ export default class NoteStep extends Step {
     this.pitch = pitch;
     this.state = "off";
     this.velocity = velocity;
-    this.velocityRange = [63, 100, 127];
+    this.velocityRange = [40, 80, 127];
     this.forks = [];
   }
 
@@ -21,9 +21,6 @@ export default class NoteStep extends Step {
   }
   // These two methods could be combined into one method
   displayNoteStep(stepSeqId) {
-    // const velocity = this.velocity;
-    // let opacity = velocity / 127;
-
     $("#" + stepSeqId + " .note-seq").append(
       `
       <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
