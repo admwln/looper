@@ -18,6 +18,7 @@ export default class Group {
     // Groups default to midi channel 1 on their respective instrument's output
     this.midiChannel = 1;
     this.sequences = [];
+    this.ccVisibility = false;
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     // Add group to instrument
@@ -79,7 +80,7 @@ export default class Group {
         // Push newControllerStep into stepSeq.controllerSteps
         newControllerStep.pushControllerStep(stepSeq);
         // Show newControllerStep in DOM
-        newControllerStep.displayControllerStep(stepSeqId);
+        newControllerStep.displayControllerStep(stepSeqId, this.id);
       }
     }
     console.log(`Group extended by ${stepsToAdd} steps`);
@@ -121,6 +122,23 @@ export default class Group {
 
   deleteLastSeq(seqIndex) {
     this.sequences.pop();
-    $("#" + this.id + " >div > div:eq(" + seqIndex + ")").remove();
+    $("#" + this.id + " > div > div:eq(" + seqIndex + ")").remove();
+  }
+
+  toggleCcVisibility() {
+    this.ccVisibility = !this.ccVisibility;
+    // Find all controller seqs in this group
+    const controllerSeqs = $("#" + this.id + " .controller-seq");
+    // If ccVisibility is true, show all controller seqs
+    // If ccVisibility is false, hide all controller seqs that are not on
+    if (this.ccVisibility) {
+      $(controllerSeqs).show();
+    } else {
+      $(controllerSeqs).each(function () {
+        if ($(this).find(".on").length < 1) {
+          $(this).hide();
+        }
+      });
+    }
   }
 }

@@ -17,10 +17,18 @@ export default class ControllerStep extends Step {
     stepSeq.controllerSteps.push(this);
   }
 
-  displayControllerStep(stepSeqId) {
+  displayControllerStep(stepSeqId, groupId) {
     $("#" + stepSeqId + " .controller-seq").append(
       `<div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
     );
+    // Find group object in project
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    if (!group.ccVisibility) {
+      $("#" + this.id)
+        .parent()
+        .hide();
+    }
   }
 
   splitControllerStep(splitBy) {

@@ -33,7 +33,7 @@ export default class StepSeq {
       noteStep.displayNoteStep(this.id);
       const controllerStep = new ControllerStep("16n", 84);
       controllerStep.pushControllerStep(this);
-      controllerStep.displayControllerStep(this.id);
+      controllerStep.displayControllerStep(this.id, groupId);
     }
 
     console.log(`Step seq created`);

@@ -253,11 +253,21 @@ $(document).ready(function () {
   $(document).on("click", ".toggle-cc", function () {
     const groupId = $(this).closest(".group").attr("id");
     const controllerSeqs = $("#" + groupId + " .controller-seq");
-    console.log(
-      "This button will toggle controller sequence visibility for current group",
-      controllerSeqs
-    );
+    // Find group object in project
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+
+    group.toggleCcVisibility();
+
     // First click hide all empty controller sequences
+    // $(controllerSeqs).each(function () {
+    //   if ($(this).find(".on").length > 0 || $(this).hasClass("hidden-cc")) {
+    //     $(this).show();
+    //     $(this).removeClass("hidden-cc");
+    //   } else {
+    //     $(this).addClass("hidden-cc").hide();
+    //   }
+    // });
     // Second click hide all controller sequences
     // Third click show all controller sequences
   });
