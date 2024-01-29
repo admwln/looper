@@ -108,6 +108,7 @@ h3 {
 
 .step.on {
   background-color: var(--darker-blue);
+  opacity: 0.79;
 }
 
 .step.cc {
@@ -131,6 +132,48 @@ h3 {
 
 .step-no-seq > div:nth-of-type(4n + 1) {
   background-color: var(--blue-gray);
+}
+
+.note-seq > .step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.note-seq > .step > div {
+  height: 81px;
+  width: 19px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.pitch-up,
+.pitch-down,
+.velocity-btn {
+  font-size: 14px;
+  display: none;
+  color: var(--white);
+}
+
+.note-seq > .step:hover > div > div > button,
+.note-seq > .step:hover > div > button {
+  display: inline;
+}
+
+.note-seq > .step:hover > div > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.pitch-up:hover,
+.pitch-down:hover,
+.velocity-btn:hover {
+  color: var(--links);
 }
 
 .controller-seq > .step {

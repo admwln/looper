@@ -181,6 +181,15 @@ $(document).ready(function () {
 
     // Pencil
     if (editMode == "pencil") {
+      if (parentSeqType == "note-seq") {
+        // Check if step is on/off
+        if (step.state == "off") {
+          // Play note
+          step.displayActiveNoteStep();
+        } else {
+          step.removeActiveNoteStep();
+        }
+      }
       // Toggle step state
       step.toggleState();
     }
@@ -214,6 +223,29 @@ $(document).ready(function () {
       if (parentSeqType == "controller-seq") {
         step.joinControllerStep(stepIndex, stepSeqId);
       }
+    }
+  });
+
+  // Note step buttons
+  $(document).on("click", ".note-step-btn", function () {
+    const noteStepId = $(this).closest(".step").attr("id");
+    // Find noteStep object in project
+    const noteSteps = findAllNestedProps(getProject(), "noteSteps");
+    const noteStep = findNestedProp(noteSteps, noteStepId);
+
+    // Velocity
+    if ($(this).hasClass("velocity-btn")) {
+      noteStep.changeVelocity();
+    }
+
+    // Pitch up
+    if ($(this).hasClass("pitch-up")) {
+      noteStep.pitchUp();
+    }
+
+    // Pitch down
+    if ($(this).hasClass("pitch-down")) {
+      noteStep.pitchDown();
     }
   });
 
