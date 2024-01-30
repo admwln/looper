@@ -25,6 +25,25 @@ body {
   padding: 24px;
 }
 
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background-color: var(--blue-lightgray);
+}
+
+main {
+  margin-top: 150px;
+}
+
 button {
   all: unset;
   cursor: pointer;

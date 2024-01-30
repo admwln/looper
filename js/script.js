@@ -258,18 +258,6 @@ $(document).ready(function () {
     const group = findNestedProp(groups, groupId);
 
     group.toggleCcVisibility();
-
-    // First click hide all empty controller sequences
-    // $(controllerSeqs).each(function () {
-    //   if ($(this).find(".on").length > 0 || $(this).hasClass("hidden-cc")) {
-    //     $(this).show();
-    //     $(this).removeClass("hidden-cc");
-    //   } else {
-    //     $(this).addClass("hidden-cc").hide();
-    //   }
-    // });
-    // Second click hide all controller sequences
-    // Third click show all controller sequences
   });
 
   // Console log project object
