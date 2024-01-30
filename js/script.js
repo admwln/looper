@@ -70,6 +70,16 @@ $(document).ready(function () {
     $("#section-name").val("");
   });
 
+  // Click section tab
+  $(document).on("click", ".section-tab", function () {
+    let sectionId = $(this).attr("id");
+    sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
+    // Find section object in project
+    const sections = findAllNestedProps(getProject(), "sections");
+    const section = findNestedProp(sections, sectionId);
+    section.selectSection();
+  });
+
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
     const sectionId = $(this).closest(".section").attr("id");
