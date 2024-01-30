@@ -14,12 +14,19 @@ export default class Project {
     $("body").append(
       `
       <main class='project'>
-        <h1>${this.name}</h1>
-        <div>
-          <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
-        </div>
-        <input type='text' id='section-name' name='section-name' placeholder='Section name' />
       </main>
+      `
+    );
+
+    $(".top-row").append(
+      `
+        <div>
+          <h1>${this.name}</h1>
+          <div>
+            <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
+          </div>
+          <input type='text' id='section-name' name='section-name' placeholder='Section name' />
+        </div>
       `
     );
   }

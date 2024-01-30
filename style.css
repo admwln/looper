@@ -22,7 +22,7 @@
 body {
   background-color: var(--background-blue);
   color: var(--white);
-  padding: 24px;
+  padding: 0;
 }
 
 header {
@@ -30,18 +30,35 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  height: 150px;
-  padding: 12px 24px;
+  /* height: 175px; */
+  padding: 12px 24px 0 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  background-color: var(--blue-lightgray);
+  border-bottom: 12px solid var(--background-blue); /* Nicer transition when scrolling main */
+}
+
+.top-row {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin-bottom: 24px;
-  background-color: var(--blue-lightgray);
+  gap: 24px;
+}
+
+.top-row > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 main {
-  margin-top: 150px;
+  margin-top: 250px; /* header height */
 }
 
 button {
@@ -58,6 +75,10 @@ label {
   cursor: pointer;
 }
 
+h1 {
+  margin: 0;
+}
+
 h2,
 h3 {
   margin: 12px 0 6px 0;
@@ -65,8 +86,22 @@ h3 {
 }
 
 .section {
-  margin: 24px 0;
-  border-top: 4px solid var(--blue-lightgray);
+  display: none;
+}
+
+.section.selected {
+  margin: 0 24px;
+  display: inline-block;
+}
+
+button.section-tab {
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 5px 5px 0 0;
+  background-color: var(--blue-lightgray);
+}
+button.section-tab.selected {
+  background-color: var(--background-blue);
 }
 
 .instrument {
@@ -200,4 +235,8 @@ h3 {
 
 .controller-seq > .step {
   height: 14px;
+}
+
+.pitch-no {
+  margin-bottom: 2px;
 }
