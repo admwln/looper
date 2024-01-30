@@ -236,3 +236,7 @@ button.section-tab.selected {
 .controller-seq > .step {
   height: 14px;
 }
+
+.pitch-no {
+  margin-bottom: 2px;
+}

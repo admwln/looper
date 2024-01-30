@@ -173,7 +173,10 @@ $(document).ready(function () {
   });
 
   // Click noteStep or controllerStep (not stepNo)
+  // Not if noteStepBtnHover is true
   $(document).on("click", ".step-seq .step", function () {
+    if (noteStepBtnHover) return;
+
     const stepId = $(this).attr("id");
     // Get class of parent to $(this)
     const parentSeqType = $(this).parent().attr("class");
@@ -234,6 +237,15 @@ $(document).ready(function () {
         step.joinControllerStep(stepIndex, stepSeqId);
       }
     }
+  });
+
+  // Change noteStepBtnHover state on mouseover
+  let noteStepBtnHover = false;
+  $(document).on("mouseover", ".note-step-btn", function () {
+    noteStepBtnHover = true;
+  });
+  $(document).on("mouseout", ".note-step-btn", function () {
+    noteStepBtnHover = false;
   });
 
   // Note step buttons
