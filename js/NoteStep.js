@@ -12,6 +12,7 @@ export default class NoteStep extends Step {
     this.pitch = pitch;
     this.state = "off";
     this.velocity = velocity;
+    this.velocityRange = [40, 80, 127];
     this.forks = [];
   }
 
@@ -21,7 +22,10 @@ export default class NoteStep extends Step {
   // These two methods could be combined into one method
   displayNoteStep(stepSeqId) {
     $("#" + stepSeqId + " .note-seq").append(
-      `<div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+      `
+      <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
+      </div>
+      `
     );
   }
 
@@ -64,8 +68,15 @@ export default class NoteStep extends Step {
     $(
       "#" + stepSeqId + " .note-seq .step:eq(" + (stepIndex + i - 1) + ")"
     ).after(
-      `<div id="${this.id}" class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
+      `
+      <div id="${this.id}" class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;">
+      </div>
+      `
     );
+    // If step is on, activate it in DOM
+    if (this.state == "on") {
+      this.displayActiveNoteStep();
+    }
   }
 
   joinNoteStep(stepIndex, stepSeqId) {
@@ -98,5 +109,52 @@ export default class NoteStep extends Step {
     stepSeq.noteSteps.splice(stepIndex, 1);
     // Remove this from DOM
     $("#" + this.id).remove();
+  }
+
+  displayActiveNoteStep() {
+    const velocity = this.velocity;
+    let opacity = velocity / 127;
+    $("#" + this.id).css(
+      "background-color",
+      "rgba(14, 27, 37," + opacity + ")"
+    );
+    const html = `
+      <div>
+        <button class="note-step-btn velocity-btn"><i class="fa-solid fa-plus"></i></button>
+        <div>
+          <button class="note-step-btn pitch-up"><i class="fa-solid fa-chevron-up"></i></button>
+          <button class="note-step-btn pitch-down"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <span class="pitch-no">${this.pitch}</span>
+      </div>
+      `;
+    $("#" + this.id).append(html);
+  }
+
+  removeActiveNoteStep() {
+    $("#" + this.id + " > div").remove();
+    $("#" + this.id).css("background-color", "transparent");
+  }
+
+  pitchUp() {
+    this.pitch++;
+    $("#" + this.id + " .pitch-no").text(this.pitch);
+  }
+
+  pitchDown() {
+    if (this.pitch > 1) {
+      this.pitch--;
+      $("#" + this.id + " .pitch-no").text(this.pitch);
+    }
+  }
+
+  changeVelocity() {
+    const currentIndex = this.velocityRange.indexOf(this.velocity);
+    const nextIndex = (currentIndex + 1) % this.velocityRange.length;
+    this.velocity = this.velocityRange[nextIndex];
+    $("#" + this.id).css(
+      "background-color",
+      "rgba(14, 27, 37," + this.velocity / 127 + ")"
+    );
   }
 }

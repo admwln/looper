@@ -181,6 +181,15 @@ $(document).ready(function () {
 
     // Pencil
     if (editMode == "pencil") {
+      if (parentSeqType == "note-seq") {
+        // Check if step is on/off
+        if (step.state == "off") {
+          // Play note
+          step.displayActiveNoteStep();
+        } else {
+          step.removeActiveNoteStep();
+        }
+      }
       // Toggle step state
       step.toggleState();
     }
@@ -217,17 +226,38 @@ $(document).ready(function () {
     }
   });
 
+  // Note step buttons
+  $(document).on("click", ".note-step-btn", function () {
+    const noteStepId = $(this).closest(".step").attr("id");
+    // Find noteStep object in project
+    const noteSteps = findAllNestedProps(getProject(), "noteSteps");
+    const noteStep = findNestedProp(noteSteps, noteStepId);
+
+    // Velocity
+    if ($(this).hasClass("velocity-btn")) {
+      noteStep.changeVelocity();
+    }
+
+    // Pitch up
+    if ($(this).hasClass("pitch-up")) {
+      noteStep.pitchUp();
+    }
+
+    // Pitch down
+    if ($(this).hasClass("pitch-down")) {
+      noteStep.pitchDown();
+    }
+  });
+
   // Toggle CC visibility button
   $(document).on("click", ".toggle-cc", function () {
     const groupId = $(this).closest(".group").attr("id");
     const controllerSeqs = $("#" + groupId + " .controller-seq");
-    console.log(
-      "This button will toggle controller sequence visibility for current group",
-      controllerSeqs
-    );
-    // First click hide all empty controller sequences
-    // Second click hide all controller sequences
-    // Third click show all controller sequences
+    // Find group object in project
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+
+    group.toggleCcVisibility();
   });
 
   // Console log project object

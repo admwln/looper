@@ -28,12 +28,12 @@ export default class StepSeq {
     );
 
     for (let i = 1; i <= sequenceLength; i++) {
-      const noteStep = new NoteStep("16n", 84, 60, 100, this.id);
+      const noteStep = new NoteStep("16n", 84, 1, 80, this.id);
       noteStep.pushNoteStep(this);
       noteStep.displayNoteStep(this.id);
       const controllerStep = new ControllerStep("16n", 84);
       controllerStep.pushControllerStep(this);
-      controllerStep.displayControllerStep(this.id);
+      controllerStep.displayControllerStep(this.id, groupId);
     }
 
     console.log(`Step seq created`);
