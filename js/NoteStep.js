@@ -1,5 +1,7 @@
 import Step from "./Step.js";
+import StepSeq from "./StepSeq.js";
 import {
+  getKick,
   getProject,
   getNoteName,
   findAllNestedProps,
@@ -156,5 +158,115 @@ export default class NoteStep extends Step {
       "background-color",
       "rgba(14, 27, 37," + this.velocity / 127 + ")"
     );
+  }
+
+  findFirstNoteStep() {
+    const stepSeqId = $("#" + this.id)
+      .parent()
+      .parent()
+      .attr("id");
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const firstNoteStep = stepSeq.noteSteps.find(
+      (noteStep) => noteStep.state == "on"
+    );
+    return firstNoteStep;
+  }
+
+  findNextNoteStep() {
+    const stepSeqId = $("#" + this.id)
+      .parent()
+      .parent()
+      .attr("id");
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepIndex = stepSeq.noteSteps.findIndex((step) => step.id == this.id);
+    const nextNoteStep = stepSeq.noteSteps.find(
+      (noteStep, index) => index > stepIndex && noteStep.state == "on"
+    );
+
+    return nextNoteStep;
+  }
+
+  // Returns the time at which the step should be played, relative to the start of the loop
+  getNoteStepTime() {
+    const stepSeqId = $("#" + this.id)
+      .parent()
+      .parent()
+      .attr("id");
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepIndex = stepSeq.noteSteps.findIndex((step) => step.id == this.id);
+    const precedingNoteSteps = stepSeq.noteSteps.filter(
+      (noteStep, index) => index < stepIndex
+    );
+    let time = 0;
+    precedingNoteSteps.forEach((noteStep) => {
+      time += Tone.Time(noteStep.noteName).toSeconds() * 1000;
+    });
+    return time;
+  }
+
+  // Time is the time at which the step should be played
+  playNoteStep(target, loopStart, round, sequenceLength) {
+    let drift = target - performance.now();
+    if (drift < 0) {
+      drift = 0;
+    }
+
+    // Play note
+    //setKickVolume((this.velocity / 12.7) * 0.25);
+    getKick().triggerAttackRelease(
+      "C1",
+      this.noteName,
+      "+" + drift / 1000,
+      this.velocity / 127
+    );
+
+    // Find next noteStep in sequence with state "on"
+    let nextNoteStep = this.findNextNoteStep();
+    // Calculate time at which nextNoteStep should be played
+    let nextTarget;
+    // If nextNoteStep is defined, calculate nextTarget
+    if (nextNoteStep) {
+      nextTarget =
+        loopStart + sequenceLength * round + nextNoteStep.getNoteStepTime();
+    }
+
+    // If nextNoteStep is undefined, find first noteStep and repeat loop
+    if (!nextNoteStep) {
+      nextNoteStep = this.findFirstNoteStep();
+      round++;
+      nextTarget =
+        loopStart + sequenceLength * round + nextNoteStep.getNoteStepTime();
+      if (round > 3) {
+        return;
+      }
+    }
+
+    // If nextTarget is more than 250ms away, start a loop that checks every 250ms
+    if (nextTarget - performance.now() - drift > 250) {
+      const silentLoop = setInterval(() => {
+        console.log("silent loop running");
+        if (nextTarget - performance.now() - drift < 250) {
+          setTimeout(() => {
+            // Play nextNoteStep
+            nextNoteStep.playNoteStep(
+              nextTarget,
+              loopStart,
+              round,
+              sequenceLength
+            );
+          }, nextTarget - performance.now() - drift - 10);
+          clearInterval(silentLoop);
+          return;
+        }
+      }, 250);
+    } else {
+      setTimeout(() => {
+        // Play nextNoteStep
+        nextNoteStep.playNoteStep(nextTarget, loopStart, round, sequenceLength);
+      }, nextTarget - performance.now() - drift - 10);
+    }
   }
 }

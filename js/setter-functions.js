@@ -18,6 +18,14 @@ export function getIdCounter() {
   return _idCounter;
 }
 
+let _kick = new Tone.MembraneSynth({
+  volume: 2,
+}).toDestination();
+
+export function getKick() {
+  return _kick;
+}
+
 export function findAllNestedProps(obj, propName) {
   let results = [];
   if (obj.hasOwnProperty(propName)) {
@@ -51,19 +59,39 @@ let noteMap = new Map([
   [42, "32n"],
   [126, "16n."],
   [84, "16n"],
-  [28, "16t"],
+  [28, "32t"],
   [252, "8n."],
   [168, "8n"],
-  [56, "8t"],
+  [56, "16t"],
   [504, "4n."],
   [336, "4n"],
-  [112, "4t"],
+  [112, "8t"],
   [1008, "2n."],
   [672, "2n"],
-  [224, "2t"],
+  [224, "4t"],
   [1344, "1n"],
-  [448, "1t"],
 ]);
+
+// original noteMap
+// let noteMap = new Map([
+//   [21, "64n"],
+//   [63, "32n."],
+//   [42, "32n"],
+//   [126, "16n."],
+//   [84, "16n"],
+//   [28, "16t"],
+//   [252, "8n."],
+//   [168, "8n"],
+//   [56, "8t"],
+//   [504, "4n."],
+//   [336, "4n"],
+//   [112, "4t"],
+//   [1008, "2n."],
+//   [672, "2n"],
+//   [224, "2t"],
+//   [1344, "1n"],
+//   [448, "1t"],
+// ]);
 
 export function getNoteName(pixelValue) {
   return noteMap.get(pixelValue);

@@ -38,4 +38,27 @@ export default class StepSeq {
 
     console.log(`Step seq created`);
   }
+
+  getSequenceLength() {
+    const stepCount = this.noteSteps.length;
+    const sequenceLength = stepCount * Tone.Time("16n").toSeconds() * 1000;
+    return sequenceLength;
+  }
+
+  playNoteSeq(loopStart) {
+    // If there are any noteSteps with state "on", play them
+    if (this.noteSteps.some((noteStep) => noteStep.state === "on")) {
+      console.log("loopStart: " + loopStart);
+      // Find first noteStep in sequence with state "on"
+      const noteStep = this.noteSteps.find(
+        (noteStep) => noteStep.state === "on"
+      );
+      noteStep.playNoteStep(
+        loopStart + noteStep.getNoteStepTime(),
+        loopStart,
+        0,
+        this.getSequenceLength()
+      );
+    }
+  }
 }

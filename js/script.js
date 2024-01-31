@@ -18,6 +18,7 @@ let bottom = 4;
 let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
 const defaultStepWidth = 84;
 let measureWidth = defaultStepWidth * measureLength;
+let kick;
 
 $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
@@ -26,6 +27,7 @@ $(document).ready(function () {
     // Tone.js initialization
     await Tone.start();
     console.log("Tone.js enabled!");
+    initKick();
 
     // Webmidi.js initialization
     // Enable WEBMIDI.js and trigger the onEnabled() function when ready
@@ -139,9 +141,8 @@ $(document).ready(function () {
       if (buttonClass == "delete-bar")
         group.shortenGroup(measureLength, stepCount);
 
-      // If number of steps is greater than number of 16th notes in a measure, scroll right
-      // sequences[0] is always the StepNoSeq
-      // Nota bene: will only have desired effect if group is scrolled all the way to the right
+      // If number of steps is greater than number of 16th notes in a measure, scroll righ
+      // nota bene: only have desired effect if group is scrolled all the way to the right
       // when expand button is clicked
       if (group.sequences[0].steps.length > measureLength) {
         const group = $("#" + groupId + " .scroll-container");
@@ -286,6 +287,74 @@ $(document).ready(function () {
   $(document).on("click", "#log-project", function () {
     console.log(getProject());
   });
+
+  // Experimental: play kick drum
+  // Initialize kick
+
+  let loopOn;
+
+  function initKick() {
+    // Synths
+    kick = new Tone.MembraneSynth({
+      volume: 6,
+    }).toDestination();
+    console.log("Kick initialized!");
+  }
+
+  let loopStart;
+  // Play button
+  $(document).on("click", "#play", function () {
+    loopStart = performance.now() + 250;
+    if (loopOn) {
+      clearInterval(loopOn);
+      loopOn = false;
+      return;
+    }
+
+    // Find section object with selected property set to true
+    const sections = getProject().sections;
+    const section = sections.find((section) => section.selected == true);
+    // In section, find all instruments
+    const instruments = section.instruments;
+    // In instrument, find all groups
+    instruments.forEach((instrument) => {
+      const groups = instrument.groups;
+      // In group, find all sequences
+      groups.forEach((group) => {
+        // Find all stepSeqs in group
+        const sequences = group.sequences;
+        // Find all stepSeqs in sequences
+        const stepSeqs = sequences.filter(
+          (sequence) => sequence.constructor.name === "StepSeq"
+        );
+        stepSeqs.forEach((stepSeq) => {
+          stepSeq.playNoteSeq(loopStart);
+        });
+      });
+    });
+
+    //playLoop();
+  });
+
+  function playLoop() {
+    // Find all noteSteps
+    const noteSteps = findAllNestedProps(getProject(), "noteSteps");
+
+    let i = 0;
+    loopOn = setInterval(() => {
+      const noteStep = noteSteps[0][i];
+      if (noteStep.state == "on") {
+        // Play note
+        kick.volume.value = (noteStep.velocity / 12.7) * 0.5;
+        console.log(kick.volume.value);
+        kick.triggerAttackRelease("C1", noteStep.noteName);
+      }
+      i++;
+      if (i == 16) {
+        i = 0;
+      }
+    }, 125);
+  }
 
   // End document.ready
 });
