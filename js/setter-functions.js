@@ -26,6 +26,16 @@ export function getKick() {
   return _kick;
 }
 
+let _loopOn = false;
+
+export function getLoopOn() {
+  return _loopOn;
+}
+
+export function setLoopOn(newValue) {
+  _loopOn = newValue;
+}
+
 export function findAllNestedProps(obj, propName) {
   let results = [];
   if (obj.hasOwnProperty(propName)) {

@@ -7,6 +7,8 @@ import StepSeq from "./StepSeq.js";
 
 import {
   getProject,
+  getLoopOn,
+  setLoopOn,
   findAllNestedProps,
   findNestedProp,
 } from "./setter-functions.js";
@@ -31,8 +33,9 @@ $(document).ready(function () {
 
     // Webmidi.js initialization
     // Enable WEBMIDI.js and trigger the onEnabled() function when ready
-    WebMidi.enable()
+    WebMidi.enable({ sysex: true })
       .then(onEnabled)
+      .then(() => console.log("WebMidi with sysex enabled!"))
       .catch((err) => alert(err));
 
     // Function triggered when WEBMIDI.js is ready
@@ -291,8 +294,6 @@ $(document).ready(function () {
   // Experimental: play kick drum
   // Initialize kick
 
-  let loopOn;
-
   function initKick() {
     // Synths
     kick = new Tone.MembraneSynth({
@@ -301,16 +302,17 @@ $(document).ready(function () {
     console.log("Kick initialized!");
   }
 
-  let loopStart;
   // Play button
   $(document).on("click", "#play", function () {
-    loopStart = performance.now() + 250;
-    if (loopOn) {
-      clearInterval(loopOn);
-      loopOn = false;
+    if (getLoopOn()) {
+      //clearInterval(loopOn);
+      setLoopOn(false);
       return;
+    } else {
+      setLoopOn(true);
     }
 
+    let loopStart = performance.now() + 10;
     // Find section object with selected property set to true
     const sections = getProject().sections;
     const section = sections.find((section) => section.selected == true);
@@ -328,7 +330,10 @@ $(document).ready(function () {
           (sequence) => sequence.constructor.name === "StepSeq"
         );
         stepSeqs.forEach((stepSeq) => {
-          stepSeq.playNoteSeq(loopStart);
+          // If stepSeq has any noteSteps with state == "on", play noteSeq
+          if (stepSeq.noteSteps.some((noteStep) => noteStep.state == "on")) {
+            stepSeq.playNoteSeq(loopStart, group);
+          }
         });
       });
     });
