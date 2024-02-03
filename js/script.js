@@ -302,38 +302,70 @@ $(document).ready(function () {
     console.log("Kick initialized!");
   }
 
+  let storedId;
+
   // Play button
   $(document).on("click", "#play", function () {
     if (getLoopOn()) {
       //clearInterval(loopOn);
       setLoopOn(false);
+      Tone.Transport.stop();
+      Tone.Transport.clear(storedId);
       return;
     } else {
+      Tone.Transport.bpm.value = 120;
+      Tone.Transport.seconds = 0;
+      // Tone loop
+      let id = Tone.Transport.scheduleRepeat(
+        (time) => {
+          Tone.Draw.schedule(function () {
+            //do drawing or DOM manipulation here
+            // Animate every 4th note here
+            $("#flasher").animate({ opacity: 1 }, 0, () => {
+              $("#flasher").animate({ opacity: 0 }, 250);
+            });
+          }, time);
+        },
+        "4n",
+        "+" + "0.005"
+      );
+      storedId = id;
+      Tone.Transport.start();
       setLoopOn(true);
     }
 
-    let loopStart = performance.now() + 10;
-    // Find section object with selected property set to true
-    const sections = getProject().sections;
-    const section = sections.find((section) => section.selected == true);
-    // In section, find all instruments
-    const instruments = section.instruments;
-    // In instrument, find all groups
-    instruments.forEach((instrument) => {
-      const groups = instrument.groups;
-      // In group, find all sequences
-      groups.forEach((group) => {
-        // Find all stepSeqs in group
-        const sequences = group.sequences;
-        // Find all stepSeqs in sequences
-        const stepSeqs = sequences.filter(
-          (sequence) => sequence.constructor.name === "StepSeq"
-        );
-        stepSeqs.forEach((stepSeq) => {
-          // If stepSeq has any noteSteps with state == "on", play noteSeq
-          if (stepSeq.noteSteps.some((noteStep) => noteStep.state == "on")) {
-            stepSeq.playNoteSeq(loopStart, group);
-          }
+    const loopStartPromise = new Promise((resolve) => {
+      Tone.Transport.on("start", () => {
+        let loopStart = performance.now() + 50;
+        resolve(loopStart);
+      });
+    });
+
+    loopStartPromise.then((updatedLoopStart) => {
+      console.log(updatedLoopStart);
+
+      // Find section object with selected property set to true
+      const sections = getProject().sections;
+      const section = sections.find((section) => section.selected == true);
+      // In section, find all instruments
+      const instruments = section.instruments;
+      // In instrument, find all groups
+      instruments.forEach((instrument) => {
+        const groups = instrument.groups;
+        // In group, find all sequences
+        groups.forEach((group) => {
+          // Find all stepSeqs in group
+          const sequences = group.sequences;
+          // Find all stepSeqs in sequences
+          const stepSeqs = sequences.filter(
+            (sequence) => sequence.constructor.name === "StepSeq"
+          );
+          stepSeqs.forEach((stepSeq) => {
+            // If stepSeq has any noteSteps with state == "on", play noteSeq
+            if (stepSeq.noteSteps.some((noteStep) => noteStep.state == "on")) {
+              stepSeq.playNoteSeq(updatedLoopStart, group);
+            }
+          });
         });
       });
     });
