@@ -311,22 +311,38 @@ $(document).ready(function () {
       setLoopOn(false);
       Tone.Transport.stop();
       Tone.Transport.clear(storedId);
+      // In the DOM, remove class "to-flash" from all stepNos
+      $(".step-no-seq .step").removeClass("to-flash");
+
       return;
     } else {
       Tone.Transport.bpm.value = 120;
       Tone.Transport.seconds = 0;
+
+      // In the DOM, add class "to-flash" first steps in  "step-no-seq"
+      $(".step-no-seq").each(function () {
+        $(this).children().first().addClass("to-flash");
+      });
+
+      const stepNoSeqs = getProject().getStepNoSeqs();
+
       // Tone loop
       let id = Tone.Transport.scheduleRepeat(
         (time) => {
           Tone.Draw.schedule(function () {
-            //do drawing or DOM manipulation here
-            // Animate every 4th note here
-            $("#flasher").animate({ opacity: 1 }, 0, () => {
-              $("#flasher").animate({ opacity: 0 }, 250);
+            stepNoSeqs.forEach((stepNoSeq) => {
+              stepNoSeq.flashStepNo(0); // 0 is the index of the stepNo to flash
             });
+            //do drawing or DOM manipulation here
+            // $("#flasher").animate({ opacity: 1 }, 0, () => {
+            //   $("#flasher").animate(
+            //     { opacity: 0 },
+            //     Tone.Time("32n").toSeconds()
+            //   );
+            // });
           }, time);
         },
-        "4n",
+        "16n",
         "+" + "0.005"
       );
       storedId = id;

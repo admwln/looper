@@ -188,9 +188,7 @@ export default class NoteStep extends Step {
     // If noteStep is on, play it
     if (this.state == "on") {
       //console.log("Playing noteStep at: " + performance.now());
-      console.log(
-        "Duration: " + parseInt(Tone.Time(this.noteName).toSeconds() * 990)
-      );
+      console.log("Duration: " + Tone.Time(this.noteName).toSeconds() * 990);
       // getKick().triggerAttackRelease(
       //   "C2",
       //   this.noteName,
@@ -199,7 +197,7 @@ export default class NoteStep extends Step {
       // );
       // WebMidi.js
       WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
-        duration: parseInt(Tone.Time(this.noteName).toSeconds() * 990),
+        duration: Tone.Time(this.noteName).toSeconds() * 990,
         rawAttack: this.velocity,
         time: target,
       });
@@ -277,7 +275,7 @@ export default class NoteStep extends Step {
     precedingNoteSteps.forEach((noteStep) => {
       time += Tone.Time(noteStep.noteName).toSeconds() * 1000;
     });
-    return parseInt(time);
+    return time;
   }
 
   // PLAYBACK METHODS - first try
