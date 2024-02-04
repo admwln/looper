@@ -17,6 +17,7 @@ export default class NoteStep extends Step {
     this.velocity = velocity;
     this.velocityRange = [40, 80, 127];
     this.forks = [];
+    this.msFromLoopStart = 0;
   }
 
   pushNoteStep(stepSeq) {
@@ -177,25 +178,10 @@ export default class NoteStep extends Step {
 
     const stepCount = stepSeq.noteSteps.length;
 
-    // let adjust = target - performance.now();
-    // let toneAdjust = adjust / 1000;
-    // if (adjust < 0) {
-    //   adjust = 0;
-    //   toneAdjust = 0;
-    //   console.log("!!!ADJUST is less than 0");
-    // }
-
     // If noteStep is on, play it
     if (this.state == "on") {
       //console.log("Playing noteStep at: " + performance.now());
       console.log("Duration: " + Tone.Time(this.noteName).toSeconds() * 990);
-      // getKick().triggerAttackRelease(
-      //   "C2",
-      //   this.noteName,
-      //   "+" + toneAdjust,
-      //   this.velocity / 127
-      // );
-      // WebMidi.js
       WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
         duration: Tone.Time(this.noteName).toSeconds() * 990,
         rawAttack: this.velocity,
@@ -267,6 +253,7 @@ export default class NoteStep extends Step {
     }
   }
 
+  // Time in ms from loop start to this noteStep
   getNoteStepTime(stepSeq, noteStepIndex) {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
       (noteStep, index) => index < noteStepIndex
@@ -278,114 +265,44 @@ export default class NoteStep extends Step {
     return time;
   }
 
-  // PLAYBACK METHODS - first try
-  // findFirstNoteStep() {
-  //   const stepSeqId = $("#" + this.id)
-  //     .parent()
-  //     .parent()
-  //     .attr("id");
-  //   const sequences = findAllNestedProps(getProject(), "sequences");
-  //   const stepSeq = findNestedProp(sequences, stepSeqId);
-  //   const firstNoteStep = stepSeq.noteSteps.find(
-  //     (noteStep) => noteStep.state == "on"
-  //   );
-  //   return firstNoteStep;
-  // }
+  // Update msFromLoopStart for single noteStep
+  updateMsFromLoopStart() {
+    // Find index of this noteStep in stepSeq.noteSteps
+    const stepSeqId = $("#" + this.id)
+      .parent()
+      .parent()
+      .attr("id");
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const noteStepIndex = stepSeq.noteSteps.findIndex(
+      (noteStep) => noteStep.id == this.id
+    );
 
-  // findNextNoteStep() {
-  //   const stepSeqId = $("#" + this.id)
-  //     .parent()
-  //     .parent()
-  //     .attr("id");
-  //   const sequences = findAllNestedProps(getProject(), "sequences");
-  //   const stepSeq = findNestedProp(sequences, stepSeqId);
-  //   const stepIndex = stepSeq.noteSteps.findIndex((step) => step.id == this.id);
-  //   const nextNoteStep = stepSeq.noteSteps.find(
-  //     (noteStep, index) => index > stepIndex && noteStep.state == "on"
-  //   );
+    this.msFromLoopStart = this.getNoteStepTime(stepSeq, noteStepIndex);
+  }
 
-  //   return nextNoteStep;
-  // }
+  playMidiNote(counter, stepCount) {
+    const target =
+      this.msFromLoopStart -
+      (counter % stepCount) * Tone.Time("16n").toMilliseconds();
+    console.log("Playing note at +" + target + "ms");
 
-  // // Returns the time at which the step should be played, relative to the start of the loop
-  // getNoteStepTime() {
-  //   const stepSeqId = $("#" + this.id)
-  //     .parent()
-  //     .parent()
-  //     .attr("id");
-  //   const sequences = findAllNestedProps(getProject(), "sequences");
-  //   const stepSeq = findNestedProp(sequences, stepSeqId);
-  //   const stepIndex = stepSeq.noteSteps.findIndex((step) => step.id == this.id);
-  //   const precedingNoteSteps = stepSeq.noteSteps.filter(
-  //     (noteStep, index) => index < stepIndex
-  //   );
-  //   let time = 0;
-  //   precedingNoteSteps.forEach((noteStep) => {
-  //     time += Tone.Time(noteStep.noteName).toSeconds() * 1000;
-  //   });
-  //   return time;
-  // }
+    WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
+      duration: Tone.Time(this.noteName).toSeconds() * 990,
+      rawAttack: this.velocity,
+      time: "+" + target,
+    });
+    this.animateStep(target);
+  }
 
-  // // Time is the time at which the step should be played
-  // playNoteStep(target, loopStart, round, sequenceLength) {
-  //   let drift = target - performance.now();
-  //   if (drift < 0) {
-  //     drift = 0;
-  //   }
-
-  //   // Play note
-  //   //setKickVolume((this.velocity / 12.7) * 0.25);
-  //   getKick().triggerAttackRelease(
-  //     "C2",
-  //     this.noteName,
-  //     "+" + drift / 1000,
-  //     this.velocity / 127
-  //   );
-
-  //   // Find next noteStep in sequence with state "on"
-  //   let nextNoteStep = this.findNextNoteStep();
-  //   // Calculate time at which nextNoteStep should be played
-  //   let nextTarget;
-  //   // If nextNoteStep is defined, calculate nextTarget
-  //   if (nextNoteStep) {
-  //     nextTarget =
-  //       loopStart + sequenceLength * round + nextNoteStep.getNoteStepTime();
-  //   }
-
-  //   // If nextNoteStep is undefined, find first noteStep and repeat loop
-  //   if (!nextNoteStep) {
-  //     nextNoteStep = this.findFirstNoteStep();
-  //     round++;
-  //     nextTarget =
-  //       loopStart + sequenceLength * round + nextNoteStep.getNoteStepTime();
-  //     if (round > 3) {
-  //       return;
-  //     }
-  //   }
-
-  //   // If nextTarget is more than 250ms away, start a loop that checks every 250ms
-  //   if (nextTarget - performance.now() - drift > 250) {
-  //     const silentLoop = setInterval(() => {
-  //       console.log("silent loop running");
-  //       if (nextTarget - performance.now() - drift < 250) {
-  //         setTimeout(() => {
-  //           // Play nextNoteStep
-  //           nextNoteStep.playNoteStep(
-  //             nextTarget,
-  //             loopStart,
-  //             round,
-  //             sequenceLength
-  //           );
-  //         }, nextTarget - performance.now() - drift - 10);
-  //         clearInterval(silentLoop);
-  //         return;
-  //       }
-  //     }, 250);
-  //   } else {
-  //     setTimeout(() => {
-  //       // Play nextNoteStep
-  //       nextNoteStep.playNoteStep(nextTarget, loopStart, round, sequenceLength);
-  //     }, nextTarget - performance.now() - drift - 10);
-  //   }
-  // }
+  animateStep(target) {
+    const stepDuration = Tone.Time(this.noteName).toMilliseconds();
+    $("#" + this.id).animate({ opacity: 1 }, target, function () {
+      $(this).animate({ opacity: 0 }, 5, function () {
+        $(this).animate({ opacity: 0 }, stepDuration * 0.75 - 5, function () {
+          $(this).animate({ opacity: 1 }, stepDuration * 0.25);
+        });
+      });
+    });
+  }
 }

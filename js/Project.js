@@ -55,4 +55,24 @@ export default class Project {
     });
     return stepNoSeqs;
   }
+
+  // Get all groups in the selected section
+  // Might want to pass in sectionId as an argument to make this more flexible
+  getGroups() {
+    const sections = getProject().sections;
+    const section = sections.find((section) => section.selected == true);
+    // In section, find all instruments
+    const instruments = section.instruments;
+
+    const groups = [];
+
+    // In instrument, find all groups
+    instruments.forEach((instrument) => {
+      instrument.groups.forEach((group) => {
+        groups.push(group);
+      });
+    });
+
+    return groups;
+  }
 }
