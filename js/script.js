@@ -315,17 +315,11 @@ $(document).ready(function () {
       // Tone loop
       let id = Tone.Transport.scheduleRepeat(
         (time) => {
+          //Everything inside Draw's callback will fire every 16th note
           Tone.Draw.schedule(function () {
             stepNoSeqs.forEach((stepNoSeq) => {
-              stepNoSeq.flashStepNo(time); // 0 is the index of the stepNo to flash
+              stepNoSeq.flashStepNo(time);
             });
-            //do drawing or DOM manipulation here
-            // $("#flasher").animate({ opacity: 1 }, 0, () => {
-            //   $("#flasher").animate(
-            //     { opacity: 0 },
-            //     Tone.Time("32n").toSeconds()
-            //   );
-            // });
           }, time);
         },
         "16n",

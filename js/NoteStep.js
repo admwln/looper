@@ -177,25 +177,10 @@ export default class NoteStep extends Step {
 
     const stepCount = stepSeq.noteSteps.length;
 
-    // let adjust = target - performance.now();
-    // let toneAdjust = adjust / 1000;
-    // if (adjust < 0) {
-    //   adjust = 0;
-    //   toneAdjust = 0;
-    //   console.log("!!!ADJUST is less than 0");
-    // }
-
     // If noteStep is on, play it
     if (this.state == "on") {
       //console.log("Playing noteStep at: " + performance.now());
       console.log("Duration: " + Tone.Time(this.noteName).toSeconds() * 990);
-      // getKick().triggerAttackRelease(
-      //   "C2",
-      //   this.noteName,
-      //   "+" + toneAdjust,
-      //   this.velocity / 127
-      // );
-      // WebMidi.js
       WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
         duration: Tone.Time(this.noteName).toSeconds() * 990,
         rawAttack: this.velocity,
