@@ -34,10 +34,12 @@ export default class StepNoSeq {
     console.log(`Step no seq created`);
   }
 
-  flashStepNo() {
+  flashStepNo(time) {
+    // time = time * 1000;
+    // console.log(`Flashing step no at: ${time}`);
     // Find index of step to flash
     const index = $("#" + this.id + " .to-flash").index();
-    console.log(`Index of step to flash: ${index}`);
+    //console.log(`Index of step to flash: ${index}`);
     const stepNoId = this.steps[index].id;
 
     $("#" + stepNoId).animate({ opacity: 1 }, 0, () => {

@@ -60,36 +60,5 @@ export default class StepSeq {
         sequenceLength // Sequence length in milliseconds
       );
     }, target - performance.now() - 10);
-
-    // noteStep.playNoteStep(
-    //   loopStart, // Target is equal to loopStart, because it's the first noteStep
-    //   loopStart, // Loop start, in milliseconds, set when play button is pressed
-    //   0, // Round counter (how many times the loop has been played)
-    //   0, // Index of noteStep in sequence
-    //   this // StepSeq object
-    // );
   }
-
-  // PLAYBACK METHODS - first try
-  // getSequenceLength() {
-  //   const stepCount = this.noteSteps.length;
-  //   const sequenceLength = stepCount * Tone.Time("16n").toSeconds() * 1000;
-  //   return parseInt(sequenceLength);
-  // }
-  // playNoteSeq(loopStart) {
-  //   // If there are any noteSteps with state "on", play them
-  //   if (this.noteSteps.some((noteStep) => noteStep.state === "on")) {
-  //     console.log("loopStart: " + loopStart);
-  //     // Find first noteStep in sequence with state "on"
-  //     const noteStep = this.noteSteps.find(
-  //       (noteStep) => noteStep.state === "on"
-  //     );
-  //     noteStep.playNoteStep(
-  //       loopStart + noteStep.getNoteStepTime(),
-  //       loopStart,
-  //       0,
-  //       this.getSequenceLength()
-  //     );
-  //   }
-  // }
 }

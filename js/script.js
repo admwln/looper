@@ -20,7 +20,6 @@ let bottom = 4;
 let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
 const defaultStepWidth = 84;
 let measureWidth = defaultStepWidth * measureLength;
-let kick;
 
 $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
@@ -29,7 +28,6 @@ $(document).ready(function () {
     // Tone.js initialization
     await Tone.start();
     console.log("Tone.js enabled!");
-    initKick();
 
     // Webmidi.js initialization
     // Enable WEBMIDI.js and trigger the onEnabled() function when ready
@@ -291,18 +289,7 @@ $(document).ready(function () {
     console.log(getProject());
   });
 
-  // Experimental: play kick drum
-  // Initialize kick
-
-  function initKick() {
-    // Synths
-    kick = new Tone.MembraneSynth({
-      volume: 6,
-    }).toDestination();
-    console.log("Kick initialized!");
-  }
-
-  let storedId;
+  let storedId; // Tone.Transport.scheduleRepeat id
 
   // Play button
   $(document).on("click", "#play", function () {
@@ -313,7 +300,6 @@ $(document).ready(function () {
       Tone.Transport.clear(storedId);
       // In the DOM, remove class "to-flash" from all stepNos
       $(".step-no-seq .step").removeClass("to-flash");
-
       return;
     } else {
       Tone.Transport.bpm.value = 120;
@@ -331,7 +317,7 @@ $(document).ready(function () {
         (time) => {
           Tone.Draw.schedule(function () {
             stepNoSeqs.forEach((stepNoSeq) => {
-              stepNoSeq.flashStepNo(0); // 0 is the index of the stepNo to flash
+              stepNoSeq.flashStepNo(time); // 0 is the index of the stepNo to flash
             });
             //do drawing or DOM manipulation here
             // $("#flasher").animate({ opacity: 1 }, 0, () => {
@@ -385,29 +371,7 @@ $(document).ready(function () {
         });
       });
     });
-
-    //playLoop();
   });
-
-  function playLoop() {
-    // Find all noteSteps
-    const noteSteps = findAllNestedProps(getProject(), "noteSteps");
-
-    let i = 0;
-    loopOn = setInterval(() => {
-      const noteStep = noteSteps[0][i];
-      if (noteStep.state == "on") {
-        // Play note
-        kick.volume.value = (noteStep.velocity / 12.7) * 0.5;
-        console.log(kick.volume.value);
-        kick.triggerAttackRelease("C1", noteStep.noteName);
-      }
-      i++;
-      if (i == 16) {
-        i = 0;
-      }
-    }, 125);
-  }
 
   // End document.ready
 });
