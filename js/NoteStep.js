@@ -260,9 +260,9 @@ export default class NoteStep extends Step {
     );
     let time = 0;
     precedingNoteSteps.forEach((noteStep) => {
-      time += Tone.Time(noteStep.noteName).toSeconds() * 1000;
+      time += Tone.Time(noteStep.noteName).toMilliseconds();
     });
-    return time;
+    return Math.round(parseFloat(time)); // Rounding to avoid floating point errors
   }
 
   // Update msFromLoopStart for single noteStep
