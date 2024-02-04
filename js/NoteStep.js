@@ -17,6 +17,7 @@ export default class NoteStep extends Step {
     this.velocity = velocity;
     this.velocityRange = [40, 80, 127];
     this.forks = [];
+    this.msFromLoopStart = 0;
   }
 
   pushNoteStep(stepSeq) {
@@ -252,6 +253,7 @@ export default class NoteStep extends Step {
     }
   }
 
+  // Time in ms from loop start to this noteStep
   getNoteStepTime(stepSeq, noteStepIndex) {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
       (noteStep, index) => index < noteStepIndex
@@ -261,5 +263,43 @@ export default class NoteStep extends Step {
       time += Tone.Time(noteStep.noteName).toSeconds() * 1000;
     });
     return time;
+  }
+
+  // Update msFromLoopStart for single noteStep
+  updateMsFromLoopStart() {
+    // Find index of this noteStep in stepSeq.noteSteps
+    const stepSeqId = $("#" + this.id)
+      .parent()
+      .parent()
+      .attr("id");
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const noteStepIndex = stepSeq.noteSteps.findIndex(
+      (noteStep) => noteStep.id == this.id
+    );
+
+    this.msFromLoopStart = this.getNoteStepTime(stepSeq, noteStepIndex);
+  }
+
+  playMidiNote(counter, stepCount) {
+    const target =
+      this.msFromLoopStart -
+      (counter % stepCount) * Tone.Time("16n").toMilliseconds();
+    console.log("Playing note at +" + target + "ms");
+
+    WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
+      duration: Tone.Time(this.noteName).toSeconds() * 990,
+      rawAttack: this.velocity,
+      time: "+" + target,
+    });
+    this.animateStep(target);
+  }
+
+  animateStep(target) {
+    $("#" + this.id).animate({ opacity: 1 }, target, function () {
+      $(this).animate({ opacity: 0 }, 0, function () {
+        $(this).animate({ opacity: 1 }, 125);
+      });
+    });
   }
 }
