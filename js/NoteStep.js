@@ -296,9 +296,12 @@ export default class NoteStep extends Step {
   }
 
   animateStep(target) {
+    const stepDuration = Tone.Time(this.noteName).toMilliseconds();
     $("#" + this.id).animate({ opacity: 1 }, target, function () {
-      $(this).animate({ opacity: 0 }, 0, function () {
-        $(this).animate({ opacity: 1 }, 125);
+      $(this).animate({ opacity: 0 }, 5, function () {
+        $(this).animate({ opacity: 0 }, stepDuration * 0.75 - 5, function () {
+          $(this).animate({ opacity: 1 }, stepDuration * 0.25);
+        });
       });
     });
   }

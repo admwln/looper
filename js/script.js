@@ -327,7 +327,7 @@ $(document).ready(function () {
         if (bundleStep.steps.length === 0) {
           return;
         }
-        // Schedule each noteStep in bundleStep with Tone.Transport.schedule
+        // Play each bundleStep
         bundleStep.steps.forEach((step) => {
           step.playMidiNote(counter, bundleStepCount);
         });
@@ -341,14 +341,6 @@ $(document).ready(function () {
           Tone.Draw.schedule(function () {
             bundleGroups.forEach((bundleGroup) => {
               playBundleGroup(bundleGroup, toneCounter, time);
-              // bundles.forEach((bundle) => {
-              //   // If bundle length is 0, return
-              //   if (bundle.steps.length === 0) {
-              //     return;
-              //   }
-              //   console.log("calling playBundle on bundle", bundle);
-              //   //bundle.playBundle(toneCounter, time);
-              // });
             });
             toneCounter++;
 
