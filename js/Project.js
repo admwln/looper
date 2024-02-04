@@ -30,4 +30,29 @@ export default class Project {
       `
     );
   }
+
+  getStepNoSeqs() {
+    const stepNoSeqs = [];
+    const sections = this.sections;
+    // Find all instrument objects in section with selected property set to true
+    const section = sections.find((section) => section.selected == true);
+    const instruments = section.instruments;
+    // In each instrument, find all stepNoSeqs
+    instruments.forEach((instrument) => {
+      const groups = instrument.groups;
+      // In each group, find all sequences
+      groups.forEach((group) => {
+        const sequences = group.sequences;
+        // Find all stepNoSeqs in group
+        const seqs = sequences.filter(
+          (sequence) => sequence.constructor.name === "StepNoSeq"
+        );
+        // Push stepNoSeqs to stepNoSeqs array
+        seqs.forEach((seq) => {
+          stepNoSeqs.push(seq);
+        });
+      });
+    });
+    return stepNoSeqs;
+  }
 }

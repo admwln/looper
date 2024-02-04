@@ -193,6 +193,11 @@ button.section-tab.selected {
   justify-content: center;
   align-items: flex-start;
 }
+
+.note-seq > .step.playing {
+  border-bottom: 5px solid hotpink;
+}
+
 .note-seq > .step > div {
   height: 81px;
   width: 19px;
@@ -239,4 +244,8 @@ button.section-tab.selected {
 
 .pitch-no {
   margin-bottom: 2px;
+}
+
+#flasher {
+  opacity: 0;
 }
