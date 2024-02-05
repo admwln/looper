@@ -293,7 +293,6 @@ $(document).ready(function () {
   // Play button
   $(document).on("click", "#play", function () {
     if (getLoopOn()) {
-      //clearInterval(loopOn);
       setLoopOn(false);
       Tone.Transport.stop();
       Tone.Transport.clear(transportId);
@@ -309,27 +308,27 @@ $(document).ready(function () {
         $(this).children().first().addClass("to-flash");
       });
 
-      const groups = getProject().getGroups(); // Get all groups in selected section
-      let bundleGroups = [];
-      groups.forEach((group) => {
-        const bundleGroup = group.sortBundles();
-        // Push bundle
-        bundleGroups.push(bundleGroup);
-      });
+      // const groups = getProject().getGroups(); // Get all groups in selected section
+      // let bundleGroups = [];
+      // groups.forEach((group) => {
+      //   const bundleGroup = group.sortBundles();
+      //   // Push bundle
+      //   bundleGroups.push(bundleGroup);
+      // });
 
       // Play bundles
-      function playBundleGroup(bundleGroup, counter, time) {
-        const bundleStepCount = bundleGroup.length;
-        const bundleStep = bundleGroup[counter % bundleStepCount];
-        // If bundleStep.steps.length is 0, return
-        if (bundleStep.steps.length === 0) {
-          return;
-        }
-        // Play each bundleStep
-        bundleStep.steps.forEach((step) => {
-          step.playMidiNote(counter, bundleStepCount);
-        });
-      }
+      // function playBundleGroup(bundleGroup, counter, time) {
+      //   const bundleStepCount = bundleGroup.length;
+      //   const bundleStep = bundleGroup[counter % bundleStepCount];
+      //   // If bundleStep.steps.length is 0, return
+      //   if (bundleStep.steps.length === 0) {
+      //     return;
+      //   }
+      //   // Play each bundleStep
+      //   bundleStep.steps.forEach((step) => {
+      //     step.playMidiNote(counter, bundleStepCount);
+      //   });
+      // }
 
       // Tone loop
       let toneCounter = 0;
@@ -337,17 +336,24 @@ $(document).ready(function () {
         (time) => {
           //Everything inside Draw's callback will fire every 16th note
           Tone.Draw.schedule(function () {
-            bundleGroups.forEach((bundleGroup) => {
-              playBundleGroup(bundleGroup, toneCounter, time);
+            const groups = getProject().getGroups(); // Get all groups in selected section
+            groups.forEach((group) => {
+              group.playTriggerIntervals(toneCounter);
             });
             toneCounter++;
-
-            // Call method to flash stepNo
-            // stepNoSeqs.forEach((stepNoSeq) => {
-            //   stepNoSeq.flashStepNo(time);
-            // });
-            // Increment toneCounter
           }, time);
+          // Tone.Draw.schedule(function () {
+          //   bundleGroups.forEach((bundleGroup) => {
+          //     playBundleGroup(bundleGroup, toneCounter, time);
+          //   });
+          //   toneCounter++;
+
+          //   // Call method to flash stepNo
+          //   // stepNoSeqs.forEach((stepNoSeq) => {
+          //   //   stepNoSeq.flashStepNo(time);
+          //   // });
+          //   // Increment toneCounter
+          // }, time);
         },
         "16n",
         "+" + "0.005"

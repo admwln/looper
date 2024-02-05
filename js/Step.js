@@ -48,7 +48,7 @@ export default class Step {
         this.msFromLoopStart >= triggerInterval.min &&
         this.msFromLoopStart <= triggerInterval.max
       ) {
-        triggerInterval.steps.push(this.id);
+        triggerInterval.steps.push(this);
       }
     });
   }
@@ -56,9 +56,11 @@ export default class Step {
   removeFromTriggerInterval() {
     const group = this.findGroup();
     const triggerIntervals = group.triggerIntervals;
-
     triggerIntervals.forEach((triggerInterval) => {
-      const index = triggerInterval.steps.indexOf(this.id);
+      // Look in each triggerInterval.steps for step with identical id to this.id and remove it
+      const index = triggerInterval.steps.findIndex(
+        (step) => step.id === this.id
+      );
       if (index > -1) {
         triggerInterval.steps.splice(index, 1);
       }

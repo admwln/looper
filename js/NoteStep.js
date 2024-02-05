@@ -103,9 +103,9 @@ export default class NoteStep extends Step {
     // Update step in DOM
     this.updateStep();
     // If subsequent step state is on, remove from trigger interval
-    if (nextStep.state == "on") {
-      nextStep.removeFromTriggerInterval();
-    }
+    //if (nextStep.state == "on") {
+    nextStep.removeFromTriggerInterval();
+    //}
     // Remove subsequent step from noteSteps array
     stepSeq.noteSteps.splice(stepIndex + 1, 1);
     // Remove subsequent step from DOM
@@ -301,9 +301,9 @@ export default class NoteStep extends Step {
     WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
       duration: Tone.Time(this.noteName).toSeconds() * 990,
       rawAttack: this.velocity,
-      time: "+" + target,
+      time: "+" + target + 25, // 25ms buffer
     });
-    this.animateStep(target);
+    this.animateStep(target + 25); // 25ms buffer
   }
 
   animateStep(target) {
