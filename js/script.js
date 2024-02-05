@@ -308,7 +308,7 @@ $(document).ready(function () {
         $(this).children().first().addClass("to-flash");
       });
 
-      // const groups = getProject().getGroups(); // Get all groups in selected section
+      const groups = getProject().getGroups(); // Get all groups in selected section
       // let bundleGroups = [];
       // groups.forEach((group) => {
       //   const bundleGroup = group.sortBundles();
@@ -336,7 +336,6 @@ $(document).ready(function () {
         (time) => {
           //Everything inside Draw's callback will fire every 16th note
           Tone.Draw.schedule(function () {
-            const groups = getProject().getGroups(); // Get all groups in selected section
             groups.forEach((group) => {
               group.playTriggerIntervals(toneCounter);
             });
