@@ -18,6 +18,7 @@ export default class NoteStep extends Step {
     this.velocityRange = [40, 80, 127];
     this.forks = [];
     this.msFromLoopStart = 0;
+    this.muted = false;
   }
 
   pushNoteStep(stepSeq) {

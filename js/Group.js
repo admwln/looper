@@ -20,6 +20,7 @@ export default class Group {
     this.midiChannel = 1;
     this.sequences = [];
     this.ccVisibility = false;
+    this.muted = false;
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     // Add group to instrument

@@ -289,7 +289,7 @@ $(document).ready(function () {
     console.log(getProject());
   });
 
-  let storedId; // Tone.Transport.scheduleRepeat id
+  let transportId; // Tone.Transport.scheduleRepeat id
 
   // Play button
   $(document).on("click", "#play", function () {
@@ -297,7 +297,7 @@ $(document).ready(function () {
       //clearInterval(loopOn);
       setLoopOn(false);
       Tone.Transport.stop();
-      Tone.Transport.clear(storedId);
+      Tone.Transport.clear(transportId);
       // In the DOM, remove class "to-flash" from all stepNos
       $(".step-no-seq .step").removeClass("to-flash");
       return;
@@ -310,7 +310,6 @@ $(document).ready(function () {
         $(this).children().first().addClass("to-flash");
       });
 
-      const stepNoSeqs = getProject().getStepNoSeqs();
       const groups = getProject().getGroups(); // Get all groups in selected section
       let bundleGroups = [];
       groups.forEach((group) => {
@@ -354,46 +353,10 @@ $(document).ready(function () {
         "16n",
         "+" + "0.005"
       );
-      storedId = id;
+      transportId = id;
       Tone.Transport.start();
       setLoopOn(true);
     }
-
-    // const loopStartPromise = new Promise((resolve) => {
-    //   Tone.Transport.on("start", () => {
-    //     let loopStart = performance.now() + 50;
-    //     resolve(loopStart);
-    //   });
-    // });
-
-    // loopStartPromise.then((updatedLoopStart) => {
-    //   console.log(updatedLoopStart);
-
-    //   // Find section object with selected property set to true
-    //   const sections = getProject().sections;
-    //   const section = sections.find((section) => section.selected == true);
-    //   // In section, find all instruments
-    //   const instruments = section.instruments;
-    //   // In instrument, find all groups
-    //   instruments.forEach((instrument) => {
-    //     const groups = instrument.groups;
-    //     // In group, find all sequences
-    //     groups.forEach((group) => {
-    //       // Find all stepSeqs in group
-    //       const sequences = group.sequences;
-    //       // Find all stepSeqs in sequences
-    //       const stepSeqs = sequences.filter(
-    //         (sequence) => sequence.constructor.name === "StepSeq"
-    //       );
-    //       stepSeqs.forEach((stepSeq) => {
-    //         // If stepSeq has any noteSteps with state == "on", play noteSeq
-    //         if (stepSeq.noteSteps.some((noteStep) => noteStep.state == "on")) {
-    //           stepSeq.playNoteSeq(updatedLoopStart, group);
-    //         }
-    //       });
-    //     });
-    //   });
-    // });
   });
 
   // End document.ready
