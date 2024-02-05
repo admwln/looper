@@ -199,7 +199,6 @@ $(document).ready(function () {
       if (parentSeqType == "note-seq") {
         // Check if step is on/off
         if (step.state == "off") {
-          // Play note
           step.displayActiveNoteStep();
         } else {
           step.removeActiveNoteStep();

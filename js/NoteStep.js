@@ -51,6 +51,11 @@ export default class NoteStep extends Step {
       );
       newStep.state = this.state;
       newStep.insertNoteStep(this.id, i);
+      // If this state is on, add step to trigger interval
+      if (newStep.state == "on") {
+        newStep.updateMsFromLoopStart();
+        newStep.addToTriggerInterval();
+      }
     }
   }
 
@@ -89,13 +94,18 @@ export default class NoteStep extends Step {
     const stepSeq = findNestedProp(sequences, stepSeqId);
 
     // Get pixel value of subsequent step
-    const nextStepPixelValue = stepSeq.noteSteps[stepIndex + 1].pixelValue;
+    const nextStep = stepSeq.noteSteps[stepIndex + 1];
+    const nextStepPixelValue = nextStep.pixelValue;
     // Calculate pixel value for extended step
     this.pixelValue = this.pixelValue + nextStepPixelValue;
     // Get note name for extended step
     this.noteName = getNoteName(this.pixelValue);
     // Update step in DOM
     this.updateStep();
+    // If subsequent step state is on, remove from trigger interval
+    if (nextStep.state == "on") {
+      nextStep.removeFromTriggerInterval();
+    }
     // Remove subsequent step from noteSteps array
     stepSeq.noteSteps.splice(stepIndex + 1, 1);
     // Remove subsequent step from DOM

@@ -4,6 +4,7 @@ import StepSeq from "./StepSeq.js";
 import StepNo from "./StepNo.js";
 import NoteStep from "./NoteStep.js";
 import ControllerStep from "./ControllerStep.js";
+import TriggerInterval from "./TriggerInterval.js";
 import {
   getProject,
   setIdCounter,
@@ -21,6 +22,7 @@ export default class Group {
     this.sequences = [];
     this.ccVisibility = false;
     this.muted = false;
+    this.triggerIntervals = [];
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     // Add group to instrument
@@ -29,6 +31,7 @@ export default class Group {
     this.displayGroup(instrumentId);
     new StepNoSeq(this.id, measureLength);
     new StepSeq(this.id, measureLength);
+    this.initTriggerIntervals();
     console.log(`Group created`);
   }
 
@@ -61,6 +64,11 @@ export default class Group {
       const newStepNo = new StepNo("16n", 84, stepCount + i, stepNoSeqId);
       //this.sequences[0].steps.push(newStepNo);
       newStepNo.displayStepNo(stepNoSeqId);
+
+      // Add a triggerInterval to this.triggerIntervals
+      const min = stepCount * Tone.Time("16n").toMilliseconds();
+      const max = (stepCount + 1) * Tone.Time("16n").toMilliseconds() - 1; // -1ms to avoid overlap with next min
+      this.addTriggerInterval(stepCount + i, min, max);
 
       // How many sequences of the kind StepSeq are there in this group?
       const stepSeqs = this.sequences.filter(
@@ -100,6 +108,9 @@ export default class Group {
       // Get last stepNo in stepNoSeq
       const stepNoToRemove = this.sequences[0].steps[stepCount - i];
       stepNoToRemove.deleteStepNo(stepNoSeqId);
+
+      // Delete last triggerInterval from group.triggerIntervals array
+      this.deleteLastTriggerInterval();
 
       // How many sequences of the kind StepSeq are there in this group?
       const stepSeqs = this.sequences.filter(
@@ -144,13 +155,34 @@ export default class Group {
     }
   }
 
+  initTriggerIntervals() {
+    const stepCount = this.sequences[0].steps.length;
+    // For each sixteenth step in the group, create a triggerStep
+    for (let i = 1; i <= stepCount; i++) {
+      const min = (i - 1) * Tone.Time("16n").toMilliseconds();
+      const max = i * Tone.Time("16n").toMilliseconds() - 1; // -1ms to avoid overlap with next min
+      const triggerInterval = new TriggerInterval(i, min, max);
+      // Push to triggerIntervals
+      this.triggerIntervals.push(triggerInterval);
+    }
+  }
+
+  addTriggerInterval(stepNo, min, max) {
+    const triggerInterval = new TriggerInterval(stepNo, min, max);
+    this.triggerIntervals.push(triggerInterval);
+  }
+
+  deleteLastTriggerInterval() {
+    this.triggerIntervals.pop();
+  }
+
   sortBundles() {
     const stepCount = this.sequences[0].steps.length;
     const groupBundles = [];
     // For all each sixteenth step in the group, create a bundle
     for (let i = 1; i <= stepCount; i++) {
-      const min = (i - 1) * Tone.Time("16n").toSeconds() * 1000;
-      const max = i * Tone.Time("16n").toSeconds() * 1000 - 1; // -1ms to avoid overlap with next min
+      const min = (i - 1) * Tone.Time("16n").toMilliseconds();
+      const max = i * Tone.Time("16n").toMilliseconds() - 1; // -1ms to avoid overlap with next min
       const bundle = new Bundle(i, min, max);
       // Push to groupBundles
       groupBundles.push(bundle);
