@@ -185,7 +185,7 @@ export default class Group {
     }
     // Play each noteStep in triggerInterval
     triggerInterval.steps.forEach((step) => {
-      step.playMidiNote(counter, stepCount, triggerInterval.stepNo); // playMidiNote() is a method in NoteStep
+      step.playMidiNote(triggerInterval.stepNo); // playMidiNote() is a method in NoteStep
     });
   }
 
