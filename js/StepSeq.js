@@ -14,6 +14,7 @@ export default class StepSeq {
     setIdCounter(getIdCounter() + 1);
     this.noteSteps = [];
     this.controllerSteps = [];
+    this.muted = false;
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
     // Add step sequence to group

@@ -8,6 +8,7 @@ export default class Instrument {
     this.midiOut = "midi output goes here";
     this.midiChannel = 1;
     this.groups = [];
+    this.muted = false;
     const project = getProject();
     // Find section object in project.sections array by id
     const section = project.sections.find(

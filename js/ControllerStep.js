@@ -10,6 +10,7 @@ export default class ControllerStep extends Step {
   constructor(noteName, pixelValue) {
     super(noteName, pixelValue);
     this.state = "off";
+    this.muted = false;
     this.velocities = [];
   }
 
