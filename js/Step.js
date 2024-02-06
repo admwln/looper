@@ -75,4 +75,11 @@ export default class Step {
     const group = findNestedProp(groups, groupId);
     return group;
   }
+
+  getMsFromIntStart(stepNo) {
+    // stepNo of triggerInterval
+    const msFromIntStart =
+      this.msFromLoopStart - (stepNo - 1) * Tone.Time("16n").toMilliseconds();
+    return msFromIntStart;
+  }
 }

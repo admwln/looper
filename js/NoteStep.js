@@ -292,18 +292,21 @@ export default class NoteStep extends Step {
     this.msFromLoopStart = this.getNoteStepTime(stepSeq, noteStepIndex);
   }
 
-  playMidiNote(counter, stepCount) {
-    const target =
-      this.msFromLoopStart -
-      (counter % stepCount) * Tone.Time("16n").toMilliseconds();
-    console.log("Playing note at +" + target + "ms");
+  //playMidiNote(counter, stepCount, stepNo) {
+  // const target =
+  //   this.msFromLoopStart -
+  //   (counter % stepCount) * Tone.Time("16n").toMilliseconds();
+  // console.log("Playing note at +" + target + "ms");
 
+  playMidiNote(counter, stepCount, stepNo) {
+    const target = this.getMsFromIntStart(stepNo);
+    //console.log("Playing note at +" + target + "ms");
     WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
       duration: Tone.Time(this.noteName).toSeconds() * 990,
       rawAttack: this.velocity,
-      time: "+" + target + 25, // 25ms buffer
+      time: "+" + target, // 25ms buffer
     });
-    this.animateStep(target + 25); // 25ms buffer
+    this.animateStep(target); // 25ms buffer
   }
 
   animateStep(target) {
