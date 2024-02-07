@@ -4,6 +4,7 @@ import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
+import DynamicInterval from "./DynamicInterval.js";
 
 import {
   getProject,
@@ -331,6 +332,10 @@ $(document).ready(function () {
       // }
 
       const groups = getProject().getGroups(); // Get all groups in selected section
+      // Create a new DynamicInterval for each group
+      groups.forEach((group) => {
+        group.initDynamicInterval(1, 0, Tone.Time("16n").toMilliseconds() - 1); // -1ms to avoid overlap with next min
+      });
 
       // Tone loop
       let toneCounter = 0;
@@ -339,9 +344,12 @@ $(document).ready(function () {
           //Everything inside Draw's callback will fire every 16th note
           Tone.Draw.schedule(function () {
             groups.forEach((group) => {
-              const stepCount = group.triggerIntervals.length;
+              const stepCount = group.triggerIntervals.length; // Don't use triggerIntervals for this!!!
               const intervalNo = (toneCounter % stepCount) + 1; // 1-16
-              group.playTriggerIntervals(intervalNo);
+              group.dynamicInterval.play(intervalNo);
+              group.dynamicInterval.update(stepCount);
+
+              //group.playTriggerIntervals(intervalNo);
             });
             toneCounter++;
           }, time);

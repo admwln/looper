@@ -1,4 +1,4 @@
-import Bundle from "./Bundle.js";
+import DynamicInterval from "./DynamicInterval.js";
 import StepNoSeq from "./StepNoSeq.js";
 import StepSeq from "./StepSeq.js";
 import StepNo from "./StepNo.js";
@@ -23,6 +23,7 @@ export default class Group {
     this.ccVisibility = false;
     this.muted = false;
     this.triggerIntervals = [];
+    this.dynamicInterval = {};
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     // Add group to instrument
@@ -188,6 +189,12 @@ export default class Group {
     triggerInterval.steps.forEach((step) => {
       step.playMidiNote(triggerInterval.stepNo); // playMidiNote() is a method in NoteStep
     });
+  }
+
+  initDynamicInterval(stepNo, min, max) {
+    const dynamicInterval = new DynamicInterval(stepNo, min, max);
+    this.dynamicInterval = dynamicInterval;
+    this.dynamicInterval.groupId = this.id;
   }
 
   // sortBundles() {
