@@ -299,7 +299,8 @@ export default class NoteStep extends Step {
   // console.log("Playing note at +" + target + "ms");
 
   playMidiNote(stepNo) {
-    const target = this.getMsFromIntStart(stepNo);
+    //const target = this.getMsFromIntStart(stepNo);
+    const target = this.msFromIntStart;
     //console.log("Playing note at +" + target + "ms");
     WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
       duration: Tone.Time(this.noteName).toSeconds() * 990,

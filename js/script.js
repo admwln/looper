@@ -345,9 +345,9 @@ $(document).ready(function () {
           Tone.Draw.schedule(function () {
             groups.forEach((group) => {
               const stepCount = group.triggerIntervals.length; // Don't use triggerIntervals for this!!!
-              const intervalNo = (toneCounter % stepCount) + 1; // 1-16
-              group.dynamicInterval.play(intervalNo);
-              group.dynamicInterval.update(stepCount);
+              //const intervalNo = (toneCounter % stepCount) + 1; // 1-16
+              group.dynamicInterval.play();
+              group.dynamicInterval.update(stepCount, group);
 
               //group.playTriggerIntervals(intervalNo);
             });

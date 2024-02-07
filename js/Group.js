@@ -195,6 +195,7 @@ export default class Group {
     const dynamicInterval = new DynamicInterval(stepNo, min, max);
     this.dynamicInterval = dynamicInterval;
     this.dynamicInterval.groupId = this.id;
+    this.dynamicInterval.harvestSteps(this);
   }
 
   // sortBundles() {
