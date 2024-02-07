@@ -366,8 +366,8 @@ $(document).ready(function () {
           //   // Increment toneCounter
           // }, time);
         },
-        "16n",
-        "+" + "0.005"
+        "16n"
+        //"+" + "0.005"
       );
       transportId = id;
       Tone.Transport.start();

@@ -1,7 +1,6 @@
 import Step from "./Step.js";
 import StepSeq from "./StepSeq.js";
 import {
-  getKick,
   getLoopOn,
   getProject,
   getNoteName,
@@ -298,15 +297,39 @@ export default class NoteStep extends Step {
   //   (counter % stepCount) * Tone.Time("16n").toMilliseconds();
   // console.log("Playing note at +" + target + "ms");
 
-  playMidiNote(stepNo) {
-    //const target = this.getMsFromIntStart(stepNo);
+  playMidiNoteNow() {
+    if (!getLoopOn()) {
+      return;
+    }
+
+    if (this.muted) {
+      return;
+    }
+
+    WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
+      duration: Tone.Time(this.noteName).toSeconds() * 990,
+      rawAttack: this.velocity,
+    });
+
+    this.animateStep(0);
+  }
+
+  playMidiNote() {
+    if (!getLoopOn()) {
+      return;
+    }
+
+    if (this.muted) {
+      return;
+    }
     const target = this.msFromIntStart;
-    //console.log("Playing note at +" + target + "ms");
+
     WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
       duration: Tone.Time(this.noteName).toSeconds() * 990,
       rawAttack: this.velocity,
       time: "+" + target,
     });
+
     this.animateStep(target);
   }
 

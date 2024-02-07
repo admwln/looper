@@ -27,7 +27,11 @@ export default class DynamicInterval extends TriggerInterval {
     console.log("Playing", this.steps);
     // Play each noteStep in dynamicInterval
     this.steps.forEach((step) => {
-      step.playMidiNote(this.stepNo); // playMidiNote() is a method in NoteStep
+      // if (step.msFromLoopStart == 0) {
+      //   step.playMidiNoteNow(); // without delay
+      // } else {
+      step.playMidiNote(); // with delay
+      //}
     });
   }
 
