@@ -57,6 +57,10 @@ export default class DynamicInterval extends TriggerInterval {
     this.stepNo = newStepNo;
     this.emptySteps();
     this.harvestSteps(group);
+
+    // Could we trigger/queue updated dynamicInterval as soon as it has been updated?
+    // this.play() but pass along value for toneCounter as it stood when dynamicInterval for previous stepNo
+    // played
   }
 
   harvestSteps(group) {
