@@ -297,23 +297,6 @@ export default class NoteStep extends Step {
   //   (counter % stepCount) * Tone.Time("16n").toMilliseconds();
   // console.log("Playing note at +" + target + "ms");
 
-  playMidiNoteNow() {
-    if (!getLoopOn()) {
-      return;
-    }
-
-    if (this.muted) {
-      return;
-    }
-
-    WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
-      duration: Tone.Time(this.noteName).toSeconds() * 990,
-      rawAttack: this.velocity,
-    });
-
-    this.animateStep(0);
-  }
-
   playMidiNote() {
     if (!getLoopOn()) {
       return;

@@ -12,6 +12,9 @@ import {
   setLoopOn,
   findAllNestedProps,
   findNestedProp,
+  getRepeatCounter,
+  increaseRepeatCounter,
+  setRepeatCounter,
 } from "./setter-functions.js";
 
 // Global variables
@@ -297,6 +300,7 @@ $(document).ready(function () {
       setLoopOn(false);
       Tone.Transport.stop();
       Tone.Transport.clear(transportId);
+      setRepeatCounter(0);
       // In the DOM, remove class "to-flash" from all stepNos
       $(".step-no-seq .step").removeClass("to-flash");
       return;
@@ -338,20 +342,21 @@ $(document).ready(function () {
       });
 
       // Tone loop
-      let toneCounter = 0;
+      // let toneCounter = 0;
       let id = Tone.Transport.scheduleRepeat(
         (time) => {
           //Everything inside Draw's callback will fire every 16th note
           Tone.Draw.schedule(function () {
             groups.forEach((group) => {
-              const stepCount = group.triggerIntervals.length; // Don't use triggerIntervals for this!!!
+              const stepCount = group.sequences[0].steps.length;
               //const intervalNo = (toneCounter % stepCount) + 1; // 1-16
               group.dynamicInterval.play();
               group.dynamicInterval.update(stepCount, group);
 
               //group.playTriggerIntervals(intervalNo);
             });
-            toneCounter++;
+            increaseRepeatCounter();
+            //toneCounter++;
           }, time);
           // Tone.Draw.schedule(function () {
           //   bundleGroups.forEach((bundleGroup) => {

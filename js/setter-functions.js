@@ -18,12 +18,18 @@ export function getIdCounter() {
   return _idCounter;
 }
 
-let _kick = new Tone.MembraneSynth({
-  volume: 2,
-}).toDestination();
+let _repeatCounter = 0;
 
-export function getKick() {
-  return _kick;
+export function getRepeatCounter() {
+  return _repeatCounter;
+}
+
+export function setRepeatCounter(newValue) {
+  _repeatCounter = newValue;
+}
+
+export function increaseRepeatCounter() {
+  _repeatCounter++;
 }
 
 let _loopOn = false;

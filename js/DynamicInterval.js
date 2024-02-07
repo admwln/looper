@@ -24,14 +24,11 @@ export default class DynamicInterval extends TriggerInterval {
     if (this.steps.length === 0) {
       return;
     }
-    console.log("Playing", this.steps);
+    //console.log("Playing", this.steps);
+    console.log("Playing dynamic interval", this);
     // Play each noteStep in dynamicInterval
     this.steps.forEach((step) => {
-      // if (step.msFromLoopStart == 0) {
-      //   step.playMidiNoteNow(); // without delay
-      // } else {
-      step.playMidiNote(); // with delay
-      //}
+      step.playMidiNote();
     });
   }
 
@@ -45,6 +42,7 @@ export default class DynamicInterval extends TriggerInterval {
       this.min = 0;
       this.max = Tone.Time("16n").toMilliseconds() - 1;
       this.stepNo = 1;
+      this.emptySteps();
       this.harvestSteps(group);
       return;
     }
