@@ -304,17 +304,17 @@ export default class NoteStep extends Step {
     WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
       duration: Tone.Time(this.noteName).toSeconds() * 990,
       rawAttack: this.velocity,
-      time: "+" + target, // 25ms buffer
+      time: "+" + target,
     });
-    this.animateStep(target); // 25ms buffer
+    this.animateStep(target);
   }
 
   animateStep(target) {
     const stepDuration = Tone.Time(this.noteName).toMilliseconds();
     $("#" + this.id).animate({ opacity: 1 }, target, function () {
       $(this).animate({ opacity: 0 }, 5, function () {
-        $(this).animate({ opacity: 0 }, stepDuration * 0.75 - 5, function () {
-          $(this).animate({ opacity: 1 }, stepDuration * 0.25);
+        $(this).animate({ opacity: 0 }, stepDuration * 0.95 - 5, function () {
+          $(this).animate({ opacity: 1 }, stepDuration * 0.05);
         });
       });
     });

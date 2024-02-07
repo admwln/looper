@@ -176,9 +176,10 @@ export default class Group {
     this.triggerIntervals.pop();
   }
 
-  playTriggerIntervals(counter) {
-    const stepCount = this.triggerIntervals.length;
-    const triggerInterval = this.triggerIntervals[counter % stepCount];
+  playTriggerIntervals(intervalNo) {
+    console.log("intervalNo:", intervalNo);
+    // const stepCount = this.triggerIntervals.length;
+    const triggerInterval = this.triggerIntervals[intervalNo - 1];
     // If triggerInterval.steps.length is 0, return
     if (triggerInterval.steps.length === 0) {
       return;

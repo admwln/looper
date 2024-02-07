@@ -308,7 +308,7 @@ $(document).ready(function () {
         $(this).children().first().addClass("to-flash");
       });
 
-      const groups = getProject().getGroups(); // Get all groups in selected section
+      //const groups = getProject().getGroups(); // Get all groups in selected section
       // let bundleGroups = [];
       // groups.forEach((group) => {
       //   const bundleGroup = group.sortBundles();
@@ -330,6 +330,8 @@ $(document).ready(function () {
       //   });
       // }
 
+      const groups = getProject().getGroups(); // Get all groups in selected section
+
       // Tone loop
       let toneCounter = 0;
       let id = Tone.Transport.scheduleRepeat(
@@ -337,7 +339,9 @@ $(document).ready(function () {
           //Everything inside Draw's callback will fire every 16th note
           Tone.Draw.schedule(function () {
             groups.forEach((group) => {
-              group.playTriggerIntervals(toneCounter);
+              const stepCount = group.triggerIntervals.length;
+              const intervalNo = (toneCounter % stepCount) + 1; // 1-16
+              group.playTriggerIntervals(intervalNo);
             });
             toneCounter++;
           }, time);
