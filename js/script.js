@@ -305,7 +305,8 @@ $(document).ready(function () {
       $(".step-no-seq .step").removeClass("to-flash");
       return;
     } else {
-      Tone.Transport.bpm.value = 120;
+      Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
+      console.log(Tone.Transport.bpm.value);
       Tone.Transport.seconds = 0;
 
       // In the DOM, add class "to-flash" first steps in  "step-no-seq"
@@ -338,7 +339,11 @@ $(document).ready(function () {
       const groups = getProject().getGroups(); // Get all groups in selected section
       // Create a new DynamicInterval for each group
       groups.forEach((group) => {
-        group.initDynamicInterval(1, 0, Tone.Time("16n").toMilliseconds() - 1); // -1ms to avoid overlap with next min
+        group.initDynamicInterval(
+          1,
+          0,
+          parseInt(Tone.Time("16n").toMilliseconds()) - 1
+        ); // -1ms to avoid overlap with next min
       });
 
       // Tone loop

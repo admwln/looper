@@ -312,8 +312,6 @@ export default class NoteStep extends Step {
     const target = this.msFromIntStart;
     const trigger = time + target + this.msFromIntStart + 125; // buffer 125ms
 
-    // Could we use a while loop to halt playing note until scheduleRepeat has fired in script.js?
-
     WebMidi.outputs[0].channels[1].playNote(pitch + 35, {
       duration: duration,
       rawAttack: velocity,
