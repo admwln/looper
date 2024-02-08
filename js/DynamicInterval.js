@@ -25,13 +25,13 @@ export default class DynamicInterval extends TriggerInterval {
       return;
     }
 
-    time = time * 1000; // Into ms
+    let now = time * 1000; // Into ms
 
     //console.log("Playing", this.steps);
     console.log("Playing dynamic interval", this);
     // Play each noteStep in dynamicInterval
     this.steps.forEach((step) => {
-      step.playMidiNote(time);
+      step.playMidiNote(now);
     });
   }
 
