@@ -17,18 +17,21 @@ export default class DynamicInterval extends TriggerInterval {
     this.groupId = "";
   }
 
-  play() {
+  play(time) {
     if (!getLoopOn()) {
       return;
     }
     if (this.steps.length === 0) {
       return;
     }
+
+    time = time * 1000; // Into ms
+
     //console.log("Playing", this.steps);
     console.log("Playing dynamic interval", this);
     // Play each noteStep in dynamicInterval
     this.steps.forEach((step) => {
-      step.playMidiNote();
+      step.playMidiNote(time);
     });
   }
 

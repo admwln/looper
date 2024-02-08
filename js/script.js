@@ -346,18 +346,18 @@ $(document).ready(function () {
       let id = Tone.Transport.scheduleRepeat(
         (time) => {
           //Everything inside Draw's callback will fire every 16th note
-          Tone.Draw.schedule(function () {
-            groups.forEach((group) => {
-              const stepCount = group.sequences[0].steps.length;
-              //const intervalNo = (toneCounter % stepCount) + 1; // 1-16
-              group.dynamicInterval.play();
-              group.dynamicInterval.update(stepCount, group);
+          //Tone.Draw.schedule(function () {
+          groups.forEach((group) => {
+            const stepCount = group.sequences[0].steps.length;
+            //const intervalNo = (toneCounter % stepCount) + 1; // 1-16
+            group.dynamicInterval.play(time);
+            group.dynamicInterval.update(stepCount, group);
 
-              //group.playTriggerIntervals(intervalNo);
-            });
-            increaseRepeatCounter();
-            //toneCounter++;
-          }, time);
+            //group.playTriggerIntervals(intervalNo);
+          });
+          increaseRepeatCounter();
+          //toneCounter++;
+          //}, time);
           // Tone.Draw.schedule(function () {
           //   bundleGroups.forEach((bundleGroup) => {
           //     playBundleGroup(bundleGroup, toneCounter, time);
