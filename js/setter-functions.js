@@ -42,6 +42,16 @@ export function setLoopOn(newValue) {
   _loopOn = newValue;
 }
 
+let _masterTurnaround = false;
+
+export function getMasterTurnaround() {
+  return _masterTurnaround;
+}
+
+export function setMasterTurnaround(newValue) {
+  _masterTurnaround = newValue;
+}
+
 export function findAllNestedProps(obj, propName) {
   let results = [];
   if (obj.hasOwnProperty(propName)) {

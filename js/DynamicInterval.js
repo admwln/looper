@@ -7,6 +7,8 @@ import {
   getProject,
   findAllNestedProps,
   findNestedProp,
+  getMasterTurnaround,
+  setMasterTurnaround,
 } from "./setter-functions.js";
 
 export default class DynamicInterval extends TriggerInterval {
@@ -41,12 +43,29 @@ export default class DynamicInterval extends TriggerInterval {
 
   update(stepCount, group) {
     const newStepNo = this.stepNo + 1;
+    // This is where the end of the current loop is detected
+
     if (newStepNo > stepCount) {
       this.min = 0;
       this.max = parseInt(Tone.Time("16n").toMilliseconds()) - 1;
       this.stepNo = 1;
       this.emptySteps();
       this.harvestSteps(group);
+      // If current section is not queued, this will be the place to
+      // actually select the next section to play
+      // NOTA BENE: this should only run if current group is the master group of the current section
+      if (!group.getSection().queued) {
+        // Find the section object that has property queued set to true
+        const project = getProject();
+        const sections = project.sections;
+        const nextSection = sections.find((section) => section.queued === true);
+        // If next section is found, select it
+        if (nextSection) {
+          // NOTA BENE: only run if current group is the master group of the current section
+          setMasterTurnaround(true);
+          console.log("Master turnaround set to true");
+        }
+      }
       return;
     }
 

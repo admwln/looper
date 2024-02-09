@@ -15,6 +15,8 @@ import {
   getRepeatCounter,
   increaseRepeatCounter,
   setRepeatCounter,
+  getMasterTurnaround,
+  setMasterTurnaround,
 } from "./setter-functions.js";
 
 // Global variables
@@ -29,6 +31,12 @@ $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
   init.addEventListener("click", async () => {
+    // If init classList doesn't include blink, return
+    if (!init.classList.contains("blink")) return;
+
+    // Remove .blink class from init button
+    init.classList.remove("blink");
+
     // Tone.js initialization
     await Tone.start();
     console.log("Tone.js enabled!");
@@ -78,9 +86,9 @@ $(document).ready(function () {
   });
 
   // Click section tab
-  $(document).on("click", ".section-tab", function () {
+  $(document).on("click", ".section-tab-button", function () {
     let sectionId = $(this).attr("id");
-    sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
+    sectionId = sectionId.slice(0, -12); // Remove "-tab-button" from id
     // Find section object in project
     const sections = findAllNestedProps(getProject(), "sections");
     const section = findNestedProp(sections, sectionId);
@@ -287,6 +295,20 @@ $(document).ready(function () {
     group.toggleCcVisibility();
   });
 
+  // Queue section button
+  $(document).on("click", ".queue-section", function () {
+    // Only if loop is playing
+    if (!getLoopOn()) return;
+    $(this).addClass("blink");
+    let sectionId = $(this).closest(".section-tab").attr("id");
+    sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
+    // Find section object in project
+    const sections = findAllNestedProps(getProject(), "sections");
+    const section = findNestedProp(sections, sectionId);
+    console.log("section to queue", section);
+    section.queue();
+  });
+
   // Console log project object
   $(document).on("click", "#log-project", function () {
     console.log(getProject());
@@ -303,42 +325,38 @@ $(document).ready(function () {
       setRepeatCounter(0);
       // In the DOM, remove class "to-flash" from all stepNos
       $(".step-no-seq .step").removeClass("to-flash");
+      // In the DOM, remove class "playing" from all .queue-section buttons
+      $(".queue-section").removeClass("playing").addClass("hide");
       return;
     } else {
       Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
       console.log(Tone.Transport.bpm.value);
       Tone.Transport.seconds = 0;
 
+      // Set selected section to queued
+      const sections = getProject().sections;
+      sections.forEach((section) => {
+        if (section.selected) {
+          section.queue();
+          // Add class playing to section tab
+          $("#" + section.id + "-tab .queue-section").addClass("playing");
+        }
+      });
+
+      // In the DOM, remove class "hide" from all .queue-section buttons
+      $(".queue-section").removeClass("hide");
+
       // In the DOM, add class "to-flash" first steps in  "step-no-seq"
       $(".step-no-seq").each(function () {
         $(this).children().first().addClass("to-flash");
       });
 
-      //const groups = getProject().getGroups(); // Get all groups in selected section
-      // let bundleGroups = [];
-      // groups.forEach((group) => {
-      //   const bundleGroup = group.sortBundles();
-      //   // Push bundle
-      //   bundleGroups.push(bundleGroup);
-      // });
+      // Get all groups in entire project
+      const allGroups = getProject().getAllGroups(); // Get all groups in entire project
+      //const groups = getProject().getSelectedGroups(); // Get all groups in selected section
 
-      // Play bundles
-      // function playBundleGroup(bundleGroup, counter, time) {
-      //   const bundleStepCount = bundleGroup.length;
-      //   const bundleStep = bundleGroup[counter % bundleStepCount];
-      //   // If bundleStep.steps.length is 0, return
-      //   if (bundleStep.steps.length === 0) {
-      //     return;
-      //   }
-      //   // Play each bundleStep
-      //   bundleStep.steps.forEach((step) => {
-      //     step.playMidiNote(counter, bundleStepCount);
-      //   });
-      // }
-
-      const groups = getProject().getGroups(); // Get all groups in selected section
       // Create a new DynamicInterval for each group
-      groups.forEach((group) => {
+      allGroups.forEach((group) => {
         group.initDynamicInterval(
           1,
           0,
@@ -346,39 +364,49 @@ $(document).ready(function () {
         ); // -1ms to avoid overlap with next min
       });
 
-      // Tone loop
-      // let toneCounter = 0;
-      let id = Tone.Transport.scheduleRepeat(
-        (time) => {
-          //Everything inside Draw's callback will fire every 16th note
-          //Tone.Draw.schedule(function () {
-          groups.forEach((group) => {
-            const stepCount = group.sequences[0].steps.length;
-            //const intervalNo = (toneCounter % stepCount) + 1; // 1-16
-            group.dynamicInterval.play(time);
-            group.dynamicInterval.update(stepCount, group);
-
-            //group.playTriggerIntervals(intervalNo);
+      // Tone.js loop every 16th note
+      let id = Tone.Transport.scheduleRepeat((time) => {
+        if (getMasterTurnaround()) {
+          const sections = getProject().sections;
+          sections.forEach((section) => {
+            // If the section is queued, and if masterTurnaround is true, its time to select the next section
+            if (section.queued) {
+              section.selectNext();
+              setMasterTurnaround(false);
+            }
           });
-          increaseRepeatCounter();
-          //toneCounter++;
-          //}, time);
-          // Tone.Draw.schedule(function () {
-          //   bundleGroups.forEach((bundleGroup) => {
-          //     playBundleGroup(bundleGroup, toneCounter, time);
-          //   });
-          //   toneCounter++;
+        }
 
-          //   // Call method to flash stepNo
-          //   // stepNoSeqs.forEach((stepNoSeq) => {
-          //   //   stepNoSeq.flashStepNo(time);
-          //   // });
-          //   // Increment toneCounter
-          // }, time);
-        },
-        "16n"
-        //"+" + "0.005"
-      );
+        // // Get groups in the currently selected section
+        // const selectedGroups = getProject().getSelectedGroups();
+
+        allGroups.forEach((group) => {
+          const section = group.getSection();
+          // If group's section is not selected, return
+          if (section.selected === false) {
+            // The non-selected group's dynamicInterval should not be updated
+            return;
+          }
+
+          const stepCount = group.sequences[0].steps.length;
+          group.dynamicInterval.play(time);
+          group.dynamicInterval.update(stepCount, group);
+        });
+
+        increaseRepeatCounter();
+        // Tone.Draw.schedule(function () {
+        //   bundleGroups.forEach((bundleGroup) => {
+        //     playBundleGroup(bundleGroup, toneCounter, time);
+        //   });
+        //   toneCounter++;
+
+        //   // Call method to flash stepNo
+        //   // stepNoSeqs.forEach((stepNoSeq) => {
+        //   //   stepNoSeq.flashStepNo(time);
+        //   // });
+        //   // Increment toneCounter
+        // }, time);
+      }, "16n");
       transportId = id;
       Tone.Transport.start();
       setLoopOn(true);

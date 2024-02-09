@@ -198,6 +198,19 @@ export default class Group {
     this.dynamicInterval.harvestSteps(this);
   }
 
+  // Get section that this group belongs to
+  getSection() {
+    const groupId = this.id;
+    const sectionId = $("#" + groupId)
+      .parent()
+      .parent()
+      .attr("id");
+    // Get section object in project by using sectionId
+    const sections = findAllNestedProps(getProject(), "sections");
+    const section = findNestedProp(sections, sectionId);
+    return section;
+  }
+
   // sortBundles() {
   //   const stepCount = this.sequences[0].steps.length;
   //   const groupBundles = [];
