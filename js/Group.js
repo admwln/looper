@@ -26,6 +26,8 @@ export default class Group {
     this.dynamicInterval = {};
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
+    this.instrumentId = instrumentId;
+    this.sectionId = instrument.sectionId;
     // Add group to instrument
     instrument.groups.push(this);
 
@@ -200,60 +202,10 @@ export default class Group {
 
   // Get section that this group belongs to
   getSection() {
-    const groupId = this.id;
-    const sectionId = $("#" + groupId)
-      .parent()
-      .parent()
-      .attr("id");
+    const sectionId = this.sectionId;
     // Get section object in project by using sectionId
     const sections = findAllNestedProps(getProject(), "sections");
     const section = findNestedProp(sections, sectionId);
     return section;
   }
-
-  // sortBundles() {
-  //   const stepCount = this.sequences[0].steps.length;
-  //   const groupBundles = [];
-  //   // For all each sixteenth step in the group, create a bundle
-  //   for (let i = 1; i <= stepCount; i++) {
-  //     const min = (i - 1) * Tone.Time("16n").toMilliseconds();
-  //     const max = i * Tone.Time("16n").toMilliseconds() - 1; // -1ms to avoid overlap with next min
-  //     const bundle = new Bundle(i, min, max);
-  //     // Push to groupBundles
-  //     groupBundles.push(bundle);
-  //   }
-
-  //   // Find all stepSeqs in this group
-  //   const stepSeqs = this.sequences.filter(
-  //     (sequence) => sequence.constructor.name === "StepSeq"
-  //   );
-  //   console.log(stepSeqs);
-  //   // All noteStep objects with state "on" in the group
-  //   const groupNoteSteps = [];
-  //   // For each stepSeq...
-  //   stepSeqs.forEach((stepSeq) => {
-  //     // ...find all noteSteps
-  //     const noteSteps = stepSeq.noteSteps;
-  //     // If they're "on", update their msFromLoopStart value ...and push them to groupNoteSteps
-  //     noteSteps.forEach((noteStep) => {
-  //       if (noteStep.state == "on") {
-  //         noteStep.updateMsFromLoopStart();
-  //         groupNoteSteps.push(noteStep);
-  //       }
-  //     });
-  //   });
-
-  //   // Loop through each bundle and check if any noteStep is within its time range
-  //   groupBundles.forEach((bundle) => {
-  //     groupNoteSteps.forEach((noteStep) => {
-  //       if (
-  //         noteStep.msFromLoopStart >= bundle.min &&
-  //         noteStep.msFromLoopStart <= bundle.max
-  //       ) {
-  //         bundle.steps.push(noteStep);
-  //       }
-  //     });
-  //   });
-  //   return groupBundles;
-  // }
 }

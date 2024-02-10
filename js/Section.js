@@ -47,7 +47,6 @@ export default class Section {
   // Set this to queued = true
   queue() {
     this.queued = true;
-    console.log("Queued", this.name);
     // Set all other sections to queued = false
     const project = getProject();
     const sections = project.sections;

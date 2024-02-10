@@ -247,10 +247,6 @@ div.section-tab.selected {
   margin-bottom: 2px;
 }
 
-#flasher {
-  opacity: 0;
-}
-
 .blink {
   animation: blink 250ms infinite;
 }

@@ -18,19 +18,19 @@ export function getIdCounter() {
   return _idCounter;
 }
 
-let _repeatCounter = 0;
+// let _repeatCounter = 0;
 
-export function getRepeatCounter() {
-  return _repeatCounter;
-}
+// export function getRepeatCounter() {
+//   return _repeatCounter;
+// }
 
-export function setRepeatCounter(newValue) {
-  _repeatCounter = newValue;
-}
+// export function setRepeatCounter(newValue) {
+//   _repeatCounter = newValue;
+// }
 
-export function increaseRepeatCounter() {
-  _repeatCounter++;
-}
+// export function increaseRepeatCounter() {
+//   _repeatCounter++;
+// }
 
 let _loopOn = false;
 

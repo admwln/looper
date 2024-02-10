@@ -12,9 +12,9 @@ import {
   setLoopOn,
   findAllNestedProps,
   findNestedProp,
-  getRepeatCounter,
-  increaseRepeatCounter,
-  setRepeatCounter,
+  // getRepeatCounter,
+  // increaseRepeatCounter,
+  // setRepeatCounter,
   getMasterTurnaround,
   setMasterTurnaround,
 } from "./setter-functions.js";
@@ -322,9 +322,9 @@ $(document).ready(function () {
       setLoopOn(false);
       Tone.Transport.stop();
       Tone.Transport.clear(transportId);
-      setRepeatCounter(0);
-      // In the DOM, remove class "to-flash" from all stepNos
-      $(".step-no-seq .step").removeClass("to-flash");
+      // Change stop button to play button
+      $(this).html('<i class="fa-solid fa-play"></i>');
+
       // In the DOM, remove class "playing" from all .queue-section buttons
       $(".queue-section").removeClass("playing").addClass("hide");
       return;
@@ -332,6 +332,9 @@ $(document).ready(function () {
       Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
       console.log(Tone.Transport.bpm.value);
       Tone.Transport.seconds = 0;
+
+      // Change play button to stop button
+      $(this).html('<i class="fa-solid fa-stop"></i>');
 
       // Set selected section to queued
       const sections = getProject().sections;
@@ -346,14 +349,8 @@ $(document).ready(function () {
       // In the DOM, remove class "hide" from all .queue-section buttons
       $(".queue-section").removeClass("hide");
 
-      // In the DOM, add class "to-flash" first steps in  "step-no-seq"
-      $(".step-no-seq").each(function () {
-        $(this).children().first().addClass("to-flash");
-      });
-
       // Get all groups in entire project
-      const allGroups = getProject().getAllGroups(); // Get all groups in entire project
-      //const groups = getProject().getSelectedGroups(); // Get all groups in selected section
+      const allGroups = getProject().getAllGroups();
 
       // Create a new DynamicInterval for each group
       allGroups.forEach((group) => {
@@ -364,52 +361,42 @@ $(document).ready(function () {
         ); // -1ms to avoid overlap with next min
       });
 
-      // Tone.js loop every 16th note
-      let id = Tone.Transport.scheduleRepeat((time) => {
-        if (getMasterTurnaround()) {
-          const sections = getProject().sections;
-          sections.forEach((section) => {
-            // If the section is queued, and if masterTurnaround is true, its time to select the next section
-            if (section.queued) {
-              section.selectNext();
-              setMasterTurnaround(false);
-            }
-          });
-        }
-
-        // // Get groups in the currently selected section
-        // const selectedGroups = getProject().getSelectedGroups();
-
-        allGroups.forEach((group) => {
-          const section = group.getSection();
-          // If group's section is not selected, return
-          if (section.selected === false) {
-            // The non-selected group's dynamicInterval should not be updated
-            return;
-          }
-
-          const stepCount = group.sequences[0].steps.length;
-          group.dynamicInterval.play(time);
-          group.dynamicInterval.update(stepCount, group);
-        });
-
-        increaseRepeatCounter();
-        // Tone.Draw.schedule(function () {
-        //   bundleGroups.forEach((bundleGroup) => {
-        //     playBundleGroup(bundleGroup, toneCounter, time);
-        //   });
-        //   toneCounter++;
-
-        //   // Call method to flash stepNo
-        //   // stepNoSeqs.forEach((stepNoSeq) => {
-        //   //   stepNoSeq.flashStepNo(time);
-        //   // });
-        //   // Increment toneCounter
-        // }, time);
-      }, "16n");
-      transportId = id;
       Tone.Transport.start();
       setLoopOn(true);
+
+      // MAIN LOOP --------------------------------------------------------------
+      // Tone.js loop every 16th note
+      let mainLoop = Tone.Transport.scheduleRepeat(
+        (time) => {
+          // If master group of current section has reached the end of its loop
+          // it's time to check if another section is queued
+          if (getMasterTurnaround()) {
+            const sections = getProject().sections;
+            sections.forEach((section) => {
+              // If the section is queued, and if masterTurnaround is true, its time to select the next section
+              if (section.queued) {
+                section.selectNext();
+                setMasterTurnaround(false);
+              }
+            });
+          }
+
+          allGroups.forEach((group) => {
+            const section = group.getSection();
+            // If group's section is not selected, return
+            if (section.selected === false) {
+              // The non-selected group's dynamicInterval should not be updated
+              return;
+            }
+            const stepCount = group.sequences[0].steps.length;
+            group.dynamicInterval.play(time);
+            group.dynamicInterval.update(stepCount, group);
+          });
+        },
+        "16n"
+        //"+0.005"
+      );
+      transportId = mainLoop;
     }
   });
 

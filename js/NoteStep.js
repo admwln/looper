@@ -316,7 +316,6 @@ export default class NoteStep extends Step {
       duration: duration,
       rawAttack: velocity,
       time: trigger,
-      //time: "+" + target,
     });
     this.animateStep(trigger - performance.now());
     const delay = trigger - performance.now();
