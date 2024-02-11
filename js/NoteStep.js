@@ -217,7 +217,6 @@ export default class NoteStep extends Step {
     const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
     const velocity = this.velocity;
 
-    // ParseInt to avoid floating point errors
     const trigger = time + this.msFromIntStart + 20; // + buffer (ms)
 
     WebMidi.outputs[0].channels[1].playNote(pitch + 35, {

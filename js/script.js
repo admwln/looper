@@ -349,7 +349,11 @@ $(document).ready(function () {
       console.log(Tone.Transport.bpm.value);
       // Set step duration
       const stepDuration = Tone.Time("16n").toMilliseconds();
-      //Tone.Transport.seconds = 0;
+
+      // Usure what this does:
+      // const context = Tone.getContext();
+      // context.lookAhead = 0.05;
+      // Tone.Transport.seconds = 0;
 
       // Change play button to stop button
       $(this).html('<i class="fa-solid fa-stop"></i>');
@@ -379,14 +383,11 @@ $(document).ready(function () {
         ); // -1ms to avoid overlap with next min
       });
 
-      // Define a variable to store the start time
-      let transportStartTime;
-
       // Start the transport after 0 seconds and save the start time
-      transportStartTime = performance.now();
-      console.log("transportStartTime", transportStartTime);
-      const transportStartTimeSec = transportStartTime / 1000;
-      Tone.Transport.start(transportStartTimeSec);
+      // console.log("playbackStartTime", playbackStartTime);
+      // const playbackStartTimeSec = playbackStartTime / 1000;
+
+      let playbackStartTime;
 
       Tone.Transport.start();
       setLoopOn(true);
@@ -411,15 +412,15 @@ $(document).ready(function () {
 
           // Tone.Draw will fire at exact "time" of Tone.Transport.scheduleRepeat(), ie every 16th note
           Tone.Draw.schedule(function () {
-            // On first loop, update transportStartTime, update inside Tone.Draw to get as current a time as possible
+            // On first loop, update playbackStartTime, update inside Tone.Draw to get as current a time as possible
             if (getPlaybackStepCounter() === 0) {
-              transportStartTime = performance.now();
-              console.log("transportStartTime updated", transportStartTime);
+              playbackStartTime = performance.now();
+              console.log("playbackStartTime updated", playbackStartTime);
             }
 
             // Use playbackStepCounter to determine time of 16th note
             const now =
-              getPlaybackStepCounter() * stepDuration + transportStartTime;
+              getPlaybackStepCounter() * stepDuration + playbackStartTime;
 
             let groupsToUpdate = [];
             allGroups.forEach((group) => {
