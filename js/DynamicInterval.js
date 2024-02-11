@@ -5,11 +5,8 @@ import {
   getIdCounter,
   getLoopOn,
   getProject,
-  findAllNestedProps,
-  findNestedProp,
-  getMasterTurnaround,
   setMasterTurnaround,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 export default class DynamicInterval extends TriggerInterval {
   constructor(stepNo, min, max) {
@@ -84,9 +81,6 @@ export default class DynamicInterval extends TriggerInterval {
   }
 
   harvestSteps(group) {
-    //console.log("Harvesting steps for dynamic interval);
-    // const harvestStart = performance.now();
-
     const sequences = group.sequences;
 
     // All except first sequence in sequences array
@@ -119,7 +113,5 @@ export default class DynamicInterval extends TriggerInterval {
         this.steps.push(noteStep);
       }
     });
-    //const harvestEnd = performance.now();
-    //console.log("Harvesting took", harvestEnd - harvestStart, "ms");
   }
 }

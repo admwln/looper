@@ -32,20 +32,6 @@ export function getIdCounter() {
   return _idCounter;
 }
 
-// let _repeatCounter = 0;
-
-// export function getRepeatCounter() {
-//   return _repeatCounter;
-// }
-
-// export function setRepeatCounter(newValue) {
-//   _repeatCounter = newValue;
-// }
-
-// export function increaseRepeatCounter() {
-//   _repeatCounter++;
-// }
-
 let _loopOn = false;
 
 export function getLoopOn() {
@@ -121,27 +107,6 @@ let noteMap = new Map([
   [224, "4t"],
   [1344, "1n"],
 ]);
-
-// original noteMap
-// let noteMap = new Map([
-//   [21, "64n"],
-//   [63, "32n."],
-//   [42, "32n"],
-//   [126, "16n."],
-//   [84, "16n"],
-//   [28, "16t"],
-//   [252, "8n."],
-//   [168, "8n"],
-//   [56, "8t"],
-//   [504, "4n."],
-//   [336, "4n"],
-//   [112, "4t"],
-//   [1008, "2n."],
-//   [672, "2n"],
-//   [224, "2t"],
-//   [1344, "1n"],
-//   [448, "1t"],
-// ]);
 
 export function getNoteName(pixelValue) {
   return noteMap.get(pixelValue);

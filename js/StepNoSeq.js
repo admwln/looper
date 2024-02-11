@@ -5,7 +5,7 @@ import {
   getIdCounter,
   findAllNestedProps,
   findNestedProp,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 export default class StepNoSeq {
   constructor(groupId, measureLength) {

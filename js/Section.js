@@ -1,4 +1,4 @@
-import { getProject, setIdCounter, getIdCounter } from "./setter-functions.js";
+import { getProject, setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class Section {
   constructor(name) {
