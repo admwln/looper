@@ -392,7 +392,7 @@ $(document).ready(function () {
       let transportStartTime;
 
       // Start the transport after 0 seconds and save the start time
-      transportStartTime = performance.now() + 100;
+      transportStartTime = performance.now() + 50;
       const transportStartTimeSec = transportStartTime / 1000;
       Tone.Transport.start(transportStartTimeSec);
 
