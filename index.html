@@ -24,7 +24,8 @@
     <div class="top-row">
       <div>
         <div>
-          <button id="audio-init" style="margin:0 24px 12px 0"><i class="fa-solid fa-power-off"></i></button>
+          <button id="audio-init" class="blink" style="margin:0 24px 12px 0"><i
+              class="fa-solid fa-power-off"></i></button>
           <button id="log-project"><i class="fa-solid fa-file-lines"></i> Log project</button>
         </div>
 
@@ -51,8 +52,11 @@
         </div>
       </div>
       <div>
+        <div style="width:50px">
+          <label for="project-bpm">BPM</label>
+          <input type="text" name="project-bpm" id="project-bpm" value="120" style="width:50px" />
+        </div>
         <button id="play"><i class="fa-solid fa-play"></i></button>
-        <div id="flasher"><i class="fa-solid fa-lightbulb"></i></div>
       </div>
     </div>
     <div class="section-tab-row"></div>

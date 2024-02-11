@@ -12,6 +12,8 @@ export default class ControllerStep extends Step {
     this.state = "off";
     this.muted = false;
     this.velocities = [];
+    this.msFromLoopStart = 0;
+    this.muted = false;
   }
 
   pushControllerStep(stepSeq) {

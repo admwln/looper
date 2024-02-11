@@ -94,13 +94,14 @@ h3 {
   display: inline-block;
 }
 
-button.section-tab {
+div.section-tab {
+  display: inline-block;
   margin: 0;
   padding: 0 12px;
   border-radius: 5px 5px 0 0;
   background-color: var(--blue-lightgray);
 }
-button.section-tab.selected {
+div.section-tab.selected {
   background-color: var(--background-blue);
 }
 
@@ -246,6 +247,35 @@ button.section-tab.selected {
   margin-bottom: 2px;
 }
 
-#flasher {
+.blink {
+  animation: blink 250ms infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.queue-section {
+  opacity: 1;
+  opacity: 0.25;
+  cursor: pointer;
+}
+.queue-section.hide {
   opacity: 0;
+  cursor: default;
+}
+
+.queue-section.blink {
+  animation: blink 250 infinite;
+  cursor: default;
+}
+
+.queue-section.playing {
+  opacity: 1;
+  cursor: default;
 }

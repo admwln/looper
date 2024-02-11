@@ -56,9 +56,24 @@ export default class Project {
     return stepNoSeqs;
   }
 
-  // Get all groups in the selected section
-  // Might want to pass in sectionId as an argument to make this more flexible
-  getGroups() {
+  // Get all groups in any section
+  getAllGroups() {
+    const sections = getProject().sections;
+    const groups = [];
+
+    sections.forEach((section) => {
+      section.instruments.forEach((instrument) => {
+        instrument.groups.forEach((group) => {
+          groups.push(group);
+        });
+      });
+    });
+
+    return groups;
+  }
+
+  // Get all groups in the currently selected section
+  getSelectedGroups() {
     const sections = getProject().sections;
     const section = sections.find((section) => section.selected == true);
     // In section, find all instruments

@@ -13,6 +13,7 @@ export default class Step {
     this.noteName = noteName;
     this.pixelValue = pixelValue;
     this.state = "off";
+    this.msFromIntStart = 0;
   }
 
   toggleState() {
@@ -81,5 +82,12 @@ export default class Step {
     const msFromIntStart =
       this.msFromLoopStart - (stepNo - 1) * Tone.Time("16n").toMilliseconds();
     return msFromIntStart;
+  }
+
+  setMsFromIntStart(stepNo) {
+    // stepNo of dynamicInterval
+    const msFromIntStart =
+      this.msFromLoopStart - (stepNo - 1) * Tone.Time("16n").toMilliseconds();
+    this.msFromIntStart = msFromIntStart;
   }
 }

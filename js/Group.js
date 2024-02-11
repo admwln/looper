@@ -1,4 +1,4 @@
-import Bundle from "./Bundle.js";
+import DynamicInterval from "./DynamicInterval.js";
 import StepNoSeq from "./StepNoSeq.js";
 import StepSeq from "./StepSeq.js";
 import StepNo from "./StepNo.js";
@@ -23,8 +23,12 @@ export default class Group {
     this.ccVisibility = false;
     this.muted = false;
     this.triggerIntervals = [];
+    this.dynamicInterval = {};
+    this.masterGroup = false;
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
+    this.instrumentId = instrumentId;
+    this.sectionId = instrument.sectionId;
     // Add group to instrument
     instrument.groups.push(this);
 
@@ -49,7 +53,9 @@ export default class Group {
           <button class="delete-bar" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
           <button class="add-step-seq"><i class='fa-solid fa-plus'></i> Sequence</button>
           <button class="delete-step-seq" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
-          <button class="toggle-cc">CC</button>
+          <button class="toggle-cc" style="margin-right:24px">CC</button>
+          <label for="master-group-${this.id}">Master</label>
+          <input type="radio" class="master-group-radio" name="master-group-section-${this.sectionId}" id="master-group-${this.id}" value="${this.id}" checked="checked" />
         </div>
       </section>
       `
@@ -176,9 +182,10 @@ export default class Group {
     this.triggerIntervals.pop();
   }
 
-  playTriggerIntervals(counter) {
-    const stepCount = this.triggerIntervals.length;
-    const triggerInterval = this.triggerIntervals[counter % stepCount];
+  playTriggerIntervals(intervalNo) {
+    console.log("intervalNo:", intervalNo);
+    // const stepCount = this.triggerIntervals.length;
+    const triggerInterval = this.triggerIntervals[intervalNo - 1];
     // If triggerInterval.steps.length is 0, return
     if (triggerInterval.steps.length === 0) {
       return;
@@ -189,49 +196,37 @@ export default class Group {
     });
   }
 
-  // sortBundles() {
-  //   const stepCount = this.sequences[0].steps.length;
-  //   const groupBundles = [];
-  //   // For all each sixteenth step in the group, create a bundle
-  //   for (let i = 1; i <= stepCount; i++) {
-  //     const min = (i - 1) * Tone.Time("16n").toMilliseconds();
-  //     const max = i * Tone.Time("16n").toMilliseconds() - 1; // -1ms to avoid overlap with next min
-  //     const bundle = new Bundle(i, min, max);
-  //     // Push to groupBundles
-  //     groupBundles.push(bundle);
-  //   }
+  initDynamicInterval(stepNo, min, max) {
+    const dynamicInterval = new DynamicInterval(stepNo, min, max);
+    this.dynamicInterval = dynamicInterval;
+    this.dynamicInterval.groupId = this.id;
+    this.dynamicInterval.harvestSteps(this);
+  }
 
-  //   // Find all stepSeqs in this group
-  //   const stepSeqs = this.sequences.filter(
-  //     (sequence) => sequence.constructor.name === "StepSeq"
-  //   );
-  //   console.log(stepSeqs);
-  //   // All noteStep objects with state "on" in the group
-  //   const groupNoteSteps = [];
-  //   // For each stepSeq...
-  //   stepSeqs.forEach((stepSeq) => {
-  //     // ...find all noteSteps
-  //     const noteSteps = stepSeq.noteSteps;
-  //     // If they're "on", update their msFromLoopStart value ...and push them to groupNoteSteps
-  //     noteSteps.forEach((noteStep) => {
-  //       if (noteStep.state == "on") {
-  //         noteStep.updateMsFromLoopStart();
-  //         groupNoteSteps.push(noteStep);
-  //       }
-  //     });
-  //   });
+  // Get section that this group belongs to
+  getSection() {
+    const sectionId = this.sectionId;
+    // Get section object in project by using sectionId
+    const sections = findAllNestedProps(getProject(), "sections");
+    const section = findNestedProp(sections, sectionId);
+    return section;
+  }
 
-  //   // Loop through each bundle and check if any noteStep is within its time range
-  //   groupBundles.forEach((bundle) => {
-  //     groupNoteSteps.forEach((noteStep) => {
-  //       if (
-  //         noteStep.msFromLoopStart >= bundle.min &&
-  //         noteStep.msFromLoopStart <= bundle.max
-  //       ) {
-  //         bundle.steps.push(noteStep);
-  //       }
-  //     });
-  //   });
-  //   return groupBundles;
-  // }
+  makeMaster() {
+    this.masterGroup = true;
+    // Find all other groups in this section
+    const section = this.getSection();
+    const instruments = section.instruments;
+    // Get all groups in this section
+    const groups = [];
+    instruments.forEach((instrument) => {
+      groups.push(...instrument.groups);
+    });
+    // Set all other groups to masterGroup = false
+    groups.forEach((group) => {
+      if (group.id !== this.id) {
+        group.masterGroup = false;
+      }
+    });
+  }
 }

@@ -1,7 +1,6 @@
 import Step from "./Step.js";
 import StepSeq from "./StepSeq.js";
 import {
-  getKick,
   getLoopOn,
   getProject,
   getNoteName,
@@ -265,7 +264,7 @@ export default class NoteStep extends Step {
   }
 
   // Time in ms from loop start to this noteStep
-  getNoteStepTime(stepSeq, noteStepIndex) {
+  getMsFromLoopStart(stepSeq, noteStepIndex) {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
       (noteStep, index) => index < noteStepIndex
     );
@@ -289,32 +288,50 @@ export default class NoteStep extends Step {
       (noteStep) => noteStep.id == this.id
     );
 
-    this.msFromLoopStart = this.getNoteStepTime(stepSeq, noteStepIndex);
+    this.msFromLoopStart = this.getMsFromLoopStart(stepSeq, noteStepIndex);
   }
 
-  //playMidiNote(counter, stepCount, stepNo) {
-  // const target =
-  //   this.msFromLoopStart -
-  //   (counter % stepCount) * Tone.Time("16n").toMilliseconds();
-  // console.log("Playing note at +" + target + "ms");
+  playMidiNote(time) {
+    if (!getLoopOn()) {
+      return;
+    }
 
-  playMidiNote(stepNo) {
-    const target = this.getMsFromIntStart(stepNo);
-    //console.log("Playing note at +" + target + "ms");
-    WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
-      duration: Tone.Time(this.noteName).toSeconds() * 990,
-      rawAttack: this.velocity,
-      time: "+" + target, // 25ms buffer
+    if (this.muted) {
+      return;
+    }
+    console.log(
+      "cf time w/ performance.now(): " +
+        time +
+        " " +
+        parseInt(performance.now())
+    );
+    console.log(
+      "Diff time w/ performance.now(): " + (time - performance.now())
+    );
+    const pitch = this.pitch;
+    // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
+    const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
+    const velocity = this.velocity;
+
+    // ParseInt to avoid floating point errors
+    const trigger = time + this.msFromIntStart + 25; // buffer 25ms
+
+    WebMidi.outputs[0].channels[1].playNote(pitch + 35, {
+      duration: duration,
+      rawAttack: velocity,
+      time: trigger,
     });
-    this.animateStep(target); // 25ms buffer
+    this.animateStep(trigger - parseInt(performance.now()));
+    const delay = parseInt(trigger - parseInt(performance.now()));
+    console.log("playMidiNote trigger: " + trigger + " delay:" + delay);
   }
 
   animateStep(target) {
     const stepDuration = Tone.Time(this.noteName).toMilliseconds();
     $("#" + this.id).animate({ opacity: 1 }, target, function () {
       $(this).animate({ opacity: 0 }, 5, function () {
-        $(this).animate({ opacity: 0 }, stepDuration * 0.75 - 5, function () {
-          $(this).animate({ opacity: 1 }, stepDuration * 0.25);
+        $(this).animate({ opacity: 0 }, stepDuration * 0.95 - 5, function () {
+          $(this).animate({ opacity: 1 }, stepDuration * 0.05);
         });
       });
     });

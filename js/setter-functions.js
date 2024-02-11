@@ -8,6 +8,20 @@ export function getProject() {
   return _project;
 }
 
+let _playbackStepCounter = 0;
+
+export function setPlaybackStepCounter(newValue) {
+  _playbackStepCounter = newValue;
+}
+
+export function resetPlaybackStepCounter() {
+  _playbackStepCounter = 0;
+}
+
+export function getPlaybackStepCounter() {
+  return _playbackStepCounter;
+}
+
 let _idCounter = 0;
 
 export function setIdCounter(newValue) {
@@ -18,13 +32,19 @@ export function getIdCounter() {
   return _idCounter;
 }
 
-let _kick = new Tone.MembraneSynth({
-  volume: 2,
-}).toDestination();
+// let _repeatCounter = 0;
 
-export function getKick() {
-  return _kick;
-}
+// export function getRepeatCounter() {
+//   return _repeatCounter;
+// }
+
+// export function setRepeatCounter(newValue) {
+//   _repeatCounter = newValue;
+// }
+
+// export function increaseRepeatCounter() {
+//   _repeatCounter++;
+// }
 
 let _loopOn = false;
 
@@ -34,6 +54,26 @@ export function getLoopOn() {
 
 export function setLoopOn(newValue) {
   _loopOn = newValue;
+}
+
+let _masterTurnaround = false;
+
+export function getMasterTurnaround() {
+  return _masterTurnaround;
+}
+
+export function setMasterTurnaround(newValue) {
+  _masterTurnaround = newValue;
+}
+
+let _sectionName = "A";
+
+export function getSectionName() {
+  return _sectionName;
+}
+
+export function setSectionName(newValue) {
+  _sectionName = newValue;
 }
 
 export function findAllNestedProps(obj, propName) {

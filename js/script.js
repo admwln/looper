@@ -4,13 +4,24 @@ import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
+import DynamicInterval from "./DynamicInterval.js";
 
 import {
   getProject,
+  getSectionName,
+  setSectionName,
   getLoopOn,
   setLoopOn,
   findAllNestedProps,
   findNestedProp,
+  getPlaybackStepCounter,
+  setPlaybackStepCounter,
+  resetPlaybackStepCounter,
+  // getRepeatCounter,
+  // increaseRepeatCounter,
+  // setRepeatCounter,
+  getMasterTurnaround,
+  setMasterTurnaround,
 } from "./setter-functions.js";
 
 // Global variables
@@ -25,6 +36,12 @@ $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
   init.addEventListener("click", async () => {
+    // If init classList doesn't include blink, return
+    if (!init.classList.contains("blink")) return;
+
+    // Remove .blink class from init button
+    init.classList.remove("blink");
+
     // Tone.js initialization
     await Tone.start();
     console.log("Tone.js enabled!");
@@ -68,15 +85,23 @@ $(document).ready(function () {
   // Add section
   $(document).on("click", ".add-section", function () {
     const name =
-      $("#section-name").val() == "" ? "section" : $("#section-name").val();
+      $("#section-name").val() == ""
+        ? getSectionName()
+        : $("#section-name").val();
     new Section(name);
     $("#section-name").val("");
+    // Increment automatic section name by one character
+    setSectionName(nextChar(getSectionName()));
   });
 
+  function nextChar(c) {
+    return String.fromCharCode(c.charCodeAt(0) + 1);
+  }
+
   // Click section tab
-  $(document).on("click", ".section-tab", function () {
+  $(document).on("click", ".section-tab-button", function () {
     let sectionId = $(this).attr("id");
-    sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
+    sectionId = sectionId.slice(0, -12); // Remove "-tab-button" from id
     // Find section object in project
     const sections = findAllNestedProps(getProject(), "sections");
     const section = findNestedProp(sections, sectionId);
@@ -97,7 +122,16 @@ $(document).ready(function () {
   // Add group
   $(document).on("click", ".add-group", function () {
     const instrumentId = $(this).closest(".instrument").attr("id");
-    new Group(instrumentId, measureLength);
+    const newGroup = new Group(instrumentId, measureLength);
+    newGroup.makeMaster();
+  });
+
+  // Change master group
+  $(document).on("change", ".master-group-radio", function () {
+    const groupId = $(this).val();
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    group.makeMaster();
   });
 
   // Add step sequence to group
@@ -283,6 +317,20 @@ $(document).ready(function () {
     group.toggleCcVisibility();
   });
 
+  // Queue section button
+  $(document).on("click", ".queue-section", function () {
+    // Only if loop is playing
+    if (!getLoopOn()) return;
+    $(this).addClass("blink");
+    let sectionId = $(this).closest(".section-tab").attr("id");
+    sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
+    // Find section object in project
+    const sections = findAllNestedProps(getProject(), "sections");
+    const section = findNestedProp(sections, sectionId);
+    console.log("section to queue", section);
+    section.queue();
+  });
+
   // Console log project object
   $(document).on("click", "#log-project", function () {
     console.log(getProject());
@@ -296,70 +344,109 @@ $(document).ready(function () {
       setLoopOn(false);
       Tone.Transport.stop();
       Tone.Transport.clear(transportId);
-      // In the DOM, remove class "to-flash" from all stepNos
-      $(".step-no-seq .step").removeClass("to-flash");
+      // Change stop button to play button
+      $(this).html('<i class="fa-solid fa-play"></i>');
+      // Reset playback step counter
+      resetPlaybackStepCounter();
+
+      // In the DOM, remove class "playing" from all .queue-section buttons
+      $(".queue-section").removeClass("playing").addClass("hide");
       return;
     } else {
-      Tone.Transport.bpm.value = 120;
-      Tone.Transport.seconds = 0;
+      // Set bpm
+      Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
+      console.log(Tone.Transport.bpm.value);
+      // Set step duration
+      const stepDuration = Tone.Time("16n").toMilliseconds();
+      //Tone.Transport.seconds = 0;
 
-      // In the DOM, add class "to-flash" first steps in  "step-no-seq"
-      $(".step-no-seq").each(function () {
-        $(this).children().first().addClass("to-flash");
+      // Change play button to stop button
+      $(this).html('<i class="fa-solid fa-stop"></i>');
+
+      // Set selected section to queued
+      const sections = getProject().sections;
+      sections.forEach((section) => {
+        if (section.selected) {
+          section.queue();
+          // Add class playing to section tab
+          $("#" + section.id + "-tab .queue-section").addClass("playing");
+        }
       });
 
-      const groups = getProject().getGroups(); // Get all groups in selected section
-      // let bundleGroups = [];
-      // groups.forEach((group) => {
-      //   const bundleGroup = group.sortBundles();
-      //   // Push bundle
-      //   bundleGroups.push(bundleGroup);
-      // });
+      // In the DOM, remove class "hide" from all .queue-section buttons
+      $(".queue-section").removeClass("hide");
 
-      // Play bundles
-      // function playBundleGroup(bundleGroup, counter, time) {
-      //   const bundleStepCount = bundleGroup.length;
-      //   const bundleStep = bundleGroup[counter % bundleStepCount];
-      //   // If bundleStep.steps.length is 0, return
-      //   if (bundleStep.steps.length === 0) {
-      //     return;
-      //   }
-      //   // Play each bundleStep
-      //   bundleStep.steps.forEach((step) => {
-      //     step.playMidiNote(counter, bundleStepCount);
-      //   });
-      // }
+      // Get all groups in entire project
+      const allGroups = getProject().getAllGroups();
 
-      // Tone loop
-      let toneCounter = 0;
-      let id = Tone.Transport.scheduleRepeat(
-        (time) => {
-          //Everything inside Draw's callback will fire every 16th note
-          Tone.Draw.schedule(function () {
-            groups.forEach((group) => {
-              group.playTriggerIntervals(toneCounter);
-            });
-            toneCounter++;
-          }, time);
-          // Tone.Draw.schedule(function () {
-          //   bundleGroups.forEach((bundleGroup) => {
-          //     playBundleGroup(bundleGroup, toneCounter, time);
-          //   });
-          //   toneCounter++;
+      // Create a new DynamicInterval for each group
+      allGroups.forEach((group) => {
+        group.initDynamicInterval(
+          1,
+          0,
+          parseInt(Tone.Time("16n").toMilliseconds()) - 1
+        ); // -1ms to avoid overlap with next min
+      });
 
-          //   // Call method to flash stepNo
-          //   // stepNoSeqs.forEach((stepNoSeq) => {
-          //   //   stepNoSeq.flashStepNo(time);
-          //   // });
-          //   // Increment toneCounter
-          // }, time);
-        },
-        "16n",
-        "+" + "0.005"
-      );
-      transportId = id;
+      // Define a variable to store the start time
+      let transportStartTime;
+
+      // Start the transport after 0 seconds and save the start time
+      transportStartTime = performance.now() + 50;
+      const transportStartTimeSec = transportStartTime / 1000;
+      Tone.Transport.start(transportStartTimeSec);
+
       Tone.Transport.start();
       setLoopOn(true);
+
+      // MAIN LOOP --------------------------------------------------------------
+      // Tone.js loop every 16th note
+
+      let mainLoop = Tone.Transport.scheduleRepeat(
+        (time) => {
+          // Use playbackStepCounter to determine time of current repeat
+          const now =
+            getPlaybackStepCounter() * stepDuration + transportStartTime;
+          // If master group of current section has reached the end of its loop
+          // it's time to check if another section is queued
+          if (getMasterTurnaround()) {
+            const sections = getProject().sections;
+            sections.forEach((section) => {
+              // If the section is queued, and if masterTurnaround is true, its time to select the next section
+              if (section.queued) {
+                section.selectNext();
+                setMasterTurnaround(false);
+              }
+            });
+          }
+
+          let groupsToUpdate = [];
+          allGroups.forEach((group) => {
+            const section = group.getSection();
+            // If group's section is not selected, return
+            if (section.selected === false) {
+              // The non-selected group's dynamicInterval should not be updated
+              return;
+            }
+            // Pass time of current repeat to dynamicInterval.play(), instead of Tone.js's time
+            group.dynamicInterval.play(now);
+            // Push to groupsToUpdate
+            groupsToUpdate.push(group);
+          });
+
+          // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
+          groupsToUpdate.forEach((group) => {
+            const stepCount = group.sequences[0].steps.length;
+            group.dynamicInterval.update(stepCount, group);
+          });
+
+          // Increase playback step counter
+          setPlaybackStepCounter(getPlaybackStepCounter() + 1);
+        },
+        "16n"
+        //"+0.005"
+      );
+      transportId = mainLoop;
     }
   });
 
