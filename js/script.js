@@ -396,7 +396,8 @@ $(document).ready(function () {
       let mainLoop = Tone.Transport.scheduleRepeat(
         (time) => {
           // If master group of current section has reached the end of its loop
-          // it's time to check if another section is queued
+          // and another section is queued, getMasterTurnaround() will be true
+          // if so, find the queued section and select it
           if (getMasterTurnaround()) {
             const sections = getProject().sections;
             sections.forEach((section) => {
