@@ -1,12 +1,11 @@
 import Step from "./Step.js";
-import StepSeq from "./StepSeq.js";
 import {
   getLoopOn,
   getProject,
   getNoteName,
   findAllNestedProps,
   findNestedProp,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 export default class NoteStep extends Step {
   constructor(noteName, pixelValue, pitch, velocity) {
@@ -53,7 +52,7 @@ export default class NoteStep extends Step {
       // If this state is on, add step to trigger interval
       if (newStep.state == "on") {
         newStep.updateMsFromLoopStart();
-        newStep.addToTriggerInterval();
+        //newStep.addToTriggerInterval();
       }
     }
   }
@@ -101,10 +100,6 @@ export default class NoteStep extends Step {
     this.noteName = getNoteName(this.pixelValue);
     // Update step in DOM
     this.updateStep();
-    // If subsequent step state is on, remove from trigger interval
-    //if (nextStep.state == "on") {
-    nextStep.removeFromTriggerInterval();
-    //}
     // Remove subsequent step from noteSteps array
     stepSeq.noteSteps.splice(stepIndex + 1, 1);
     // Remove subsequent step from DOM
@@ -172,97 +167,6 @@ export default class NoteStep extends Step {
     );
   }
 
-  // PLAYBACK METHODS - second try
-  playNoteStep(
-    target,
-    loopStart,
-    round,
-    noteStepIndex,
-    stepSeq,
-    sequenceLength
-  ) {
-    // If loop is off, return
-    if (!getLoopOn()) {
-      return;
-    }
-
-    const stepCount = stepSeq.noteSteps.length;
-
-    // If noteStep is on, play it
-    if (this.state == "on") {
-      //console.log("Playing noteStep at: " + performance.now());
-      console.log("Duration: " + Tone.Time(this.noteName).toSeconds() * 990);
-      WebMidi.outputs[0].channels[1].playNote(this.pitch + 35, {
-        duration: Tone.Time(this.noteName).toSeconds() * 990,
-        rawAttack: this.velocity,
-        time: target,
-      });
-    }
-
-    // Increment noteStepIndex
-    noteStepIndex++;
-    // If next noteStep is off, noteStepIndex is incremented again, this should always skip a
-    // off noteStep, directly succeeding an on noteStep
-    // if (stepSeq.noteSteps[noteStepIndex].state == "off") {
-    //   noteStepIndex++;
-    //   console.log("skipping off noteStep");
-    // }
-
-    // If noteStepIndex is less than stepCount, queue next noteStep
-    if (noteStepIndex < stepCount) {
-      const nextNoteStep = stepSeq.noteSteps[noteStepIndex];
-      // Calculate time at which nextNoteStep should be played
-      let nextTarget;
-
-      // Calculate nextTarget
-      nextTarget =
-        loopStart +
-        sequenceLength * round +
-        nextNoteStep.getNoteStepTime(stepSeq, noteStepIndex);
-
-      // Queue next noteStep
-      console.log("Will play next step at " + nextTarget);
-      setTimeout(() => {
-        nextNoteStep.playNoteStep(
-          nextTarget,
-          loopStart,
-          round,
-          noteStepIndex,
-          stepSeq,
-          sequenceLength
-        );
-      }, nextTarget - performance.now() - 10); // -10 is just a small buffer to avoid calling next note too late
-      return;
-    }
-
-    // If noteStepIndex is equal to or more than stepCount, restart loop
-    if (noteStepIndex >= stepCount) {
-      noteStepIndex = 0;
-      const nextNoteStep = stepSeq.noteSteps[noteStepIndex];
-      round++;
-
-      // Calculate nextTarget
-      let nextTarget;
-      nextTarget =
-        loopStart +
-        sequenceLength * round +
-        nextNoteStep.getNoteStepTime(stepSeq, noteStepIndex);
-
-      // Queue next noteStep
-      console.log("Will restart loop at " + nextTarget);
-      setTimeout(() => {
-        nextNoteStep.playNoteStep(
-          nextTarget,
-          loopStart,
-          round,
-          noteStepIndex,
-          stepSeq,
-          sequenceLength
-        );
-      }, nextTarget - performance.now() - 10); // -10 is just a small buffer to avoid calling next note too late
-    }
-  }
-
   // Time in ms from loop start to this noteStep
   getMsFromLoopStart(stepSeq, noteStepIndex) {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
@@ -314,7 +218,7 @@ export default class NoteStep extends Step {
     const velocity = this.velocity;
 
     // ParseInt to avoid floating point errors
-    const trigger = time + this.msFromIntStart + 10; // buffer 10ms
+    const trigger = time + this.msFromIntStart + 20; // + buffer (ms)
 
     WebMidi.outputs[0].channels[1].playNote(pitch + 35, {
       duration: duration,

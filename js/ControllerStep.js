@@ -4,7 +4,7 @@ import {
   getNoteName,
   findAllNestedProps,
   findNestedProp,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 export default class ControllerStep extends Step {
   constructor(noteName, pixelValue) {

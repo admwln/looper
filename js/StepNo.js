@@ -3,7 +3,7 @@ import {
   getProject,
   findAllNestedProps,
   findNestedProp,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 export default class StepNo extends Step {
   constructor(noteName, pixelValue, stepNo, stepNoSeqId) {

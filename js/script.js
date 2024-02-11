@@ -4,7 +4,6 @@ import Instrument from "./Instrument.js";
 import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
-import DynamicInterval from "./DynamicInterval.js";
 
 import {
   getProject,
@@ -17,15 +16,11 @@ import {
   getPlaybackStepCounter,
   setPlaybackStepCounter,
   resetPlaybackStepCounter,
-  // getRepeatCounter,
-  // increaseRepeatCounter,
-  // setRepeatCounter,
   getMasterTurnaround,
   setMasterTurnaround,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 // Global variables
-let tempo = 120;
 let top = 4;
 let bottom = 4;
 let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
@@ -67,10 +62,6 @@ $(document).ready(function () {
       }
     }
   });
-
-  // Change scrollgroup width to accomodate measure length, will have to be done on a
-  // scrollgroup-by-scrollgroup basis later
-  //$(".scrollgroup").css("width", measureWidth);
 
   // New project button
   $("#new-project").click(() => {
@@ -346,13 +337,13 @@ $(document).ready(function () {
       Tone.Transport.clear(transportId);
       // Change stop button to play button
       $(this).html('<i class="fa-solid fa-play"></i>');
-      // Reset playback step counter
-      resetPlaybackStepCounter();
 
       // In the DOM, remove class "playing" from all .queue-section buttons
       $(".queue-section").removeClass("playing").addClass("hide");
       return;
     } else {
+      // Reset playback step counter
+      resetPlaybackStepCounter();
       // Set bpm
       Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
       console.log(Tone.Transport.bpm.value);
@@ -419,7 +410,7 @@ $(document).ready(function () {
 
           // Tone.Draw will fire at exact "time" of Tone.Transport.scheduleRepeat(), ie every 16th note
           Tone.Draw.schedule(function () {
-            // On first loop, update transportStartTime
+            // On first loop, update transportStartTime, update inside Tone.Draw to get as current a time as possible
             if (getPlaybackStepCounter() === 0) {
               transportStartTime = performance.now();
               console.log("transportStartTime updated", transportStartTime);

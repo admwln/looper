@@ -1,10 +1,4 @@
-import {
-  setIdCounter,
-  getIdCounter,
-  getProject,
-  findAllNestedProps,
-  findNestedProp,
-} from "./setter-functions.js";
+import { setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class TriggerInterval {
   constructor(stepNo, min, max) {

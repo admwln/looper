@@ -6,7 +6,7 @@ import {
   getIdCounter,
   findAllNestedProps,
   findNestedProp,
-} from "./setter-functions.js";
+} from "./helper-functions.js";
 
 export default class StepSeq {
   constructor(groupId, sequenceLength) {
@@ -38,28 +38,5 @@ export default class StepSeq {
     }
 
     console.log(`Step seq created`);
-  }
-
-  // PLAYBACK METHODS - second try
-  playNoteSeq(loopStart, group) {
-    // Will always start on first noteStep, whether it's on or off
-    // Method on noteStep will check if it's on or off
-    const firstNoteStep = this.noteSteps[0];
-    // Calculate time at which firstNoteStep should be played
-    let target = loopStart;
-    let sequenceLength =
-      group.sequences[0].steps.length * Tone.Time("16n").toSeconds() * 1000;
-    // Queue noteStep
-    console.log("Will play first step at " + target);
-    setTimeout(() => {
-      firstNoteStep.playNoteStep(
-        target, // Target is equal to loopStart, because it's the first noteStep
-        loopStart, // Loop start, in milliseconds, set when play button is pressed (includes latency buffer)
-        0, // Round counter (how many times the loop has been played)
-        0, // Index of first noteStep in sequence
-        this, // This StepSeq object
-        sequenceLength // Sequence length in milliseconds
-      );
-    }, target - performance.now() - 10);
   }
 }

@@ -1,10 +1,11 @@
-import { setProject, getProject } from "./setter-functions.js";
+import { setProject, getProject } from "./helper-functions.js";
 
 export default class Project {
   constructor(name) {
     this.name = name;
     this.sections = [];
     this.eventSeq = []; // new EventSeq() for chords, switching sections, etc.
+    this.bpm = 120;
     this.displayProject();
     setProject(this);
     console.log(`Project "${this.name}" created`);
