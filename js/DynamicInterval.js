@@ -27,13 +27,11 @@ export default class DynamicInterval extends TriggerInterval {
       return;
     }
 
-    let now = time * 1000; // Into ms
-
     //console.log("Playing", this.steps);
     console.log("Playing dynamic interval", this);
     // Play each noteStep in dynamicInterval
     this.steps.forEach((step) => {
-      step.playMidiNote(now);
+      step.playMidiNote(time);
     });
   }
 
@@ -51,17 +49,19 @@ export default class DynamicInterval extends TriggerInterval {
       this.stepNo = 1;
       this.emptySteps();
       this.harvestSteps(group);
-      // If current section is not queued, this will be the place to
-      // actually select the next section to play
-      // NOTA BENE: this should only run if current group is the master group of the current section
-      if (!group.getSection().queued) {
+      // If the group is a masterGroup and the section is not queued, switch to queued section
+      if (!group.getSection().queued && group.masterGroup) {
+        // The current masterGroup dynamicInterval is by definition reset to stepNo 1
+        // How do we make sure that all other currently playing dynamicIntervals are reset to stepNo 1?
+        // We could have a method in Group that resets all dynamicIntervals to stepNo 1
+        // (except the masterGroup's dynamicInterval, which is already reset to stepNo 1)
+
         // Find the section object that has property queued set to true
         const project = getProject();
         const sections = project.sections;
         const nextSection = sections.find((section) => section.queued === true);
         // If next section is found, select it
         if (nextSection) {
-          // NOTA BENE: only run if current group is the master group of the current section
           setMasterTurnaround(true);
           console.log("Master turnaround set to true");
         }

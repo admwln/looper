@@ -8,6 +8,20 @@ export function getProject() {
   return _project;
 }
 
+let _playbackStepCounter = 0;
+
+export function setPlaybackStepCounter(newValue) {
+  _playbackStepCounter = newValue;
+}
+
+export function resetPlaybackStepCounter() {
+  _playbackStepCounter = 0;
+}
+
+export function getPlaybackStepCounter() {
+  return _playbackStepCounter;
+}
+
 let _idCounter = 0;
 
 export function setIdCounter(newValue) {
@@ -50,6 +64,16 @@ export function getMasterTurnaround() {
 
 export function setMasterTurnaround(newValue) {
   _masterTurnaround = newValue;
+}
+
+let _sectionName = "A";
+
+export function getSectionName() {
+  return _sectionName;
+}
+
+export function setSectionName(newValue) {
+  _sectionName = newValue;
 }
 
 export function findAllNestedProps(obj, propName) {

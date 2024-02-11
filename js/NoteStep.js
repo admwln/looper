@@ -264,7 +264,7 @@ export default class NoteStep extends Step {
   }
 
   // Time in ms from loop start to this noteStep
-  getNoteStepTime(stepSeq, noteStepIndex) {
+  getMsFromLoopStart(stepSeq, noteStepIndex) {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
       (noteStep, index) => index < noteStepIndex
     );
@@ -288,14 +288,8 @@ export default class NoteStep extends Step {
       (noteStep) => noteStep.id == this.id
     );
 
-    this.msFromLoopStart = this.getNoteStepTime(stepSeq, noteStepIndex);
+    this.msFromLoopStart = this.getMsFromLoopStart(stepSeq, noteStepIndex);
   }
-
-  //playMidiNote(counter, stepCount, stepNo) {
-  // const target =
-  //   this.msFromLoopStart -
-  //   (counter % stepCount) * Tone.Time("16n").toMilliseconds();
-  // console.log("Playing note at +" + target + "ms");
 
   playMidiNote(time) {
     if (!getLoopOn()) {
@@ -305,20 +299,30 @@ export default class NoteStep extends Step {
     if (this.muted) {
       return;
     }
-
+    console.log(
+      "cf time w/ performance.now(): " +
+        time +
+        " " +
+        parseInt(performance.now())
+    );
+    console.log(
+      "Diff time w/ performance.now(): " + (time - performance.now())
+    );
     const pitch = this.pitch;
-    const duration = Tone.Time(this.noteName).toMilliseconds() * 0.99;
+    // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
+    const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
     const velocity = this.velocity;
-    const target = this.msFromIntStart;
-    const trigger = time + target + this.msFromIntStart + 125; // buffer 125ms
+
+    // ParseInt to avoid floating point errors
+    const trigger = time + this.msFromIntStart + 50; // buffer 50ms
 
     WebMidi.outputs[0].channels[1].playNote(pitch + 35, {
       duration: duration,
       rawAttack: velocity,
       time: trigger,
     });
-    this.animateStep(trigger - performance.now());
-    const delay = trigger - performance.now();
+    this.animateStep(trigger - parseInt(performance.now()));
+    const delay = parseInt(trigger - parseInt(performance.now()));
     console.log("playMidiNote trigger: " + trigger + " delay:" + delay);
   }
 

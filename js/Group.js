@@ -24,6 +24,7 @@ export default class Group {
     this.muted = false;
     this.triggerIntervals = [];
     this.dynamicInterval = {};
+    this.masterGroup = false;
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     this.instrumentId = instrumentId;
@@ -52,7 +53,9 @@ export default class Group {
           <button class="delete-bar" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
           <button class="add-step-seq"><i class='fa-solid fa-plus'></i> Sequence</button>
           <button class="delete-step-seq" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
-          <button class="toggle-cc">CC</button>
+          <button class="toggle-cc" style="margin-right:24px">CC</button>
+          <label for="master-group-${this.id}">Master</label>
+          <input type="radio" class="master-group-radio" name="master-group-section-${this.sectionId}" id="master-group-${this.id}" value="${this.id}" checked="checked" />
         </div>
       </section>
       `
@@ -207,5 +210,23 @@ export default class Group {
     const sections = findAllNestedProps(getProject(), "sections");
     const section = findNestedProp(sections, sectionId);
     return section;
+  }
+
+  makeMaster() {
+    this.masterGroup = true;
+    // Find all other groups in this section
+    const section = this.getSection();
+    const instruments = section.instruments;
+    // Get all groups in this section
+    const groups = [];
+    instruments.forEach((instrument) => {
+      groups.push(...instrument.groups);
+    });
+    // Set all other groups to masterGroup = false
+    groups.forEach((group) => {
+      if (group.id !== this.id) {
+        group.masterGroup = false;
+      }
+    });
   }
 }

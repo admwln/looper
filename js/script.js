@@ -8,10 +8,15 @@ import DynamicInterval from "./DynamicInterval.js";
 
 import {
   getProject,
+  getSectionName,
+  setSectionName,
   getLoopOn,
   setLoopOn,
   findAllNestedProps,
   findNestedProp,
+  getPlaybackStepCounter,
+  setPlaybackStepCounter,
+  resetPlaybackStepCounter,
   // getRepeatCounter,
   // increaseRepeatCounter,
   // setRepeatCounter,
@@ -80,10 +85,18 @@ $(document).ready(function () {
   // Add section
   $(document).on("click", ".add-section", function () {
     const name =
-      $("#section-name").val() == "" ? "section" : $("#section-name").val();
+      $("#section-name").val() == ""
+        ? getSectionName()
+        : $("#section-name").val();
     new Section(name);
     $("#section-name").val("");
+    // Increment automatic section name by one character
+    setSectionName(nextChar(getSectionName()));
   });
+
+  function nextChar(c) {
+    return String.fromCharCode(c.charCodeAt(0) + 1);
+  }
 
   // Click section tab
   $(document).on("click", ".section-tab-button", function () {
@@ -109,7 +122,16 @@ $(document).ready(function () {
   // Add group
   $(document).on("click", ".add-group", function () {
     const instrumentId = $(this).closest(".instrument").attr("id");
-    new Group(instrumentId, measureLength);
+    const newGroup = new Group(instrumentId, measureLength);
+    newGroup.makeMaster();
+  });
+
+  // Change master group
+  $(document).on("change", ".master-group-radio", function () {
+    const groupId = $(this).val();
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    group.makeMaster();
   });
 
   // Add step sequence to group
@@ -324,14 +346,19 @@ $(document).ready(function () {
       Tone.Transport.clear(transportId);
       // Change stop button to play button
       $(this).html('<i class="fa-solid fa-play"></i>');
+      // Reset playback step counter
+      resetPlaybackStepCounter();
 
       // In the DOM, remove class "playing" from all .queue-section buttons
       $(".queue-section").removeClass("playing").addClass("hide");
       return;
     } else {
+      // Set bpm
       Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
       console.log(Tone.Transport.bpm.value);
-      Tone.Transport.seconds = 0;
+      // Set step duration
+      const stepDuration = Tone.Time("16n").toMilliseconds();
+      //Tone.Transport.seconds = 0;
 
       // Change play button to stop button
       $(this).html('<i class="fa-solid fa-stop"></i>');
@@ -361,13 +388,25 @@ $(document).ready(function () {
         ); // -1ms to avoid overlap with next min
       });
 
+      // Define a variable to store the start time
+      let transportStartTime;
+
+      // Start the transport after 0 seconds and save the start time
+      transportStartTime = performance.now() + 100;
+      const transportStartTimeSec = transportStartTime / 1000;
+      Tone.Transport.start(transportStartTimeSec);
+
       Tone.Transport.start();
       setLoopOn(true);
 
       // MAIN LOOP --------------------------------------------------------------
       // Tone.js loop every 16th note
+
       let mainLoop = Tone.Transport.scheduleRepeat(
         (time) => {
+          // Use playbackStepCounter to determine time of current repeat
+          const now =
+            getPlaybackStepCounter() * stepDuration + transportStartTime;
           // If master group of current section has reached the end of its loop
           // it's time to check if another section is queued
           if (getMasterTurnaround()) {
@@ -381,6 +420,7 @@ $(document).ready(function () {
             });
           }
 
+          let groupsToUpdate = [];
           allGroups.forEach((group) => {
             const section = group.getSection();
             // If group's section is not selected, return
@@ -388,10 +428,20 @@ $(document).ready(function () {
               // The non-selected group's dynamicInterval should not be updated
               return;
             }
+            // Pass time of current repeat to dynamicInterval.play(), instead of Tone.js's time
+            group.dynamicInterval.play(now);
+            // Push to groupsToUpdate
+            groupsToUpdate.push(group);
+          });
+
+          // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
+          groupsToUpdate.forEach((group) => {
             const stepCount = group.sequences[0].steps.length;
-            group.dynamicInterval.play(time);
             group.dynamicInterval.update(stepCount, group);
           });
+
+          // Increase playback step counter
+          setPlaybackStepCounter(getPlaybackStepCounter() + 1);
         },
         "16n"
         //"+0.005"
