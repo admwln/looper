@@ -333,8 +333,8 @@ $(document).ready(function () {
   $(document).on("click", "#play", function () {
     if (getLoopOn()) {
       setLoopOn(false);
-      Tone.Transport.stop();
-      Tone.Transport.clear(transportId);
+      // Tone.Transport.stop();
+      // Tone.Transport.clear(transportId);
       // Change stop button to play button
       $(this).html('<i class="fa-solid fa-play"></i>');
 
@@ -388,14 +388,51 @@ $(document).ready(function () {
       // const playbackStartTimeSec = playbackStartTime / 1000;
 
       let playbackStartTime;
+      let target;
 
-      Tone.Transport.start();
+      //Tone.Transport.start();
       setLoopOn(true);
-
       // MAIN LOOP --------------------------------------------------------------
-      // Tone.js loop every 16th note
-      let mainLoop = Tone.Transport.scheduleRepeat(
-        (time) => {
+      // Attempt to replace tone.js scheduleRepeat with setTimeout
+
+      // On play, update playbackStartTime
+
+      playbackStartTime = performance.now();
+      console.log("playbackStartTime set", playbackStartTime);
+      // Use playbackStepCounter to determine time of first 16th note
+      target = getPlaybackStepCounter() * stepDuration + playbackStartTime;
+
+      let groupsToUpdate = [];
+      allGroups.forEach((group) => {
+        const section = group.getSection();
+        // If group's section is not selected, return
+        if (section.selected === false) {
+          // The non-selected group's dynamicInterval should not be updated
+          return;
+        }
+        // Pass time of current repeat to dynamicInterval.play(), instead of Tone.js's time
+        group.dynamicInterval.play(performance.now());
+        // Push to groupsToUpdate
+        groupsToUpdate.push(group);
+      });
+      // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
+      groupsToUpdate.forEach((group) => {
+        const stepCount = group.sequences[0].steps.length;
+        group.dynamicInterval.update(stepCount, group);
+      });
+
+      // Increase playback step counter
+      setPlaybackStepCounter(getPlaybackStepCounter() + 1);
+
+      // Use playbackStepCounter to determine time of next 16th note
+      target = getPlaybackStepCounter() * stepDuration + playbackStartTime;
+      // Get difference between target and now, represents time to next 16th note
+      const diff = target - performance.now();
+      playbackLoop(diff, target);
+
+      function playbackLoop(diff, target) {
+        if (getLoopOn() === false) return;
+        setTimeout(() => {
           // If master group of current section has reached the end of its loop
           // and another section is queued, getMasterTurnaround() will be true
           // if so, find the queued section and select it
@@ -410,45 +447,93 @@ $(document).ready(function () {
             });
           }
 
-          // Tone.Draw will fire at exact "time" of Tone.Transport.scheduleRepeat(), ie every 16th note
-          Tone.Draw.schedule(function () {
-            // On first loop, update playbackStartTime, update inside Tone.Draw to get as current a time as possible
-            if (getPlaybackStepCounter() === 0) {
-              playbackStartTime = performance.now();
-              console.log("playbackStartTime updated", playbackStartTime);
+          let groupsToUpdate = [];
+          allGroups.forEach((group) => {
+            const section = group.getSection();
+            // If group's section is not selected, return
+            if (section.selected === false) {
+              // The non-selected group's dynamicInterval should not be updated
+              return;
             }
+            // Pass target time of current 16h to dynamicInterval.play()
+            group.dynamicInterval.play(target);
+            // Push to groupsToUpdate
+            groupsToUpdate.push(group);
+          });
+          // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
+          groupsToUpdate.forEach((group) => {
+            const stepCount = group.sequences[0].steps.length;
+            group.dynamicInterval.update(stepCount, group);
+          });
 
-            // Use playbackStepCounter to determine time of 16th note
-            const now =
-              getPlaybackStepCounter() * stepDuration + playbackStartTime;
+          // Increase playback step counter
+          setPlaybackStepCounter(getPlaybackStepCounter() + 1);
 
-            let groupsToUpdate = [];
-            allGroups.forEach((group) => {
-              const section = group.getSection();
-              // If group's section is not selected, return
-              if (section.selected === false) {
-                // The non-selected group's dynamicInterval should not be updated
-                return;
-              }
-              // Pass time of current repeat to dynamicInterval.play(), instead of Tone.js's time
-              group.dynamicInterval.play(now);
-              // Push to groupsToUpdate
-              groupsToUpdate.push(group);
-            });
-            // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
-            groupsToUpdate.forEach((group) => {
-              const stepCount = group.sequences[0].steps.length;
-              group.dynamicInterval.update(stepCount, group);
-            });
+          // Use playbackStepCounter to determine time of next 16th note
+          target = getPlaybackStepCounter() * stepDuration + playbackStartTime;
+          // Get difference between target and now, represents time to next 16th note
+          diff = target - performance.now();
+          playbackLoop(diff, target);
+        }, diff);
+      }
 
-            // Increase playback step counter
-            setPlaybackStepCounter(getPlaybackStepCounter() + 1);
-          }, time);
-        },
-        "16n"
-        //"+0.005"
-      );
-      transportId = mainLoop;
+      // MAIN LOOP --------------------------------------------------------------
+      // Tone.js loop every 16th note
+      // let mainLoop = Tone.Transport.scheduleRepeat(
+      //   (time) => {
+      //     // If master group of current section has reached the end of its loop
+      //     // and another section is queued, getMasterTurnaround() will be true
+      //     // if so, find the queued section and select it
+      //     if (getMasterTurnaround()) {
+      //       const sections = getProject().sections;
+      //       sections.forEach((section) => {
+      //         // If the section is queued, and if masterTurnaround is true, its time to select the next section
+      //         if (section.queued) {
+      //           section.selectNext();
+      //           setMasterTurnaround(false);
+      //         }
+      //       });
+      //     }
+
+      //     // Tone.Draw will fire at exact "time" of Tone.Transport.scheduleRepeat(), ie every 16th note
+      //     Tone.Draw.schedule(function () {
+      //       // On first loop, update playbackStartTime, update inside Tone.Draw to get as current a time as possible
+      //       if (getPlaybackStepCounter() === 0) {
+      //         playbackStartTime = performance.now();
+      //         console.log("playbackStartTime updated", playbackStartTime);
+      //       }
+
+      //       // Use playbackStepCounter to determine time of 16th note
+      //       const now =
+      //         getPlaybackStepCounter() * stepDuration + playbackStartTime;
+
+      //       let groupsToUpdate = [];
+      //       allGroups.forEach((group) => {
+      //         const section = group.getSection();
+      //         // If group's section is not selected, return
+      //         if (section.selected === false) {
+      //           // The non-selected group's dynamicInterval should not be updated
+      //           return;
+      //         }
+      //         // Pass time of current repeat to dynamicInterval.play(), instead of Tone.js's time
+      //         group.dynamicInterval.play(now);
+      //         // Push to groupsToUpdate
+      //         groupsToUpdate.push(group);
+      //       });
+      //       // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
+      //       groupsToUpdate.forEach((group) => {
+      //         const stepCount = group.sequences[0].steps.length;
+      //         group.dynamicInterval.update(stepCount, group);
+      //       });
+
+      //       // Increase playback step counter
+      //       setPlaybackStepCounter(getPlaybackStepCounter() + 1);
+      //     }, time);
+      //   },
+      //   "16n"
+      //   //"+0.005"
+      // );
+      // transportId = mainLoop;
     }
   });
 
