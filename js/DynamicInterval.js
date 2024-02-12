@@ -1,5 +1,3 @@
-import TriggerInterval from "./TriggerInterval.js";
-
 import {
   setIdCounter,
   getIdCounter,
@@ -8,11 +6,14 @@ import {
   setMasterTurnaround,
 } from "./helper-functions.js";
 
-export default class DynamicInterval extends TriggerInterval {
+export default class DynamicInterval {
   constructor(stepNo, min, max) {
-    super(stepNo, min, max);
     this.id = "din" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
+    this.stepNo = stepNo;
+    this.min = min;
+    this.max = max;
+    this.steps = [];
     this.groupId = "";
   }
 

@@ -473,6 +473,23 @@ $(document).ready(function () {
           target = getPlaybackStepCounter() * stepDuration + playbackStartTime;
           // Get difference between target and now, represents time to next 16th note
           diff = target - performance.now();
+          // Possibility here to make a silent loop at shorter interval,
+          // say 25ms, until diff is less than 25ms
+          // Then, call playbackLoop(diff, target) with updated diff as argument
+          if (diff > 50) {
+            silentLoop();
+          }
+
+          function silentLoop() {
+            setTimeout(() => {
+              diff = target - performance.now();
+              if (diff < 50) return;
+              silentLoop();
+            }, 25);
+          }
+
+          // Check that loop is still on
+          if (getLoopOn() === false) return;
           playbackLoop(diff, target);
         }, diff);
       }
