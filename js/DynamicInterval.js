@@ -37,33 +37,44 @@ export default class DynamicInterval {
     this.steps = [];
   }
 
+  reset(group) {
+    console.log("Resetting dynamic interval", this);
+    this.min = 0;
+    this.max = parseInt(Tone.Time("16n").toMilliseconds()) - 1;
+    this.stepNo = 1;
+    this.emptySteps();
+    this.harvestSteps(group);
+  }
+
   update(stepCount, group) {
     const newStepNo = this.stepNo + 1;
-    // This is where the end of the current loop is detected
 
+    // This is where the end of the current loop is detected
+    // If the new stepNo is greater than the stepCount, reset the dynamicInterval
+    // or if a new section is queued, reset all current dynamicIntervals and select the new section
     if (newStepNo > stepCount) {
-      this.min = 0;
-      this.max = parseInt(Tone.Time("16n").toMilliseconds()) - 1;
-      this.stepNo = 1;
-      this.emptySteps();
-      this.harvestSteps(group);
       // If the group is a masterGroup and the section is not queued, switch to queued section
       if (!group.getSection().queued && group.masterGroup) {
-        // The current masterGroup dynamicInterval is by definition reset to stepNo 1
-        // How do we make sure that all other currently playing dynamicIntervals are reset to stepNo 1?
-        // We could have a method in Group that resets all dynamicIntervals to stepNo 1
-        // (except the masterGroup's dynamicInterval, which is already reset to stepNo 1)
-
-        // Find the section object that has property queued set to true
         const project = getProject();
         const sections = project.sections;
+        const selectedGroups = project.getSelectedGroups();
+
+        // Reset dynamicInterval of each group in the current section
+        selectedGroups.forEach((group) => {
+          group.dynamicInterval.reset(group);
+        });
+
+        // Find the section object that has property queued set to true
         const nextSection = sections.find((section) => section.queued === true);
         // If next section is found, select it
         if (nextSection) {
           setMasterTurnaround(true);
           console.log("Master turnaround set to true");
         }
+        return;
       }
+
+      this.reset(group);
       return;
     }
 
