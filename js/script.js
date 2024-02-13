@@ -167,8 +167,8 @@ $(document).ready(function () {
       // nota bene: only have desired effect if group is scrolled all the way to the right
       // when expand button is clicked
       if (group.sequences[0].steps.length > measureLength) {
-        const group = $("#" + groupId + " .scroll-container");
-        scrollRight(group);
+        //const group = $("#" + groupId + " .scroll-container");
+        group.scrollRight(measureWidth);
       }
     }
   );
@@ -176,18 +176,13 @@ $(document).ready(function () {
   // Scrollgroup arrows
   $(document).on("click", ".scroll-group", function () {
     const groupId = $(this).closest(".group").attr("id");
-    const group = $("#" + groupId + " .scroll-container");
-    if ($(this).hasClass("right")) scrollRight(group);
-    if ($(this).hasClass("left")) scrollLeft(group);
+    // Get group object
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    console.log("group", group);
+    if ($(this).hasClass("right")) group.scrollRight(measureWidth);
+    if ($(this).hasClass("left")) group.scrollLeft(measureWidth);
   });
-
-  function scrollRight(group) {
-    $(group).animate({ scrollLeft: `+=${measureWidth}px` }, 0);
-  }
-
-  function scrollLeft(group) {
-    $(group).animate({ scrollLeft: `-=${measureWidth}px` }, 0);
-  }
 
   // Edit
   let editMode = "pencil";

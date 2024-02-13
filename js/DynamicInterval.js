@@ -61,6 +61,8 @@ export default class DynamicInterval {
     // If the new stepNo is greater than the stepCount, reset the dynamicInterval
     // or if a new section is queued, reset all current dynamicIntervals and select the new section
     if (newStepNo > stepCount) {
+      // END OF LOOP!
+
       // If the group is a masterGroup and the section is not queued, switch to queued section
       if (!group.getSection().queued && group.masterGroup) {
         const project = getProject();

@@ -23,6 +23,7 @@ export default class Group {
     this.muted = false;
     this.dynamicInterval = {};
     this.masterGroup = false;
+    this.automaticScroll = true;
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     this.instrumentId = instrumentId;
@@ -56,6 +57,20 @@ export default class Group {
         </div>
       </section>
       `
+    );
+  }
+
+  scrollRight(width) {
+    $(`#${this.id} .scroll-container`).animate(
+      { scrollLeft: `+=${width}px` },
+      0
+    );
+  }
+
+  scrollLeft(width) {
+    $(`#${this.id} .scroll-container`).animate(
+      { scrollLeft: `-=${width}px` },
+      0
     );
   }
 
