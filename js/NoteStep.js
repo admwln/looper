@@ -203,15 +203,10 @@ export default class NoteStep extends Step {
     if (this.muted) {
       return;
     }
-    console.log(
-      "cf time w/ performance.now(): " +
-        time +
-        " " +
-        parseInt(performance.now())
-    );
-    console.log(
-      "Diff time w/ performance.now(): " + (time - performance.now())
-    );
+
+    if (time - performance.now() < -5 || time - performance.now() > 5) {
+      console.log("Diff target-now " + (time - performance.now()));
+    }
     const pitch = this.pitch;
     // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
     const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
@@ -226,7 +221,9 @@ export default class NoteStep extends Step {
     });
     this.animateStep(trigger - parseInt(performance.now()));
     const delay = parseInt(trigger - parseInt(performance.now()));
-    console.log("playMidiNote trigger: " + trigger + " delay:" + delay);
+    if (delay < 5 || delay > 20) {
+      console.log("playMidiNote delay incl. buffer (20ms):" + delay + "ms");
+    }
   }
 
   animateStep(target) {
