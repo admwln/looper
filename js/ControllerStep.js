@@ -104,4 +104,35 @@ export default class ControllerStep extends Step {
     stepSeq.controllerSteps.splice(stepIndex, 1);
     $("#" + this.id).remove();
   }
+
+  // Time in ms from loop start to this controllerStep
+  getMsFromLoopStart(stepSeq, controllerStepIndex) {
+    const precedingControllerSteps = stepSeq.controllerSteps.filter(
+      (controllerStep, index) => index < controllerStepIndex
+    );
+    let time = 0;
+    precedingControllerSteps.forEach((controllerStep) => {
+      time += Tone.Time(controllerStep.noteName).toMilliseconds();
+    });
+    return Math.round(parseFloat(time)); // Rounding to avoid floating point errors
+  }
+
+  // Update msFromLoopStart for single controllerStep
+  updateMsFromLoopStart() {
+    // Find index of this controllerStep in stepSeq.controllerSteps
+    const stepSeqId = $("#" + this.id)
+      .parent()
+      .parent()
+      .attr("id");
+    const sequences = findAllNestedProps(getProject(), "sequences");
+    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const controllerStepIndex = stepSeq.controllerSteps.findIndex(
+      (controllerStep) => controllerStep.id == this.id
+    );
+
+    this.msFromLoopStart = this.getMsFromLoopStart(
+      stepSeq,
+      controllerStepIndex
+    );
+  }
 }
