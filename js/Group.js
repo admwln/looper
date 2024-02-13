@@ -99,33 +99,54 @@ export default class Group {
     // Check if stepsToDelete is greater than stepCount, if so, set stepsToDelete to stepCount,
     // this in order to avoid negative values
     stepsToDelete > stepCount ? (stepsToDelete = stepCount) : null;
+    // How many sequences of the kind StepSeq are there in this group?
+    const stepSeqs = this.sequences.filter(
+      (sequence) => sequence.constructor.name === "StepSeq"
+    ).length;
 
     for (let i = 1; i <= stepsToDelete; i++) {
-      // There is always just one StepNoSeq per group, remove one StepNo from it
-      const stepNoSeqId = this.sequences[0].id;
-      // Get last stepNo in stepNoSeq
-      const stepNoToRemove = this.sequences[0].steps[stepCount - i];
-      stepNoToRemove.deleteStepNo(stepNoSeqId);
-
-      // How many sequences of the kind StepSeq are there in this group?
-      const stepSeqs = this.sequences.filter(
-        (sequence) => sequence.constructor.name === "StepSeq"
-      ).length;
       for (let j = 0; j < stepSeqs; j++) {
+        // Delete noteStep
+        // Get noteStep count of the current stepSeq
+        const noteStepCount = this.sequences[j + 1].noteSteps.length;
         // For each step sequence, remove a noteStep
+        // +1 to skip the first sequence, which is always a StepNoSeq
         const stepSeqId = this.sequences[j + 1].id;
         // Find the stepSeq object in project by using stepSeqId
         const sequences = findAllNestedProps(getProject(), "sequences");
         const stepSeq = findNestedProp(sequences, stepSeqId);
         // Delete last noteStep from stepSeq.noteSteps
-        const noteStepToRemove = stepSeq.noteSteps[stepCount - i];
-        noteStepToRemove.deleteNoteStep(stepSeqId);
+        const noteStepToRemove = stepSeq.noteSteps[noteStepCount - i];
+        // Check if noteStepToRemove has noteName 16n, else break the loop
+        if (noteStepToRemove.noteName === "16n") {
+          noteStepToRemove.deleteNoteStep(stepSeqId);
+        } else {
+          console.log("Can't delete noteStep w/ other value than 16n");
+          break;
+        }
+
+        // Delete controllerStep
+        // Get controllerStep count of the current stepSeq
+        const controllerStepCount =
+          this.sequences[j + 1].controllerSteps.length;
         // Delete last controllerStep from stepSeq.controllerSteps
-        const controllerStepToRemove = stepSeq.controllerSteps[stepCount - i];
-        controllerStepToRemove.deleteControllerStep(stepSeqId);
+        const controllerStepToRemove =
+          stepSeq.controllerSteps[controllerStepCount - i];
+        // Check if controllerStepToRemove has controllerName 16n, else break the loop
+        if (controllerStepToRemove.noteName === "16n") {
+          controllerStepToRemove.deleteControllerStep(stepSeqId);
+        } else {
+          console.log("Can't delete controllerStep w/ other value than 16n");
+          break;
+        }
+        // There is always just one StepNoSeq per group, remove one StepNo from it
+        const stepNoSeqId = this.sequences[0].id;
+        // Get last stepNo in stepNoSeq
+        const stepNoToRemove = this.sequences[0].steps[stepCount - i];
+        stepNoToRemove.deleteStepNo(stepNoSeqId);
+        console.log(`Group shortened by ${stepsToDelete} steps`);
       }
     }
-    console.log(`Group shortened by ${stepsToDelete} steps`);
   }
 
   deleteLastSeq(seqIndex) {
