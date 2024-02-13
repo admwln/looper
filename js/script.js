@@ -335,6 +335,7 @@ $(document).ready(function () {
       $(".queue-section").removeClass("playing").addClass("hide");
       return;
     } else {
+      // Initialize player
       const player = new Player();
       player.startPlayback();
     }
