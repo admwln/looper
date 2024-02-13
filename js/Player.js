@@ -1,6 +1,7 @@
 import {
   getProject,
   getLoopOn,
+  setLoopOn,
   getMasterTurnaround,
   setMasterTurnaround,
 } from "./helper-functions.js";
@@ -50,27 +51,58 @@ export default class Player {
     console.log("playbackStartTime set", this.playbackStartTime);
   }
 
-  checkAllGroups(target) {
-    const groupsToUpdate = [];
-    this.allGroups.forEach((group) => {
-      //console.log("checking", group);
-      const section = group.getSection();
-      // If group's section is not selected, return
-      if (section.selected === false) {
-        // The non-selected group's dynamicInterval should not be updated
-        return;
+  startPlayback() {
+    // Reset playback step counter
+    this.resetPlaybackStepCounter();
+    // Set bpm
+    Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
+    // The step sequencers main unit is 16th notes, after bpm is set this value needs to be updated
+    this.updateStepDuration();
+
+    // Change play button to stop button
+    $("#play").html('<i class="fa-solid fa-stop"></i>');
+
+    // Set selected section to queued
+    const sections = getProject().sections;
+    sections.forEach((section) => {
+      if (section.selected) {
+        section.queue();
+        // Add class playing to section tab
+        $("#" + section.id + "-tab .queue-section").addClass("playing");
       }
-      // Pass current time to dynamicInterval.play(), instead of player's playbackStartTime
-      group.dynamicInterval.play(target);
-      //console.log("playing dynInt of group", group);
-      // Push to groupsToUpdate
-      groupsToUpdate.push(group);
     });
-    // groupsToUpdate is an array of all groups in the selected section, groups that have been played
-    groupsToUpdate.forEach((group) => {
-      const stepCount = group.sequences[0].steps.length;
-      group.dynamicInterval.update(stepCount, group);
+
+    // In the DOM, remove class "hide" from all .queue-section buttons
+    $(".queue-section").removeClass("hide");
+
+    // Get all groups in entire project
+    this.setAllGroups(getProject().getAllGroups());
+    // Create a new DynamicInterval for each group
+    this.getAllGroups().forEach((group) => {
+      group.initDynamicInterval(
+        1,
+        0,
+        parseInt(Tone.Time("16n").toMilliseconds()) - 1
+      ); // -1ms to avoid overlap with next min
     });
+
+    // Update playbackStartTime to now
+    this.setPlaybackStartTime(performance.now());
+
+    setLoopOn(true);
+
+    // First 16th note
+    let target =
+      this.getPlaybackStepCounter() * this.getStepDuration() +
+      this.getPlaybackStartTime();
+
+    // // Get difference between target and now, represents time to next 16th note
+    let diff = target - performance.now();
+    if (diff < 0) {
+      diff = 0;
+    }
+
+    this.loop(diff, target);
   }
 
   loop(diff, target) {
@@ -111,6 +143,29 @@ export default class Player {
       // Recursive call to loop()
       this.loop(diff, nextTarget);
     }, diff);
+  }
+
+  checkAllGroups(target) {
+    const groupsToUpdate = [];
+    this.allGroups.forEach((group) => {
+      //console.log("checking", group);
+      const section = group.getSection();
+      // If group's section is not selected, return
+      if (section.selected === false) {
+        // The non-selected group's dynamicInterval should not be updated
+        return;
+      }
+      // Pass current time to dynamicInterval.play(), instead of player's playbackStartTime
+      group.dynamicInterval.play(target);
+      //console.log("playing dynInt of group", group);
+      // Push to groupsToUpdate
+      groupsToUpdate.push(group);
+    });
+    // groupsToUpdate is an array of all groups in the selected section, groups that have been played
+    groupsToUpdate.forEach((group) => {
+      const stepCount = group.sequences[0].steps.length;
+      group.dynamicInterval.update(stepCount, group);
+    });
   }
 
   silentLoop(nextTarget) {

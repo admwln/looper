@@ -335,61 +335,9 @@ $(document).ready(function () {
       $(".queue-section").removeClass("playing").addClass("hide");
       return;
     } else {
-      let player = new Player();
-      // Reset playback step counter
-      player.resetPlaybackStepCounter();
-      // Set bpm
-      Tone.Transport.bpm.value = parseInt($("#project-bpm").val());
-      // The step sequencers main unit is 16th notes, after bpm is set this value needs to be updated
-      player.updateStepDuration();
-
-      // Change play button to stop button
-      $(this).html('<i class="fa-solid fa-stop"></i>');
-
-      // Set selected section to queued
-      const sections = getProject().sections;
-      sections.forEach((section) => {
-        if (section.selected) {
-          section.queue();
-          // Add class playing to section tab
-          $("#" + section.id + "-tab .queue-section").addClass("playing");
-        }
-      });
-
-      // In the DOM, remove class "hide" from all .queue-section buttons
-      $(".queue-section").removeClass("hide");
-
-      // Get all groups in entire project
-      player.setAllGroups(getProject().getAllGroups());
-      // Create a new DynamicInterval for each group
-      player.getAllGroups().forEach((group) => {
-        group.initDynamicInterval(
-          1,
-          0,
-          parseInt(Tone.Time("16n").toMilliseconds()) - 1
-        ); // -1ms to avoid overlap with next min
-      });
-
-      // MAIN LOOP --------------------------------------------------------------
-      // Update playbackStartTime to now
-      player.setPlaybackStartTime(performance.now());
-
-      setLoopOn(true);
-
-      // First 16th note
-      let target =
-        player.getPlaybackStepCounter() * player.getStepDuration() +
-        player.getPlaybackStartTime();
-
-      // // Get difference between target and now, represents time to next 16th note
-      let diff = target - performance.now();
-      if (diff < 0) {
-        diff = 0;
-      }
-
-      player.loop(diff, target);
+      const player = new Player();
+      player.startPlayback();
     }
   });
-
   // End document.ready
 });
