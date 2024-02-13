@@ -29,7 +29,13 @@ export default class DynamicInterval {
     console.log("Playing dynamic interval", this);
     // Play each noteStep in dynamicInterval
     this.steps.forEach((step) => {
-      step.playMidiNote(time);
+      // Check if step is a noteStep or a controllerStep
+      if (step.constructor.name === "NoteStep") {
+        step.playMidiNote(time);
+      } else if (step.constructor.name === "ControllerStep") {
+        console.log("Playing controller step", step);
+        //step.playMidiCc(time);
+      }
     });
   }
 
@@ -100,6 +106,7 @@ export default class DynamicInterval {
       (sequence) => sequence.constructor.name === "StepSeq"
     );
 
+    // Note steps --------------------------------------
     // All noteStep objects with state "on" in the group
     const groupNoteSteps = [];
     // For each stepSeq...
@@ -123,6 +130,33 @@ export default class DynamicInterval {
       ) {
         noteStep.setMsFromIntStart(this.stepNo);
         this.steps.push(noteStep);
+      }
+    });
+
+    // Controller steps --------------------------------------
+    // All controllerStep objects with state "on" in the group
+    const groupControllerSteps = [];
+    // For each stepSeq...
+    stepSeqs.forEach((stepSeq) => {
+      // ...find all controllerSteps
+      const controllerSteps = stepSeq.controllerSteps;
+      // If they're "on", update their msFromLoopStart value ...and push them to groupControllerSteps
+      controllerSteps.forEach((controllerStep) => {
+        if (controllerStep.state == "on") {
+          controllerStep.updateMsFromLoopStart();
+          groupControllerSteps.push(controllerStep);
+        }
+      });
+    });
+
+    // Check if any controllerStep is within its time range
+    groupControllerSteps.forEach((controllerStep) => {
+      if (
+        controllerStep.msFromLoopStart >= this.min &&
+        controllerStep.msFromLoopStart <= this.max
+      ) {
+        controllerStep.setMsFromIntStart(this.stepNo);
+        this.steps.push(controllerStep);
       }
     });
   }
