@@ -32,7 +32,9 @@ export default class DynamicInterval {
       // Check if step is a noteStep or a controllerStep
       if (step.constructor.name === "NoteStep") {
         step.playMidiNote(time);
-      } else if (step.constructor.name === "ControllerStep") {
+      }
+
+      if (step.constructor.name === "ControllerStep") {
         console.log("Playing controller step", step);
         //step.playMidiCc(time);
       }
@@ -100,63 +102,42 @@ export default class DynamicInterval {
 
   harvestSteps(group) {
     const sequences = group.sequences;
-
     // All except first sequence in sequences array
     const stepSeqs = sequences.filter(
       (sequence) => sequence.constructor.name === "StepSeq"
     );
 
-    // Note steps --------------------------------------
-    // All noteStep objects with state "on" in the group
-    const groupNoteSteps = [];
+    // All noteStep and controllerStep objects with state "on" in the group
+    const groupStepsOn = [];
+
     // For each stepSeq...
     stepSeqs.forEach((stepSeq) => {
-      // ...find all noteSteps
-      const noteSteps = stepSeq.noteSteps;
-      // If they're "on", update their msFromLoopStart value ...and push them to groupNoteSteps
-      noteSteps.forEach((noteStep) => {
-        if (noteStep.state == "on") {
-          noteStep.updateMsFromLoopStart();
-          groupNoteSteps.push(noteStep);
+      const groupStepsAll = [];
+      // ...find all noteSteps and controllerSteps in current group and push to groupStepsAll
+      stepSeq.noteSteps.forEach((noteStep) => {
+        groupStepsAll.push(noteStep);
+      });
+
+      stepSeq.controllerSteps.forEach((controllerStep) => {
+        groupStepsAll.push(controllerStep);
+      });
+      // If a step is "on", update its msFromLoopStart value ...and push it to groupStepsOn
+      groupStepsAll.forEach((step) => {
+        if (step.state == "on") {
+          step.updateMsFromLoopStart();
+          groupStepsOn.push(step);
         }
       });
     });
 
-    // Check if any noteStep is within its time range
-    groupNoteSteps.forEach((noteStep) => {
+    // Check if any step is within its time range
+    groupStepsOn.forEach((step) => {
       if (
-        noteStep.msFromLoopStart >= this.min &&
-        noteStep.msFromLoopStart <= this.max
+        step.msFromLoopStart >= this.min &&
+        step.msFromLoopStart <= this.max
       ) {
-        noteStep.setMsFromIntStart(this.stepNo);
-        this.steps.push(noteStep);
-      }
-    });
-
-    // Controller steps --------------------------------------
-    // All controllerStep objects with state "on" in the group
-    const groupControllerSteps = [];
-    // For each stepSeq...
-    stepSeqs.forEach((stepSeq) => {
-      // ...find all controllerSteps
-      const controllerSteps = stepSeq.controllerSteps;
-      // If they're "on", update their msFromLoopStart value ...and push them to groupControllerSteps
-      controllerSteps.forEach((controllerStep) => {
-        if (controllerStep.state == "on") {
-          controllerStep.updateMsFromLoopStart();
-          groupControllerSteps.push(controllerStep);
-        }
-      });
-    });
-
-    // Check if any controllerStep is within its time range
-    groupControllerSteps.forEach((controllerStep) => {
-      if (
-        controllerStep.msFromLoopStart >= this.min &&
-        controllerStep.msFromLoopStart <= this.max
-      ) {
-        controllerStep.setMsFromIntStart(this.stepNo);
-        this.steps.push(controllerStep);
+        step.setMsFromIntStart(this.stepNo);
+        this.steps.push(step);
       }
     });
   }
