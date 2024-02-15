@@ -53,8 +53,10 @@ export default class DynamicInterval {
     this.stepNo = 1;
     this.emptySteps();
     this.harvestSteps(group);
+    // Reset dotIndicator to first dot
+    group.dotIndicator.setCurrentDot(0);
     // Reset scroll position all the way to the left of group
-    group.scrollLeft(group.groupLength * getStepWidth());
+    group.scrollLeft(group.groupLength * getStepWidth(), false);
   }
 
   update(stepCount, group) {
@@ -75,7 +77,8 @@ export default class DynamicInterval {
         if (newStepNo < stepCount) {
           // Scroll one measureWidth to the right
           console.log("Scrolling one measureWidth to the right");
-          group.scrollRight(group.measureLength * getStepWidth());
+          // true = increment currentDot
+          group.scrollRight(group.measureLength * getStepWidth(), true);
         }
       }
     }

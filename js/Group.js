@@ -136,7 +136,6 @@ export default class Group {
 
   // Shorten group by x number of steps
   shortenGroup(stepsToDelete, stepCount) {
-    let error = false;
     // Check if stepsToDelete is greater than stepCount, if so, set stepsToDelete to stepCount,
     // this in order to avoid negative values
     stepsToDelete > stepCount ? (stepsToDelete = stepCount) : null;
@@ -162,12 +161,6 @@ export default class Group {
         const stepSeq = findNestedProp(sequences, stepSeqId);
         // Delete last noteStep from stepSeq.noteSteps
         const noteStepToRemove = stepSeq.noteSteps[noteStepCount - 1];
-        console.log(
-          "noteStepToRemove",
-          noteStepToRemove,
-          "noteStep index",
-          noteStepCount - 1
-        );
 
         // Get controllerStep to remove
         // Get controllerStep count of the current stepSeq
@@ -175,17 +168,6 @@ export default class Group {
           this.sequences[j + 1].controllerSteps.length;
         const controllerStepToRemove =
           stepSeq.controllerSteps[controllerStepCount - 1];
-
-        // Check if noteStepToRemove or controllerStepToRemove
-        // are undefined, if so break the loop
-        if (
-          noteStepToRemove === undefined ||
-          controllerStepToRemove === undefined
-        ) {
-          error = true;
-          console.log("Undefined noteStepToRemove or controllerStepToRemove");
-          break;
-        }
 
         // Check if noteStepToRemove or controllerStepToRemove don't have noteName 16n, if so break the loop
         if (

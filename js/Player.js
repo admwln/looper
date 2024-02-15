@@ -86,6 +86,8 @@ export default class Player {
         0,
         parseInt(Tone.Time("16n").toMilliseconds()) - 1
       ); // -1ms to avoid overlap with next min
+      // Set current dot to 0
+      group.dotIndicator.setCurrentDot(0);
       // Scroll all groups all the way to the left
       group.scrollLeft(getStepWidth() * group.groupLength);
     });
