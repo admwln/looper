@@ -4,6 +4,7 @@ import {
   setLoopOn,
   getMasterTurnaround,
   setMasterTurnaround,
+  getStepWidth,
 } from "./helper-functions.js";
 
 export default class Player {
@@ -79,11 +80,14 @@ export default class Player {
     this.setAllGroups(getProject().getAllGroups());
     // Create a new DynamicInterval for each group
     this.getAllGroups().forEach((group) => {
+      // Init dynamicInterval for each group
       group.initDynamicInterval(
         1,
         0,
         parseInt(Tone.Time("16n").toMilliseconds()) - 1
       ); // -1ms to avoid overlap with next min
+      // Scroll all groups all the way to the left
+      group.scrollLeft(getStepWidth() * group.groupLength);
     });
 
     // Update playbackStartTime to now

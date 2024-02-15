@@ -23,6 +23,9 @@ export default class Group {
     this.muted = false;
     this.dynamicInterval = {};
     this.masterGroup = false;
+    this.autoScroll = true;
+    this.measureLength = 16; // NB! Should be updated dynamically
+    this.groupLength = 16; // NB! Should be updated dynamically
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
     this.instrumentId = instrumentId;
@@ -59,8 +62,24 @@ export default class Group {
     );
   }
 
+  scrollRight(width) {
+    $(`#${this.id} .scroll-container`).animate(
+      { scrollLeft: `+=${width}px` },
+      125
+    );
+  }
+
+  scrollLeft(width) {
+    $(`#${this.id} .scroll-container`).animate(
+      { scrollLeft: `-=${width}px` },
+      125
+    );
+  }
+
   // Extend group by x number of steps
   extendGroup(stepsToAdd, stepCount) {
+    // Extend groupLength by x number of steps
+    this.groupLength += stepsToAdd;
     for (let i = 1; i <= stepsToAdd; i++) {
       // There is always just one StepNoSeq per group, add one StepNo to it
       const stepNoSeqId = this.sequences[0].id;
@@ -99,6 +118,10 @@ export default class Group {
     // Check if stepsToDelete is greater than stepCount, if so, set stepsToDelete to stepCount,
     // this in order to avoid negative values
     stepsToDelete > stepCount ? (stepsToDelete = stepCount) : null;
+
+    // Shorten groupLength by x number of steps
+    this.groupLength -= stepsToDelete;
+
     // How many sequences of the kind StepSeq are there in this group?
     const stepSeqs = this.sequences.filter(
       (sequence) => sequence.constructor.name === "StepSeq"

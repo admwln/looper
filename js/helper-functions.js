@@ -48,6 +48,12 @@ export function setSectionName(newValue) {
   _sectionName = newValue;
 }
 
+let _stepWidth = 84;
+
+export function getStepWidth() {
+  return _stepWidth;
+}
+
 export function findAllNestedProps(obj, propName) {
   let results = [];
   if (obj.hasOwnProperty(propName)) {
