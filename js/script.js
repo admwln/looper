@@ -320,20 +320,18 @@ $(document).ready(function () {
 
   // Play button
   $(document).on("click", "#play", function () {
+    // Stop playback if loop is on
     if (getLoopOn()) {
       setLoopOn(false);
-
       // Change stop button to play button
       $(this).html('<i class="fa-solid fa-play"></i>');
-
       // In the DOM, remove class "playing" from all .queue-section buttons
       $(".queue-section").removeClass("playing").addClass("hide");
       return;
-    } else {
-      // Initialize player
-      const player = new Player();
-      player.startPlayback();
     }
+    // Initialize player
+    const player = new Player();
+    player.startPlayback();
   });
   // End document.ready
 });

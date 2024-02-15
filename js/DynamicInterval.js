@@ -3,6 +3,7 @@ import {
   getIdCounter,
   getLoopOn,
   getProject,
+  getStepWidth,
   setMasterTurnaround,
 } from "./helper-functions.js";
 
@@ -52,10 +53,32 @@ export default class DynamicInterval {
     this.stepNo = 1;
     this.emptySteps();
     this.harvestSteps(group);
+    // Reset scroll position all the way to the left of group
+    group.scrollLeft(group.groupLength * getStepWidth());
   }
 
   update(stepCount, group) {
     const newStepNo = this.stepNo + 1;
+
+    // If group.autoScroll is true, check if newStepNo is a scrollpoint
+    if (group.autoScroll) {
+      // If newStepNo is divisible by group.measureLength, that step represents a scrollpoint
+      if (newStepNo % group.measureLength === 0) {
+        // Scrollpoint detected!
+
+        // Determine if the group should be scrolled right or left?
+        if (newStepNo >= stepCount) {
+          // Scroll all the way to the left
+          console.log("Scrolling all the way to the left");
+          group.scrollLeft(stepCount * getStepWidth());
+        }
+        if (newStepNo < stepCount) {
+          // Scroll one measureWidth to the right
+          console.log("Scrolling one measureWidth to the right");
+          group.scrollRight(group.measureLength * getStepWidth());
+        }
+      }
+    }
 
     // This is where the end of the current loop is detected
     // If the new stepNo is greater than the stepCount, reset the dynamicInterval
@@ -69,8 +92,8 @@ export default class DynamicInterval {
         const sections = project.sections;
         const selectedGroups = project.getSelectedGroups();
 
-        // Reset dynamicInterval of each group in the current section
         selectedGroups.forEach((group) => {
+          // Reset dynamicInterval of each group in the current section
           group.dynamicInterval.reset(group);
         });
 
