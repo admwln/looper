@@ -162,14 +162,6 @@ $(document).ready(function () {
       if (buttonClass == "delete-step") group.shortenGroup(1, stepCount);
       if (buttonClass == "delete-bar")
         group.shortenGroup(measureLength, stepCount);
-
-      // If number of steps is greater than number of 16th notes in a measure, scroll righ
-      // nota bene: only have desired effect if group is scrolled all the way to the right
-      // when expand button is clicked
-      if (group.sequences[0].steps.length > measureLength) {
-        //const group = $("#" + groupId + " .scroll-container");
-        group.scrollRight(measureWidth);
-      }
     }
   );
 
@@ -180,8 +172,12 @@ $(document).ready(function () {
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
     console.log("group", group);
-    if ($(this).hasClass("right")) group.scrollRight(measureWidth);
-    if ($(this).hasClass("left")) group.scrollLeft(measureWidth);
+    if ($(this).hasClass("right")) {
+      group.scrollRight(measureWidth, true); // true = change currentDot
+    }
+    if ($(this).hasClass("left")) {
+      group.scrollLeft(measureWidth, true); // true = change current Dot
+    }
   });
 
   // Edit
