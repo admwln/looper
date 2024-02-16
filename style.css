@@ -57,6 +57,28 @@ header {
   align-items: flex-start;
 }
 
+.project-name-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+/* Try to ape h1 */
+.project-name-input {
+  all: unset;
+  font-size: 32px;
+  font-weight: 700;
+  border-radius: 6px;
+  background-color: var(--background-blue);
+}
+
+.project-name-input::selection {
+  background-color: var(--background-blue);
+}
+
 main {
   margin-top: 250px; /* header height */
 }

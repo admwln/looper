@@ -60,14 +60,28 @@ $(document).ready(function () {
 
   // New project button
   $("#new-project").click(() => {
-    const name =
-      $("#new-project-name").val() == ""
-        ? "untitled project"
-        : $("#new-project-name").val();
     // Create a new project
-    new Project(name);
+    new Project();
     // Create a new section
     getProject().newSection();
+  });
+
+  // Edit project name button
+  $(document).on("click", ".edit-project-name", function () {
+    const projectName = $(".project-name-container h1").text();
+    console.log("projectName", projectName);
+    const width = parseInt($(".project-name-container h1").width());
+    $(".project-name-container h1").html(
+      `<input type="text" class="project-name-input" id="project-name" value="${projectName}" style="width:${width}px" />`
+    );
+    $("#project-name").focus().select();
+  });
+
+  // Change project name
+  $(document).on("focusout", ".project-name-input", function () {
+    const newName = $(this).val();
+    $(".project-name-container h1").text(newName);
+    getProject().name = newName;
   });
 
   // Add section
