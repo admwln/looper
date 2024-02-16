@@ -190,6 +190,35 @@ $(document).ready(function () {
     }
   });
 
+  // Dot indicator dots
+  $(document).on("click", ".dot", function () {
+    const groupId = $(this).closest(".group").attr("id");
+    // Find group object by id
+    const groups = findAllNestedProps(getProject(), "groups");
+    const group = findNestedProp(groups, groupId);
+    // Get index of clicked dot, and of current dot
+    const clickedDotIndex = $(this).index();
+    const currentDotIndex = group.dotIndicator.currentDot;
+
+    // If clicked dot already is the current dot, return
+    if (clickedDotIndex == currentDotIndex) return;
+
+    const scrollRight = clickedDotIndex > currentDotIndex;
+    const diff = Math.abs(clickedDotIndex - currentDotIndex);
+
+    // If clicked dot is to the right of the current dot, scroll right by factor of diff
+    if (scrollRight) {
+      for (let i = 0; i < diff; i++) {
+        group.scrollRight(measureWidth, true);
+      }
+      return;
+    }
+    // If clicked dot is to the left of the current dot, scroll left by factor of diff
+    for (let i = 0; i < diff; i++) {
+      group.scrollLeft(measureWidth, true);
+    }
+  });
+
   // Edit
   let editMode = "pencil";
   $("input[name='edit-mode']").click(function () {
