@@ -8,8 +8,8 @@ import {
 } from "./helper-functions.js";
 
 export default class Project {
-  constructor(name) {
-    this.name = name;
+  constructor() {
+    this.name = "New project";
     this.sections = [];
     this.eventSeq = []; // new EventSeq() for chords, switching sections, etc.
     this.bpm = 120;
@@ -29,7 +29,10 @@ export default class Project {
     $(".top-row").append(
       `
         <div>
-          <h1>${this.name}</h1>
+          <div class='project-name-container'>
+            <h1>${this.name}</h1>
+            <button class='edit-project-name'><i class="fa-solid fa-pencil"></i></button>
+          </div>
           <div>
             <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
           </div>
