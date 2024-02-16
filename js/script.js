@@ -162,26 +162,32 @@ $(document).ready(function () {
       if (buttonClass == "delete-step") group.shortenGroup(1, stepCount);
       if (buttonClass == "delete-bar")
         group.shortenGroup(measureLength, stepCount);
-
-      // If number of steps is greater than number of 16th notes in a measure, scroll righ
-      // nota bene: only have desired effect if group is scrolled all the way to the right
-      // when expand button is clicked
-      if (group.sequences[0].steps.length > measureLength) {
-        //const group = $("#" + groupId + " .scroll-container");
-        group.scrollRight(measureWidth);
-      }
     }
   );
 
   // Scrollgroup arrows
-  $(document).on("click", ".scroll-group", function () {
+  $(document).on("click", "button.scroll-group", function () {
     const groupId = $(this).closest(".group").attr("id");
     // Get group object
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
-    console.log("group", group);
-    if ($(this).hasClass("right")) group.scrollRight(measureWidth);
-    if ($(this).hasClass("left")) group.scrollLeft(measureWidth);
+    // TODO:
+    // Check group.dotIndicator. By comparing dotCount and currentDot,
+    // we can determine if the group is at the beginning or end of the sequence.
+    // If so, we can disable the right and left scroll buttons, depending on the case.
+
+    if ($(this).hasClass("right")) {
+      // If currentDot already is at the end of the sequence, return
+      if (group.dotIndicator.currentDot == group.dotIndicator.dotCount - 1)
+        return;
+      group.scrollRight(measureWidth, true); // true = change currentDot
+    }
+
+    if ($(this).hasClass("left")) {
+      // If currentDot already is at the beginning of the sequence, return
+      if (group.dotIndicator.currentDot == 0) return;
+      group.scrollLeft(measureWidth, true); // true = change current Dot
+    }
   });
 
   // Edit

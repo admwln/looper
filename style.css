@@ -131,6 +131,35 @@ div.section-tab.selected {
   display: none;
 }
 
+.group-settings {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.group-settings > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot-indicator {
+  display: inline-block;
+}
+
+.dot {
+  display: inline-block;
+  margin: 0 3px;
+  cursor: pointer;
+}
+
+.dot:hover {
+  color: var(--links);
+}
+
 .step-no-seq,
 .note-seq,
 .controller-seq {
