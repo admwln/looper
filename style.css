@@ -156,6 +156,10 @@ div.section-tab.selected {
   cursor: pointer;
 }
 
+.dot:hover {
+  color: var(--links);
+}
+
 .step-no-seq,
 .note-seq,
 .controller-seq {

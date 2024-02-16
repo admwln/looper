@@ -166,16 +166,26 @@ $(document).ready(function () {
   );
 
   // Scrollgroup arrows
-  $(document).on("click", ".scroll-group", function () {
+  $(document).on("click", "button.scroll-group", function () {
     const groupId = $(this).closest(".group").attr("id");
     // Get group object
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
-    console.log("group", group);
+    // TODO:
+    // Check group.dotIndicator. By comparing dotCount and currentDot,
+    // we can determine if the group is at the beginning or end of the sequence.
+    // If so, we can disable the right and left scroll buttons, depending on the case.
+
     if ($(this).hasClass("right")) {
+      // If currentDot already is at the end of the sequence, return
+      if (group.dotIndicator.currentDot == group.dotIndicator.dotCount - 1)
+        return;
       group.scrollRight(measureWidth, true); // true = change currentDot
     }
+
     if ($(this).hasClass("left")) {
+      // If currentDot already is at the beginning of the sequence, return
+      if (group.dotIndicator.currentDot == 0) return;
       group.scrollLeft(measureWidth, true); // true = change current Dot
     }
   });

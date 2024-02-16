@@ -191,13 +191,12 @@ export default class Group {
         stepNoToRemove.deleteStepNo(stepNoSeqId);
       }
     }
-    if (!error) {
-      // Update dot indicator
-      this.dotIndicator.extendShorten(this);
-      this.dotIndicator.displayDots();
 
-      console.log(`Group shortened by ${stepsToDelete} steps`);
-    }
+    // Update dot indicator
+    this.dotIndicator.extendShorten(this);
+    this.dotIndicator.displayDots();
+
+    console.log(`Group shortened by ${stepsToDelete} steps`);
   }
 
   deleteLastSeq(seqIndex) {
