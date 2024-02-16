@@ -1,4 +1,11 @@
-import { setProject, getProject } from "./helper-functions.js";
+import Section from "./Section.js";
+import {
+  getSectionName,
+  setSectionName,
+  setProject,
+  getProject,
+  nextChar,
+} from "./helper-functions.js";
 
 export default class Project {
   constructor(name) {
@@ -90,5 +97,16 @@ export default class Project {
     });
 
     return groups;
+  }
+
+  newSection() {
+    const name =
+      $("#section-name").val() == ""
+        ? getSectionName()
+        : $("#section-name").val();
+    new Section(name);
+    $("#section-name").val("");
+    // Increment automatic section name by one character
+    setSectionName(nextChar(getSectionName()));
   }
 }

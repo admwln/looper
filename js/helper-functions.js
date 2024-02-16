@@ -54,6 +54,10 @@ export function getStepWidth() {
   return _stepWidth;
 }
 
+export function nextChar(c) {
+  return String.fromCharCode(c.charCodeAt(0) + 1);
+}
+
 export function findAllNestedProps(obj, propName) {
   let results = [];
   if (obj.hasOwnProperty(propName)) {

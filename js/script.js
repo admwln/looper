@@ -2,7 +2,6 @@
 import Project from "./Project.js";
 import Player from "./Player.js";
 import Instrument from "./Instrument.js";
-import Section from "./Section.js";
 import Group from "./Group.js";
 import StepSeq from "./StepSeq.js";
 
@@ -67,23 +66,15 @@ $(document).ready(function () {
         : $("#new-project-name").val();
     // Create a new project
     new Project(name);
+    // Create a new section
+    getProject().newSection();
   });
 
   // Add section
   $(document).on("click", ".add-section", function () {
-    const name =
-      $("#section-name").val() == ""
-        ? getSectionName()
-        : $("#section-name").val();
-    new Section(name);
-    $("#section-name").val("");
-    // Increment automatic section name by one character
-    setSectionName(nextChar(getSectionName()));
+    // Create a new section
+    getProject().newSection();
   });
-
-  function nextChar(c) {
-    return String.fromCharCode(c.charCodeAt(0) + 1);
-  }
 
   // Click section tab
   $(document).on("click", ".section-tab-button", function () {
@@ -102,8 +93,11 @@ $(document).ready(function () {
       $("#" + sectionId + " .instrument-name").val() == ""
         ? "instrument"
         : $("#" + sectionId + " .instrument-name").val();
-    new Instrument(name, sectionId);
+    const instrument = new Instrument(name, sectionId);
     $("#" + sectionId + " .instrument-name").val("");
+    // Add group to instrument
+    const newGroup = new Group(instrument.id, measureLength);
+    newGroup.makeMaster();
   });
 
   // Add group
