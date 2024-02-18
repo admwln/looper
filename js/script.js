@@ -27,11 +27,8 @@ $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
   init.addEventListener("click", async () => {
-    // If init classList doesn't include blink, return
-    if (!init.classList.contains("blink")) return;
-
-    // Remove .blink class from init button
-    init.classList.remove("blink");
+    // Remove init button
+    init.remove();
 
     // Tone.js initialization
     await Tone.start();
@@ -61,6 +58,7 @@ $(document).ready(function () {
 
   // New project button
   $("#new-project").click(() => {
+    $("#new-project").hide();
     // Create a new project
     new Project();
     // Create a new section
@@ -82,7 +80,7 @@ $(document).ready(function () {
   });
 
   // Click section tab
-  $(document).on("click", ".section-heading", function () {
+  $(document).on("click", ".section-tab", function () {
     let sectionId = $(this).attr("id").split("-")[0];
     // Find section object in project
     const sections = findAllNestedProps(getProject(), "sections");
@@ -131,9 +129,7 @@ $(document).ready(function () {
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
     // Find index of last seq
-    const seqIndex = $("#" + groupId + " > div > div")
-      .last()
-      .index();
+    const seqIndex = $("#" + groupId + " > div > div.step-seq").length;
     group.deleteLastSeq(seqIndex);
   });
 

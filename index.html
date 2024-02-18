@@ -23,14 +23,18 @@
   <header>
     <div class="top-row">
       <div>
-        <div>
-          <button id="audio-init" class="blink" style="margin:0 24px 12px 0"><i
-              class="fa-solid fa-power-off"></i></button>
-          <button id="log-project"><i class="fa-solid fa-file-lines"></i> Log project</button>
-        </div>
 
+        <button id="audio-init" class="blink" style="margin:0 24px 12px 0"><i
+            class="fa-solid fa-power-off"></i></button>
         <button id="new-project"><i class="fa-solid fa-plus"></i> Project</button>
-        <div style="margin-top:12px">
+        <div class="bpm-container" style="margin:12px 0;">
+          <label for="project-bpm">BPM</label>
+          <input type="text" name="project-bpm" id="project-bpm" value="120" style="width:50px" />
+          <button id="play"><i class="fa-solid fa-play"></i></button>
+        </div>
+      </div>
+      <div>
+        <div>
           <label for="join-radio"><i class="fa-solid fa-handshake"></i></label>
           <input type="radio" name="edit-mode" id="join-radio" value="join" />
           <label for="split-2-radio"><i class="fa-solid fa-split"></i> <i class="fa-solid fa-divide"></i> <i
@@ -48,17 +52,12 @@
           <input type="radio" name="edit-mode" id="pencil-radio" value="pencil" checked="checked" />
           <label for="no-edit-radio"><i class="fa-solid fa-wand-magic-sparkles"></i></label>
           <input type="radio" name="edit-mode" id="no-edit-radio" value="no-edit" />
+          <button id="log-project"><i class="fa-solid fa-file-lines"></i></button>
         </div>
-      </div>
-      <div>
-        <div style="width:50px">
-          <label for="project-bpm">BPM</label>
-          <input type="text" name="project-bpm" id="project-bpm" value="120" style="width:50px" />
-        </div>
-        <button id="play"><i class="fa-solid fa-play"></i></button>
       </div>
     </div>
-    <div class="section-tab-row"></div>
+    <div class="section-tab-row">
+    </div>
   </header>
 </body>
 

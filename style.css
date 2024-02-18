@@ -1,5 +1,6 @@
 :root {
   --background-blue: #2f3b4c;
+  --vague-tab-blue: #344254;
   --section-blue: #374659;
   --dark-blue: #161f27;
   --darker-blue: #0e1b25;
@@ -63,12 +64,12 @@ header {
   justify-content: flex-start;
   align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
+  /* margin-bottom: 6px; */
 }
 
 .heading-text-input {
   all: unset;
-  border-bottom: 1px solid var(--white);
+  border-bottom: 2px solid var(--white);
   background-color: var(--blue-lightgray);
   font-weight: bold;
   font-size: 1.2rem;
@@ -90,18 +91,18 @@ header .top-row .heading-text-input::selection {
 }
 
 button.edit-heading {
-  opacity: 0.25;
-  color: var(--white);
+  opacity: 0;
   transition: all 100ms ease-in-out;
 }
 
-button.edit-heading:hover {
+button.edit-heading:hover,
+.section-tab:hover button.edit-heading {
   opacity: 1;
   color: var(--links);
 }
 
 main {
-  margin-top: 200px; /* header height */
+  margin-top: 150px; /* header height */
 }
 
 button {
@@ -124,7 +125,7 @@ h3 {
   all: unset;
   font-size: 1.2rem;
   font-weight: bold;
-  margin: 6px 0;
+  margin: 6px 0 0 0;
   padding: 0;
   margin: 0;
   margin-block-start: 0;
@@ -145,20 +146,34 @@ h3 {
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+  gap: 6px;
 }
 
 div.section-tab {
   display: flex;
   flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
   margin: 0;
   padding: 6px 12px 0 12px;
   border-radius: 5px 5px 0 0;
-  background-color: var(--blue-lightgray);
+
+  background-color: var(--background-blue);
   cursor: pointer;
+  opacity: 0.5;
+  transition: all 100ms ease-in-out;
 }
+
 div.section-tab.selected {
   background-color: var(--background-blue);
   color: var(--links);
+  opacity: 1;
+}
+
+#add-section-tab.section-tab {
+  background-color: var(--blue-lightgray);
+  opacity: 1;
 }
 
 .instrument {
@@ -352,15 +367,15 @@ div.section-tab.selected {
 }
 .queue-section.hide {
   opacity: 0;
-  cursor: default;
+  /* cursor: default; */
 }
 
 .queue-section.blink {
   animation: blink 250 infinite;
-  cursor: default;
+  /* cursor: default; */
 }
 
 .queue-section.playing {
   opacity: 1;
-  cursor: default;
+  /* cursor: default; */
 }

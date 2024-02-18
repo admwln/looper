@@ -27,28 +27,30 @@ export default class HeadingEditor {
     const headingInput = document.getElementById("heading-input");
     headingInput.addEventListener("change", function () {
       const newText = $("#heading-input").val();
+
       if (object.property == "project") {
-        console.log("property at if", object.property);
         $("#heading-input").replaceWith(
           `<h1 class="project-heading">${newText}</h3>`
         );
         getProject().name = newText;
       }
 
-      const section = getProject().sections.find(
-        (section) => section.selected === true
-      );
-
       if (object.property == "section") {
-        console.log("property at if", object.property);
+        let sectionId = $("#heading-input").parent().parent().attr("id");
+        sectionId = sectionId.split("-")[0];
+        const section = getProject().sections.find(
+          (section) => section.id === sectionId
+        );
         $("#heading-input").replaceWith(
-          `<h2 class="section-heading" id="${section.id}-heading">${newText}</h2>`
+          `<h2 class="section-heading" id="${sectionId}-heading">${newText}</h2>`
         );
         section.name = newText;
       }
 
       if (object.property == "instrument") {
-        console.log("property at if", object.property);
+        const section = getProject().sections.find(
+          (section) => section.selected === true
+        );
         let instrumentId = $("#heading-input").parent().parent().attr("id");
         $("#heading-input").replaceWith(
           `<h3 class="instrument-heading">${newText}</h3>`

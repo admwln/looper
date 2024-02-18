@@ -28,14 +28,21 @@ export default class Section {
       `
     );
 
+    $("#add-section-tab").remove();
+
     $(".section-tab-row").append(
       `
       <div class="section-tab" id="${this.id}-tab">
-      <div class='heading-container'>
-        <h2 class="section-heading" id=${this.id}-heading'>${this.name}</h2>
-        <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
-      </div>
         <button class="queue-section hide"><i class="fa-solid fa-play"></i></button>
+        <div class='heading-container'>
+          <h2 class="section-heading" id=${this.id}-heading'>${this.name}</h2>
+          <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
+        </div>
+      </div>
+      <div class="section-tab" id="add-section-tab">
+        <div>
+          <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
+        </div>
       </div>
       `
     );
