@@ -1,4 +1,5 @@
 // Import modules and variables
+import HeadingEditor from "./HeadingEditor.js";
 import Project from "./Project.js";
 import Player from "./Player.js";
 import Instrument from "./Instrument.js";
@@ -26,11 +27,8 @@ $(document).ready(function () {
   // Initialize webmidi.js and tone.js on click
   const init = document.querySelector("#audio-init");
   init.addEventListener("click", async () => {
-    // If init classList doesn't include blink, return
-    if (!init.classList.contains("blink")) return;
-
-    // Remove .blink class from init button
-    init.classList.remove("blink");
+    // Remove init button
+    init.remove();
 
     // Tone.js initialization
     await Tone.start();
@@ -60,28 +58,19 @@ $(document).ready(function () {
 
   // New project button
   $("#new-project").click(() => {
+    $("#new-project").hide();
     // Create a new project
     new Project();
     // Create a new section
     getProject().newSection();
   });
 
-  // Edit project name button
-  $(document).on("click", ".edit-project-name", function () {
-    const projectName = $(".project-name-container h1").text();
-    console.log("projectName", projectName);
-    const width = parseInt($(".project-name-container h1").width());
-    $(".project-name-container h1").html(
-      `<input type="text" class="project-name-input" id="project-name" value="${projectName}" style="width:${width}px" />`
-    );
-    $("#project-name").focus().select();
-  });
-
-  // Change project name
-  $(document).on("focusout", ".project-name-input", function () {
-    const newName = $(this).val();
-    $(".project-name-container h1").text(newName);
-    getProject().name = newName;
+  // Edit heading button
+  // Pertains to project, section and instrument headings
+  $(document).on("click", ".edit-heading", function () {
+    const heading = $(this).prev();
+    const headingEditor = new HeadingEditor(heading);
+    headingEditor.edit();
   });
 
   // Add section
@@ -91,9 +80,8 @@ $(document).ready(function () {
   });
 
   // Click section tab
-  $(document).on("click", ".section-tab-button", function () {
-    let sectionId = $(this).attr("id");
-    sectionId = sectionId.slice(0, -12); // Remove "-tab-button" from id
+  $(document).on("click", ".section-tab", function () {
+    let sectionId = $(this).attr("id").split("-")[0];
     // Find section object in project
     const sections = findAllNestedProps(getProject(), "sections");
     const section = findNestedProp(sections, sectionId);
@@ -103,10 +91,7 @@ $(document).ready(function () {
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
     const sectionId = $(this).closest(".section").attr("id");
-    const name =
-      $("#" + sectionId + " .instrument-name").val() == ""
-        ? "instrument"
-        : $("#" + sectionId + " .instrument-name").val();
+    const name = "Instrument";
     const instrument = new Instrument(name, sectionId);
     $("#" + sectionId + " .instrument-name").val("");
     // Add group to instrument
@@ -144,9 +129,7 @@ $(document).ready(function () {
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
     // Find index of last seq
-    const seqIndex = $("#" + groupId + " > div > div")
-      .last()
-      .index();
+    const seqIndex = $("#" + groupId + " > div > div.step-seq").length;
     group.deleteLastSeq(seqIndex);
   });
 
@@ -179,10 +162,6 @@ $(document).ready(function () {
     // Get group object
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
-    // TODO:
-    // Check group.dotIndicator. By comparing dotCount and currentDot,
-    // we can determine if the group is at the beginning or end of the sequence.
-    // If so, we can disable the right and left scroll buttons, depending on the case.
 
     if ($(this).hasClass("right")) {
       // If currentDot already is at the end of the sequence, return

@@ -1,5 +1,6 @@
 :root {
   --background-blue: #2f3b4c;
+  --vague-tab-blue: #344254;
   --section-blue: #374659;
   --dark-blue: #161f27;
   --darker-blue: #0e1b25;
@@ -57,30 +58,51 @@ header {
   align-items: flex-start;
 }
 
-.project-name-container {
+.heading-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
+  /* margin-bottom: 6px; */
 }
 
-/* Try to ape h1 */
-.project-name-input {
+.heading-text-input {
   all: unset;
-  font-size: 32px;
-  font-weight: 700;
-  border-radius: 6px;
+  border-bottom: 2px solid var(--white);
+  background-color: var(--blue-lightgray);
+  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 6px 0;
+  padding: 0;
+}
+
+.heading-text-input::selection {
+  background-color: var(--blue-lightgray);
+}
+
+header .top-row .heading-text-input {
+  border-bottom: 1px solid var(--white);
+  background-color: var(--background-blue);
+}
+header .top-row .heading-text-input::selection {
   background-color: var(--background-blue);
 }
 
-.project-name-input::selection {
-  background-color: var(--background-blue);
+button.edit-heading {
+  opacity: 0;
+  transition: all 100ms ease-in-out;
+}
+
+button.edit-heading:hover,
+.section-tab:hover button.edit-heading {
+  opacity: 1;
+  color: var(--links);
 }
 
 main {
-  margin-top: 250px; /* header height */
+  margin-top: 150px; /* header height */
 }
 
 button {
@@ -97,14 +119,17 @@ label {
   cursor: pointer;
 }
 
-h1 {
-  margin: 0;
-}
-
+h1,
 h2,
 h3 {
-  margin: 12px 0 6px 0;
+  all: unset;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 6px 0 0 0;
   padding: 0;
+  margin: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .section {
@@ -116,15 +141,39 @@ h3 {
   display: inline-block;
 }
 
-div.section-tab {
-  display: inline-block;
-  margin: 0;
-  padding: 0 12px;
-  border-radius: 5px 5px 0 0;
-  background-color: var(--blue-lightgray);
+.section-tab-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
 }
+
+div.section-tab {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 12px 0 12px;
+  border-radius: 5px 5px 0 0;
+
+  background-color: var(--background-blue);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 100ms ease-in-out;
+}
+
 div.section-tab.selected {
   background-color: var(--background-blue);
+  color: var(--links);
+  opacity: 1;
+}
+
+#add-section-tab.section-tab {
+  background-color: var(--blue-lightgray);
+  opacity: 1;
 }
 
 .instrument {
@@ -318,15 +367,15 @@ div.section-tab.selected {
 }
 .queue-section.hide {
   opacity: 0;
-  cursor: default;
+  /* cursor: default; */
 }
 
 .queue-section.blink {
   animation: blink 250 infinite;
-  cursor: default;
+  /* cursor: default; */
 }
 
 .queue-section.playing {
   opacity: 1;
-  cursor: default;
+  /* cursor: default; */
 }

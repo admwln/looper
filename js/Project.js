@@ -26,17 +26,13 @@ export default class Project {
       `
     );
 
-    $(".top-row").append(
+    $("#new-project").replaceWith(
       `
         <div>
-          <div class='project-name-container'>
-            <h1>${this.name}</h1>
-            <button class='edit-project-name'><i class="fa-solid fa-pencil"></i></button>
+          <div class='heading-container'>
+            <h1 class='project-heading'>${this.name}</h1>
+            <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
           </div>
-          <div>
-            <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
-          </div>
-          <input type='text' id='section-name' name='section-name' placeholder='Section name' />
         </div>
       `
     );
@@ -103,12 +99,8 @@ export default class Project {
   }
 
   newSection() {
-    const name =
-      $("#section-name").val() == ""
-        ? getSectionName()
-        : $("#section-name").val();
+    const name = getSectionName();
     new Section(name);
-    $("#section-name").val("");
     // Increment automatic section name by one character
     setSectionName(nextChar(getSectionName()));
   }
