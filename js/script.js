@@ -30,6 +30,13 @@ $(document).ready(function () {
     // Remove init button
     init.remove();
 
+    // To save time, init new project and section
+    $("#new-project").hide();
+    // Create a new project
+    new Project();
+    // Create a new section
+    getProject().newSection();
+
     // Tone.js initialization
     await Tone.start();
     console.log("Tone.js enabled!");
