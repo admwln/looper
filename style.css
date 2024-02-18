@@ -57,7 +57,7 @@ header {
   align-items: flex-start;
 }
 
-.project-name-container {
+.heading-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -67,12 +67,25 @@ header {
 }
 
 /* Try to ape h1 */
-.project-name-input {
+.heading-text-input {
   all: unset;
-  font-size: 32px;
-  font-weight: 700;
+  font-weight: bold;
   border-radius: 6px;
   background-color: var(--background-blue);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 6px 0;
+  padding: 0;
+}
+
+button.edit-heading {
+  opacity: 0;
+  transition: all 100ms ease-in-out;
+}
+
+button.edit-heading:hover {
+  opacity: 1;
+  color: var(--links);
 }
 
 .project-name-input::selection {
@@ -80,7 +93,7 @@ header {
 }
 
 main {
-  margin-top: 250px; /* header height */
+  margin-top: 200px; /* header height */
 }
 
 button {
@@ -103,7 +116,10 @@ h1 {
 
 h2,
 h3 {
-  margin: 12px 0 6px 0;
+  all: unset;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 6px 0;
   padding: 0;
 }
 

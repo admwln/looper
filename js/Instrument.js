@@ -25,7 +25,10 @@ export default class Instrument {
     $("#" + sectionId).append(
       `
       <section class="instrument" id='${this.id}'>
-        <h3>${this.name}</h3>
+        <div class='heading-container'>
+          <h3 class="instrument-heading">${this.name}</h3>
+          <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
+        </div>
         <div><button class='add-group'><i class="fa-solid fa-plus"></i> Group</button></div>
       </section>`
     );

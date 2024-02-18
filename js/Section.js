@@ -23,8 +23,7 @@ export default class Section {
       <section class="section" id='${this.id}'>
         <div>
           <button id='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button>
-          </div>
-        <input type='text' class='instrument-name' name='instrument-name' placeholder='Instrument name' />
+        </div>
       </section>
       `
     );

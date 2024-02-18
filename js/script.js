@@ -1,4 +1,5 @@
 // Import modules and variables
+import Editor from "./Editor.js";
 import Project from "./Project.js";
 import Player from "./Player.js";
 import Instrument from "./Instrument.js";
@@ -67,21 +68,9 @@ $(document).ready(function () {
   });
 
   // Edit project name button
-  $(document).on("click", ".edit-project-name", function () {
-    const projectName = $(".project-name-container h1").text();
-    console.log("projectName", projectName);
-    const width = parseInt($(".project-name-container h1").width());
-    $(".project-name-container h1").html(
-      `<input type="text" class="project-name-input" id="project-name" value="${projectName}" style="width:${width}px" />`
-    );
-    $("#project-name").focus().select();
-  });
-
-  // Change project name
-  $(document).on("focusout", ".project-name-input", function () {
-    const newName = $(this).val();
-    $(".project-name-container h1").text(newName);
-    getProject().name = newName;
+  $(document).on("click", ".edit-heading", function () {
+    const heading = $(this).prev();
+    Editor.editHeading(heading);
   });
 
   // Add section
@@ -103,10 +92,10 @@ $(document).ready(function () {
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
     const sectionId = $(this).closest(".section").attr("id");
-    const name =
-      $("#" + sectionId + " .instrument-name").val() == ""
-        ? "instrument"
-        : $("#" + sectionId + " .instrument-name").val();
+    const name = "instrument";
+    // $("#" + sectionId + " .instrument-name").val() == ""
+    //   ? "instrument"
+    //   : $("#" + sectionId + " .instrument-name").val();
     const instrument = new Instrument(name, sectionId);
     $("#" + sectionId + " .instrument-name").val("");
     // Add group to instrument
@@ -179,10 +168,6 @@ $(document).ready(function () {
     // Get group object
     const groups = findAllNestedProps(getProject(), "groups");
     const group = findNestedProp(groups, groupId);
-    // TODO:
-    // Check group.dotIndicator. By comparing dotCount and currentDot,
-    // we can determine if the group is at the beginning or end of the sequence.
-    // If so, we can disable the right and left scroll buttons, depending on the case.
 
     if ($(this).hasClass("right")) {
       // If currentDot already is at the end of the sequence, return

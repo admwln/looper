@@ -29,9 +29,9 @@ export default class Project {
     $(".top-row").append(
       `
         <div>
-          <div class='project-name-container'>
-            <h1>${this.name}</h1>
-            <button class='edit-project-name'><i class="fa-solid fa-pencil"></i></button>
+          <div class='heading-container'>
+            <h1 class='project-heading'>${this.name}</h1>
+            <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
           </div>
           <div>
             <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
