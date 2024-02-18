@@ -1,5 +1,5 @@
 // Import modules and variables
-import Editor from "./Editor.js";
+import HeadingEditor from "./HeadingEditor.js";
 import Project from "./Project.js";
 import Player from "./Player.js";
 import Instrument from "./Instrument.js";
@@ -67,10 +67,12 @@ $(document).ready(function () {
     getProject().newSection();
   });
 
-  // Edit project name button
+  // Edit heading button
+  // Pertains to project, section and instrument headings
   $(document).on("click", ".edit-heading", function () {
     const heading = $(this).prev();
-    Editor.editHeading(heading);
+    const headingEditor = new HeadingEditor(heading);
+    headingEditor.edit();
   });
 
   // Add section
@@ -80,9 +82,8 @@ $(document).ready(function () {
   });
 
   // Click section tab
-  $(document).on("click", ".section-tab-button", function () {
-    let sectionId = $(this).attr("id");
-    sectionId = sectionId.slice(0, -12); // Remove "-tab-button" from id
+  $(document).on("click", ".section-heading", function () {
+    let sectionId = $(this).attr("id").split("-")[0];
     // Find section object in project
     const sections = findAllNestedProps(getProject(), "sections");
     const section = findNestedProp(sections, sectionId);
@@ -92,10 +93,7 @@ $(document).ready(function () {
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
     const sectionId = $(this).closest(".section").attr("id");
-    const name = "instrument";
-    // $("#" + sectionId + " .instrument-name").val() == ""
-    //   ? "instrument"
-    //   : $("#" + sectionId + " .instrument-name").val();
+    const name = "Instrument";
     const instrument = new Instrument(name, sectionId);
     $("#" + sectionId + " .instrument-name").val("");
     // Add group to instrument

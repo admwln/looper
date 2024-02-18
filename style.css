@@ -66,30 +66,38 @@ header {
   margin-bottom: 6px;
 }
 
-/* Try to ape h1 */
 .heading-text-input {
   all: unset;
+  border-bottom: 1px solid var(--white);
+  background-color: var(--blue-lightgray);
   font-weight: bold;
-  border-radius: 6px;
-  background-color: var(--background-blue);
   font-size: 1.2rem;
   font-weight: bold;
   margin: 6px 0;
   padding: 0;
 }
 
+.heading-text-input::selection {
+  background-color: var(--blue-lightgray);
+}
+
+header .top-row .heading-text-input {
+  border-bottom: 1px solid var(--white);
+  background-color: var(--background-blue);
+}
+header .top-row .heading-text-input::selection {
+  background-color: var(--background-blue);
+}
+
 button.edit-heading {
-  opacity: 0;
+  opacity: 0.25;
+  color: var(--white);
   transition: all 100ms ease-in-out;
 }
 
 button.edit-heading:hover {
   opacity: 1;
   color: var(--links);
-}
-
-.project-name-input::selection {
-  background-color: var(--background-blue);
 }
 
 main {
@@ -110,10 +118,7 @@ label {
   cursor: pointer;
 }
 
-h1 {
-  margin: 0;
-}
-
+h1,
 h2,
 h3 {
   all: unset;
@@ -121,6 +126,9 @@ h3 {
   font-weight: bold;
   margin: 6px 0;
   padding: 0;
+  margin: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .section {
@@ -132,15 +140,25 @@ h3 {
   display: inline-block;
 }
 
+.section-tab-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
 div.section-tab {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
   margin: 0;
-  padding: 0 12px;
+  padding: 6px 12px 0 12px;
   border-radius: 5px 5px 0 0;
   background-color: var(--blue-lightgray);
+  cursor: pointer;
 }
 div.section-tab.selected {
   background-color: var(--background-blue);
+  color: var(--links);
 }
 
 .instrument {

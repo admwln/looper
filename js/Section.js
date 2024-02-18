@@ -31,9 +31,10 @@ export default class Section {
     $(".section-tab-row").append(
       `
       <div class="section-tab" id="${this.id}-tab">
-        <button class="section-tab-button" id=${this.id}-tab-button'>
-          <h2>${this.name}</h2>
-        </button>
+      <div class='heading-container'>
+        <h2 class="section-heading" id=${this.id}-heading'>${this.name}</h2>
+        <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
+      </div>
         <button class="queue-section hide"><i class="fa-solid fa-play"></i></button>
       </div>
       `

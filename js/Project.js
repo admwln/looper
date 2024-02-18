@@ -36,7 +36,6 @@ export default class Project {
           <div>
             <button class='add-section'><i class="fa-solid fa-plus"></i> Section</button>
           </div>
-          <input type='text' id='section-name' name='section-name' placeholder='Section name' />
         </div>
       `
     );
@@ -103,12 +102,8 @@ export default class Project {
   }
 
   newSection() {
-    const name =
-      $("#section-name").val() == ""
-        ? getSectionName()
-        : $("#section-name").val();
+    const name = getSectionName();
     new Section(name);
-    $("#section-name").val("");
     // Increment automatic section name by one character
     setSectionName(nextChar(getSectionName()));
   }
