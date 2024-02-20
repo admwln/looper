@@ -195,7 +195,7 @@ export default class NoteStep extends Step {
     this.msFromLoopStart = this.getMsFromLoopStart(stepSeq, noteStepIndex);
   }
 
-  playMidiNote(time) {
+  playMidiNote(time, output) {
     if (!getLoopOn()) {
       return;
     }
@@ -207,6 +207,7 @@ export default class NoteStep extends Step {
     if (time - performance.now() < -5 || time - performance.now() > 5) {
       console.log("Diff target-now " + (time - performance.now()));
     }
+
     const pitch = this.pitch;
     // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
     const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
@@ -214,7 +215,7 @@ export default class NoteStep extends Step {
 
     const trigger = time + this.msFromIntStart + 20; // + buffer (ms)
 
-    WebMidi.outputs[0].channels[1].playNote(pitch + 35, {
+    output.channels[1].playNote(pitch + 35, {
       duration: duration,
       rawAttack: velocity,
       time: trigger,

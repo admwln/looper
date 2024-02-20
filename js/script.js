@@ -17,6 +17,7 @@ import {
 } from "./helper-functions.js";
 
 // Global variables
+let outputs;
 let top = 4;
 let bottom = 4;
 let measureLength = (top / bottom) * 16; // Number of 16th notes in a measure
@@ -57,7 +58,7 @@ $(document).ready(function () {
       }
 
       if (WebMidi.outputs.length > 0) {
-        const outputs = WebMidi.outputs;
+        outputs = WebMidi.outputs;
         console.log(outputs);
       }
     }
