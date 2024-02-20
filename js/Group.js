@@ -29,9 +29,9 @@ export default class Group {
     this.measureLength = 16; // NB! Should be updated dynamically
     this.groupLength = 16; // NB! Should be updated dynamically
     this.dotIndicator = new DotIndicator(this);
+    this.instrumentId = instrumentId;
     const instruments = findAllNestedProps(getProject(), "instruments");
     const instrument = findNestedProp(instruments, instrumentId);
-    this.instrumentId = instrumentId;
     this.sectionId = instrument.sectionId;
     // Add group to instrument
     instrument.groups.push(this);
@@ -222,7 +222,12 @@ export default class Group {
   }
 
   initDynamicInterval(stepNo, min, max) {
-    const dynamicInterval = new DynamicInterval(stepNo, min, max);
+    const dynamicInterval = new DynamicInterval(
+      stepNo,
+      min,
+      max,
+      this.instrumentId
+    );
     this.dynamicInterval = dynamicInterval;
     this.dynamicInterval.groupId = this.id;
     this.dynamicInterval.harvestSteps(this);
