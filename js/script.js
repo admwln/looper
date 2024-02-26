@@ -169,10 +169,7 @@ $(document).ready(function () {
 
   // Scrollgroup arrows
   $(document).on("click", "button.scroll-group", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    // Get group object
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
 
     if ($(this).hasClass("right")) {
       // If currentDot already is at the end of the sequence, return
