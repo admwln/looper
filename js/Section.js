@@ -1,3 +1,4 @@
+import Instrument from "./Instrument.js";
 import { getProject, setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class Section {
@@ -15,6 +16,12 @@ export default class Section {
     // this.displayInstrument(instrumentIndex);
     this.displaySection();
     console.log(`Section "${this.name}" created`);
+  }
+
+  newInstrument() {
+    const instrument = new Instrument("Instrument", this, this.id);
+    this.instruments.push(instrument);
+    return instrument;
   }
 
   displaySection() {

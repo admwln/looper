@@ -99,12 +99,14 @@ $(document).ready(function () {
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
     const sectionId = $(this).closest(".section").attr("id");
-    const name = "Instrument";
-    const instrument = new Instrument(name, sectionId);
-    $("#" + sectionId + " .instrument-name").val("");
-    // Add group to instrument
-    const newGroup = new Group(instrument.id, measureLength);
-    newGroup.makeMaster();
+    const sections = findAllNestedProps(getProject(), "sections");
+    const section = findNestedProp(sections, sectionId);
+    const instrument = section.newInstrument();
+    // const name = "Instrument";
+    // const instrument = new Instrument(name, sectionId);
+    // // Add group to instrument
+    //const group = new Group(instrument.id, measureLength);
+    // group.makeMaster();
   });
 
   // Add group

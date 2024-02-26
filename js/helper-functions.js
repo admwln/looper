@@ -59,6 +59,7 @@ export function nextChar(c) {
 }
 
 export function findAllNestedProps(obj, propName) {
+  console.log("findAllNestedProps called", obj, propName);
   let results = [];
   if (obj.hasOwnProperty(propName)) {
     results.push(obj[propName]);
