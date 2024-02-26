@@ -18,6 +18,7 @@ export default class NoteStep extends Step {
     this.msFromLoopStart = 0;
     this.muted = false;
     this.parentStepSeq = parentStepSeq;
+    console.log("parentStepSeq: " + parentStepSeq);
   }
 
   pushNoteStep() {

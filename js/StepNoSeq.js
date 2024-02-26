@@ -13,8 +13,6 @@ export default class StepNoSeq {
     setIdCounter(getIdCounter() + 1);
     this.steps = [];
     this.parentGroup = parentGroup;
-    // Add step no sequence to group
-    this.parentGroup.sequences.push(this);
     this.initStepNoSeq(groupId, measureLength);
   }
 
@@ -25,7 +23,7 @@ export default class StepNoSeq {
     );
 
     for (let i = 1; i <= measureLength; i++) {
-      const stepNo = new StepNo("16n", 84, i, this.id, this);
+      const stepNo = new StepNo("16n", 84, i, this);
       //this.steps.push(stepNo);
       stepNo.displayStepNo(this.id);
     }

@@ -6,7 +6,7 @@ import {
 } from "./helper-functions.js";
 
 export default class StepNo extends Step {
-  constructor(noteName, pixelValue, stepNo, stepNoSeqId, parentStepNoSeq) {
+  constructor(noteName, pixelValue, stepNo, parentStepNoSeq) {
     super(noteName, pixelValue);
     this.stepNo = stepNo;
     this.parentStepNoSeq = parentStepNoSeq;

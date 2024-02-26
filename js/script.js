@@ -131,10 +131,8 @@ $(document).ready(function () {
 
   // Add step sequence to group
   $(document).on("click", ".add-step-seq", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    const parentGroup = findGroupOnClick(this);
-    const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
-    new StepSeq(parentGroup, sequenceLength);
+    const group = findGroupOnClick(this);
+    group.newStepSeq();
   });
 
   // Delete last step sequence from group
@@ -157,9 +155,8 @@ $(document).ready(function () {
       const groupId = $(this).closest(".group").attr("id");
       // How many steps are there in this group?
       const stepCount = $("#" + groupId + " .step-no-seq > .step").length;
-      // Find group object in project
-      const groups = findAllNestedProps(getProject(), "groups");
-      const group = findNestedProp(groups, groupId);
+
+      const group = findGroupOnClick(this);
 
       // Call method to extend group by one step or bar
       if (buttonClass == "add-step") group.extendGroup(1, stepCount);

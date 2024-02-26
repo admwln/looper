@@ -38,7 +38,6 @@ export default class Group {
     this.displayGroup();
     this.newStepNoSeq();
     this.newStepSeq();
-    //new StepSeq(this.id, measureLength);
     console.log(`Group created`);
   }
 
@@ -112,31 +111,38 @@ export default class Group {
     for (let i = 1; i <= stepsToAdd; i++) {
       // There is always just one StepNoSeq per group, add one StepNo to it
       const stepNoSeqId = this.sequences[0].id;
-      const newStepNo = new StepNo("16n", 84, stepCount + i, stepNoSeqId);
-      //this.sequences[0].steps.push(newStepNo);
+      const newStepNo = new StepNo("16n", 84, stepCount + i, this.sequences[0]);
       newStepNo.displayStepNo(stepNoSeqId);
 
       // How many sequences of the kind StepSeq are there in this group?
       const stepSeqs = this.sequences.filter(
         (sequence) => sequence.constructor.name === "StepSeq"
       ).length;
+
       for (let j = 0; j < stepSeqs; j++) {
-        // For each step sequence, add a noteStep
-        const stepSeqId = this.sequences[j + 1].id;
-        const newNoteStep = new NoteStep("16n", 84, 1, 80, stepSeqId);
-        // Find the stepSeq object in project by using stepSeqId
-        const sequences = findAllNestedProps(getProject(), "sequences");
-        const stepSeq = findNestedProp(sequences, stepSeqId);
-        // Push newNoteStep into stepSeq.noteSteps
-        newNoteStep.pushNoteStep(stepSeq);
+        // For each stepSeq, add a noteStep
+        const newNoteStep = new NoteStep(
+          "16n",
+          84,
+          1,
+          80,
+          this.sequences[j + 1]
+        );
+        // Push newNoteStep into current StepSeq.noteSteps
+        this.sequences[j + 1].noteSteps.push(newNoteStep);
         // Show newNoteStep in DOM
-        newNoteStep.displayNoteStep(stepSeqId);
+        newNoteStep.displayNoteStep();
+
         // For each step sequence, add a controllerStep
-        const newControllerStep = new ControllerStep("16n", 84, stepSeqId);
-        // Push newControllerStep into stepSeq.controllerSteps
-        newControllerStep.pushControllerStep(stepSeq);
+        const newControllerStep = new ControllerStep(
+          "16n",
+          84,
+          this.sequences[j + 1]
+        );
+        // Push newControllerStep into current StepSeq.controllerSteps
+        this.sequences[j + 1].controllerSteps.push(newControllerStep);
         // Show newControllerStep in DOM
-        newControllerStep.displayControllerStep(stepSeqId, this.id);
+        newControllerStep.displayControllerStep();
       }
     }
     // Update dot indicator
