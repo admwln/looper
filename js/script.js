@@ -187,10 +187,7 @@ $(document).ready(function () {
 
   // Dot indicator dots
   $(document).on("click", ".dot", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    // Find group object by id
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
     // Get index of clicked dot, and of current dot
     const clickedDotIndex = $(this).index();
     const currentDotIndex = group.dotIndicator.currentDot;

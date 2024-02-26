@@ -36,19 +36,19 @@ export default class Group {
     //instrument.groups.push(this);
 
     this.displayGroup();
-    this.newStepNoSeq();
+    this.newStepNoSeq(this.measureLength);
     this.newStepSeq();
     console.log(`Group created`);
   }
 
-  newStepNoSeq() {
-    const stepNoSeq = new StepNoSeq(this, this.id, this.measureLength);
+  newStepNoSeq(length) {
+    const stepNoSeq = new StepNoSeq(this, this.id, length);
     this.sequences.push(stepNoSeq);
     return stepNoSeq;
   }
 
   newStepSeq() {
-    const stepSeq = new StepSeq(this, this.measureLength);
+    const stepSeq = new StepSeq(this);
     this.sequences.push(stepSeq);
     return stepSeq;
   }

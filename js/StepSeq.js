@@ -9,7 +9,7 @@ import {
 } from "./helper-functions.js";
 
 export default class StepSeq {
-  constructor(parentGroup, sequenceLength) {
+  constructor(parentGroup) {
     this.id = "sts" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     this.noteSteps = [];
@@ -18,10 +18,11 @@ export default class StepSeq {
     this.parentGroup = parentGroup;
     // Add step sequence to group
     //this.parentGroup.sequences.push(this);
-    this.initStepSeq(sequenceLength);
+    this.initStepSeq();
   }
 
-  initStepSeq(sequenceLength) {
+  initStepSeq() {
+    const sequenceLength = this.parentGroup.sequences[0].steps.length;
     // Create div to contain steps
     $("#" + this.parentGroup.id + " .scroll-container").append(
       `
