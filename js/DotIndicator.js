@@ -45,7 +45,7 @@ export default class DotIndicator {
   }
 
   extendShorten(group) {
-    //console.log("extendShorten called");
+    console.log("extendShorten called");
     // How many times can the measureLength fit into the new groupLength?
     let dotsQuotient = Math.floor(group.groupLength / group.measureLength);
     let dotsRemainder = group.groupLength % group.measureLength;

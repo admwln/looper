@@ -26,7 +26,6 @@ export default class StepNoSeq {
   }
 
   popStepNo() {
-    console.log("popping");
     this.steps.pop();
     $("#" + this.id + " .step:last-of-type").remove();
   }

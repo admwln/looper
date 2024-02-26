@@ -207,12 +207,11 @@ export default class Group {
       this.sequences[0].popStepNo();
     }
 
+    // Shorten groupLength by x number of steps
+    this.groupLength -= stepsToDelete;
     // Update dot indicator
     this.dotIndicator.extendShorten(this);
     this.dotIndicator.displayDots();
-
-    // Shorten groupLength by x number of steps
-    this.groupLength -= stepsToDelete;
 
     console.log(`Group shortened by ${stepsToDelete} steps`);
   }

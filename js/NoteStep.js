@@ -18,7 +18,6 @@ export default class NoteStep extends Step {
     this.msFromLoopStart = 0;
     this.muted = false;
     this.parentStepSeq = parentStepSeq;
-    console.log("parentStepSeq: " + parentStepSeq);
   }
 
   pushNoteStep() {
@@ -26,7 +25,6 @@ export default class NoteStep extends Step {
   }
   // These two methods could be combined into one method
   displayNoteStep() {
-    console.log("Displaying note step");
     $("#" + this.parentStepSeq.id + " .note-seq").append(
       `
       <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
