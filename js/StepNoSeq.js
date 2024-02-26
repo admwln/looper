@@ -1,11 +1,5 @@
 import StepNo from "./StepNo.js";
-import {
-  getProject,
-  setIdCounter,
-  getIdCounter,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
+import { setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class StepNoSeq {
   constructor(parentGroup, groupId, measureLength) {
@@ -29,5 +23,11 @@ export default class StepNoSeq {
     }
 
     console.log(`Step no seq created`);
+  }
+
+  popStepNo() {
+    console.log("popping");
+    this.steps.pop();
+    $("#" + this.id + " .step:last-of-type").remove();
   }
 }

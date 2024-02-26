@@ -21,11 +21,9 @@ export default class StepNo extends Step {
   }
 
   // Remove stepNo from parent stepNoSeq
-  deleteStepNo(stepNoSeqId) {
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepNoSeq = findNestedProp(sequences, stepNoSeqId);
-    const stepNoIndex = stepNoSeq.steps.indexOf(this);
-    stepNoSeq.steps.splice(stepNoIndex, 1);
+  deleteStepNo() {
+    const stepNoSeq = this.parentStepNoSeq;
+    stepNoSeq.pop();
     $("#" + this.id).remove();
   }
 }

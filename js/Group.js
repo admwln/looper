@@ -158,9 +158,6 @@ export default class Group {
     // this in order to avoid negative values
     stepsToDelete > stepCount ? (stepsToDelete = stepCount) : null;
 
-    // Shorten groupLength by x number of steps
-    this.groupLength -= stepsToDelete;
-
     // How many sequences of the kind StepSeq are there in this group?
     const stepSeqs = this.sequences.filter(
       (sequence) => sequence.constructor.name === "StepSeq"
@@ -173,12 +170,11 @@ export default class Group {
         const noteStepCount = this.sequences[j + 1].noteSteps.length;
         // For each step sequence, remove a noteStep
         // +1 to skip the first sequence, which is always a StepNoSeq
-        const stepSeqId = this.sequences[j + 1].id;
-        // Find the stepSeq object in project by using stepSeqId
-        const sequences = findAllNestedProps(getProject(), "sequences");
-        const stepSeq = findNestedProp(sequences, stepSeqId);
+
+        const stepSeq = this.sequences[j + 1];
         // Delete last noteStep from stepSeq.noteSteps
-        const noteStepToRemove = stepSeq.noteSteps[noteStepCount - 1];
+        const noteStepToRemove =
+          this.sequences[j + 1].noteSteps[noteStepCount - 1];
 
         // Get controllerStep to remove
         // Get controllerStep count of the current stepSeq
@@ -198,21 +194,25 @@ export default class Group {
         }
 
         // Delete last noteStep from stepSeq.noteSteps
-        noteStepToRemove.deleteNoteStep(stepSeqId);
+        noteStepToRemove.deleteNoteStep();
         // Delete last controllerStep from stepSeq.controllerSteps
-        controllerStepToRemove.deleteControllerStep(stepSeqId);
-
-        // There is always just one StepNoSeq per group, remove one StepNo from it
-        const stepNoSeqId = this.sequences[0].id;
-        // Get last stepNo in stepNoSeq
-        const stepNoToRemove = this.sequences[0].steps[stepCount - i];
-        stepNoToRemove.deleteStepNo(stepNoSeqId);
+        controllerStepToRemove.deleteControllerStep();
       }
+    }
+
+    // Remove stepNo(s)
+    for (let k = 0; k < stepsToDelete; k++) {
+      // There is always just one StepNoSeq per group, remove one StepNo from it
+      // Get last stepNo in stepNoSeq
+      this.sequences[0].popStepNo();
     }
 
     // Update dot indicator
     this.dotIndicator.extendShorten(this);
     this.dotIndicator.displayDots();
+
+    // Shorten groupLength by x number of steps
+    this.groupLength -= stepsToDelete;
 
     console.log(`Group shortened by ${stepsToDelete} steps`);
   }

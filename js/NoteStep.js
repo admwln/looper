@@ -112,9 +112,8 @@ export default class NoteStep extends Step {
   }
 
   // Delete noteStep from stepSeq.noteSteps, and from DOM
-  deleteNoteStep(stepSeqId) {
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+  deleteNoteStep() {
+    const stepSeq = this.parentStepSeq;
     // Get index of this in stepSeq.noteSteps
     const stepIndex = stepSeq.noteSteps.findIndex((step) => step.id == this.id);
     // Remove this from stepSeq.noteSteps

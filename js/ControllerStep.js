@@ -94,9 +94,8 @@ export default class ControllerStep extends Step {
   }
 
   // Delete controllerStep stepSeq.controllerSteps
-  deleteControllerStep(stepSeqId) {
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+  deleteControllerStep() {
+    const stepSeq = this.parentStepSeq;
     const stepIndex = stepSeq.controllerSteps.findIndex(
       (step) => step.id == this.id
     );
