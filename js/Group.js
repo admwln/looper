@@ -260,7 +260,6 @@ export default class Group {
     // Find all other groups in this section
     const section = this.parentInstrument.parentSection;
     const sectionInstruments = section.instruments;
-    console.log("sectionInstruments", sectionInstruments);
     // Get all groups in this section
     const groups = [];
     sectionInstruments.forEach((instrument) => {

@@ -128,3 +128,15 @@ export function findObjectById(array, id) {
   });
   return needle;
 }
+
+export function findGroupOnClick(element) {
+  const instrumentId = $(element).closest(".instrument").attr("id");
+  const groupId = $(element).closest(".group").attr("id");
+  const sections = getProject().sections;
+  const section = findSelectedObject(sections);
+  const instruments = section.instruments;
+  const instrument = findObjectById(instruments, instrumentId);
+  const groups = instrument.groups;
+  const group = findObjectById(groups, groupId);
+  return group;
+}

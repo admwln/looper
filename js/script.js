@@ -14,6 +14,7 @@ import {
   setLoopOn,
   findAllNestedProps,
   findNestedProp,
+  findGroupOnClick,
   findObjectById,
   findSelectedObject,
 } from "./helper-functions.js";
@@ -124,22 +125,16 @@ $(document).ready(function () {
 
   // Change master group
   $(document).on("change", ".master-group-radio", function () {
-    const instrumentId = $(this).closest(".instrument").attr("id");
-    const groupId = $(this).val();
-    const sections = getProject().sections;
-    const section = findSelectedObject(sections);
-    const instruments = section.instruments;
-    const instrument = findObjectById(instruments, instrumentId);
-    const groups = instrument.groups;
-    const group = findObjectById(groups, groupId);
+    const group = findGroupOnClick(this);
     group.makeMaster();
   });
 
   // Add step sequence to group
   $(document).on("click", ".add-step-seq", function () {
     const groupId = $(this).closest(".group").attr("id");
+    const parentGroup = findGroupOnClick(this);
     const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
-    new StepSeq(groupId, sequenceLength);
+    new StepSeq(parentGroup, sequenceLength);
   });
 
   // Delete last step sequence from group
