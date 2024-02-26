@@ -14,6 +14,8 @@ import {
   setLoopOn,
   findAllNestedProps,
   findNestedProp,
+  findObjectById,
+  findSelectedObject,
 } from "./helper-functions.js";
 
 // Global variables
@@ -100,12 +102,7 @@ $(document).ready(function () {
   $(document).on("click", "#add-instrument", function () {
     //const sectionId = $(this).closest(".section").attr("id");
     const sections = getProject().sections;
-    let selectedSection;
-    sections.forEach((section) => {
-      if (section.selected) {
-        selectedSection = section;
-      }
-    });
+    let selectedSection = findSelectedObject(sections);
     const instrument = selectedSection.newInstrument();
     // Add group to instrument
     const group = instrument.newGroup();
@@ -115,8 +112,14 @@ $(document).ready(function () {
   // Add group
   $(document).on("click", ".add-group", function () {
     const instrumentId = $(this).closest(".instrument").attr("id");
-    const newGroup = new Group(instrumentId);
-    newGroup.makeMaster();
+    // Find instruments in selected section
+    const sections = getProject().sections;
+    const section = findSelectedObject(sections);
+    const instruments = section.instruments;
+    const instrument = findObjectById(instruments, instrumentId);
+    // Add group to instrument
+    const group = instrument.newGroup();
+    group.makeMaster();
   });
 
   // Change master group

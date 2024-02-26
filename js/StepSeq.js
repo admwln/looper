@@ -22,8 +22,6 @@ export default class StepSeq {
   }
 
   initStepSeq(sequenceLength) {
-    console.log("Init step seq");
-    console.log("step seq parent group id", this.parentGroup.id);
     // Create div to contain steps
     $("#" + this.parentGroup.id + " .scroll-container").append(
       `

@@ -43,7 +43,6 @@ export default class Group {
   }
 
   newStepNoSeq() {
-    console.log("new stepnoseq called");
     const stepNoSeq = new StepNoSeq(this, this.id, this.measureLength);
     this.sequences.push(stepNoSeq);
     return stepNoSeq;

@@ -108,3 +108,23 @@ let noteMap = new Map([
 export function getNoteName(pixelValue) {
   return noteMap.get(pixelValue);
 }
+
+export function findSelectedObject(array) {
+  let object;
+  array.forEach((item) => {
+    if (item.selected) {
+      object = item;
+    }
+  });
+  return object;
+}
+
+export function findObjectById(array, id) {
+  let needle;
+  array.forEach((object) => {
+    if (object.id == id) {
+      needle = object;
+    }
+  });
+  return needle;
+}
