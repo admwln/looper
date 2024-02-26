@@ -124,9 +124,14 @@ $(document).ready(function () {
 
   // Change master group
   $(document).on("change", ".master-group-radio", function () {
+    const instrumentId = $(this).closest(".instrument").attr("id");
     const groupId = $(this).val();
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const sections = getProject().sections;
+    const section = findSelectedObject(sections);
+    const instruments = section.instruments;
+    const instrument = findObjectById(instruments, instrumentId);
+    const groups = instrument.groups;
+    const group = findObjectById(groups, groupId);
     group.makeMaster();
   });
 
