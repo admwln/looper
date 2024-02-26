@@ -141,9 +141,7 @@ $(document).ready(function () {
   // Replace this with unique button for deleting each step sequence
   $(document).on("click", ".delete-step-seq", function () {
     const groupId = $(this).closest(".group").attr("id");
-    // Find group object in project
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
     // Find index of last seq
     const seqIndex = $("#" + groupId + " > div > div.step-seq").length;
     group.deleteLastSeq(seqIndex);
