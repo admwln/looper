@@ -91,9 +91,8 @@ $(document).ready(function () {
   });
 
   // Click section tab
-  $(document).on("click", ".section-tab", function () {
+  $(document).on("click", ".section-tab:not(#add-section-tab)", function () {
     let sectionId = $(this).attr("id").split("-")[0];
-    // Find section object in project
     const sections = getProject().sections;
     const section = findObjectById(sections, sectionId);
     section.selectSection();
