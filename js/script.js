@@ -94,8 +94,8 @@ $(document).ready(function () {
   $(document).on("click", ".section-tab", function () {
     let sectionId = $(this).attr("id").split("-")[0];
     // Find section object in project
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
+    const sections = getProject().sections;
+    const section = findObjectById(sections, sectionId);
     section.selectSection();
   });
 
