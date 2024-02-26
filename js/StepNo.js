@@ -6,13 +6,12 @@ import {
 } from "./helper-functions.js";
 
 export default class StepNo extends Step {
-  constructor(noteName, pixelValue, stepNo, stepNoSeqId) {
+  constructor(noteName, pixelValue, stepNo, stepNoSeqId, parentStepNoSeq) {
     super(noteName, pixelValue);
     this.stepNo = stepNo;
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepNoSeq = findNestedProp(sequences, stepNoSeqId);
+    this.parentStepNoSeq = parentStepNoSeq;
     // Add step to stepNoSeq
-    stepNoSeq.steps.push(this);
+    parentStepNoSeq.steps.push(this);
   }
 
   displayStepNo(stepNoSeqId) {

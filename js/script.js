@@ -98,21 +98,24 @@ $(document).ready(function () {
 
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
-    const sectionId = $(this).closest(".section").attr("id");
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
-    const instrument = section.newInstrument();
-    // const name = "Instrument";
-    // const instrument = new Instrument(name, sectionId);
-    // // Add group to instrument
-    //const group = new Group(instrument.id, measureLength);
-    // group.makeMaster();
+    //const sectionId = $(this).closest(".section").attr("id");
+    const sections = getProject().sections;
+    let selectedSection;
+    sections.forEach((section) => {
+      if (section.selected) {
+        selectedSection = section;
+      }
+    });
+    const instrument = selectedSection.newInstrument();
+    // Add group to instrument
+    const group = instrument.newGroup();
+    group.makeMaster();
   });
 
   // Add group
   $(document).on("click", ".add-group", function () {
     const instrumentId = $(this).closest(".instrument").attr("id");
-    const newGroup = new Group(instrumentId, measureLength);
+    const newGroup = new Group(instrumentId);
     newGroup.makeMaster();
   });
 

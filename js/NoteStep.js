@@ -8,7 +8,7 @@ import {
 } from "./helper-functions.js";
 
 export default class NoteStep extends Step {
-  constructor(noteName, pixelValue, pitch, velocity) {
+  constructor(noteName, pixelValue, pitch, velocity, parentStepSeq) {
     super(noteName, pixelValue);
     this.pitch = pitch;
     this.state = "off";
@@ -17,14 +17,16 @@ export default class NoteStep extends Step {
     this.forks = [];
     this.msFromLoopStart = 0;
     this.muted = false;
+    this.parentStepSeq = parentStepSeq;
   }
 
-  pushNoteStep(stepSeq) {
-    stepSeq.noteSteps.push(this);
+  pushNoteStep() {
+    this.parentStepSeq.noteSteps.push(this);
   }
   // These two methods could be combined into one method
-  displayNoteStep(stepSeqId) {
-    $("#" + stepSeqId + " .note-seq").append(
+  displayNoteStep() {
+    console.log("Displaying note step");
+    $("#" + this.parentStepSeq.id + " .note-seq").append(
       `
       <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
       </div>

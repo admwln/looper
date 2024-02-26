@@ -15,7 +15,7 @@ import {
 } from "./helper-functions.js";
 
 export default class Group {
-  constructor(instrumentId, measureLength) {
+  constructor(parentInstrument, instrumentId) {
     this.id = "grp" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     // Groups default to midi channel 1 on their respective instrument's output
@@ -29,21 +29,34 @@ export default class Group {
     this.measureLength = 16; // NB! Should be updated dynamically
     this.groupLength = 16; // NB! Should be updated dynamically
     this.dotIndicator = new DotIndicator(this);
+    this.parentInstrument = parentInstrument;
     this.instrumentId = instrumentId;
-    const instruments = findAllNestedProps(getProject(), "instruments");
-    const instrument = findNestedProp(instruments, instrumentId);
-    this.sectionId = instrument.sectionId;
+    //this.sectionId = this.parentInstrument.parentSection.id;
     // Add group to instrument
-    instrument.groups.push(this);
+    //instrument.groups.push(this);
 
-    this.displayGroup(instrumentId);
-    new StepNoSeq(this.id, measureLength);
-    new StepSeq(this.id, measureLength);
+    this.displayGroup();
+    this.newStepNoSeq();
+    this.newStepSeq();
+    //new StepSeq(this.id, measureLength);
     console.log(`Group created`);
   }
 
-  displayGroup(instrumentId) {
-    $("#" + instrumentId).append(
+  newStepNoSeq() {
+    console.log("new stepnoseq called");
+    const stepNoSeq = new StepNoSeq(this, this.id, this.measureLength);
+    this.sequences.push(stepNoSeq);
+    return stepNoSeq;
+  }
+
+  newStepSeq() {
+    const stepSeq = new StepSeq(this, this.measureLength);
+    this.sequences.push(stepSeq);
+    return stepSeq;
+  }
+
+  displayGroup() {
+    $("#" + this.parentInstrument.id).append(
       `
       <section class='group' id='${this.id}'>
         <div class='scroll-container'></div>
@@ -235,21 +248,23 @@ export default class Group {
 
   // Get section that this group belongs to
   getSection() {
-    const sectionId = this.sectionId;
-    // Get section object in project by using sectionId
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
+    // const sectionId = this.sectionId;
+    // // Get section object in project by using sectionId
+    // const sections = findAllNestedProps(getProject(), "sections");
+    // const section = findNestedProp(sections, sectionId);
+    const section = this.parentInstrument.parentSection;
     return section;
   }
 
   makeMaster() {
     this.masterGroup = true;
     // Find all other groups in this section
-    const section = this.getSection();
-    const instruments = section.instruments;
+    const section = this.parentInstrument.parentSection;
+    const sectionInstruments = section.instruments;
+    console.log("sectionInstruments", sectionInstruments);
     // Get all groups in this section
     const groups = [];
-    instruments.forEach((instrument) => {
+    sectionInstruments.forEach((instrument) => {
       groups.push(...instrument.groups);
     });
     // Set all other groups to masterGroup = false

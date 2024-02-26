@@ -7,26 +7,25 @@ import {
 } from "./helper-functions.js";
 
 export default class ControllerStep extends Step {
-  constructor(noteName, pixelValue) {
+  constructor(noteName, pixelValue, parentStepSeq) {
     super(noteName, pixelValue);
     this.state = "off";
     this.muted = false;
     this.velocities = [];
     this.msFromLoopStart = 0;
     this.muted = false;
+    this.parentStepSeq = parentStepSeq;
   }
 
-  pushControllerStep(stepSeq) {
-    stepSeq.controllerSteps.push(this);
+  pushControllerStep() {
+    this.parentStepSeq.controllerSteps.push(this);
   }
 
-  displayControllerStep(stepSeqId, groupId) {
-    $("#" + stepSeqId + " .controller-seq").append(
+  displayControllerStep() {
+    $("#" + this.parentStepSeq.id + " .controller-seq").append(
       `<div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
     );
-    // Find group object in project
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = this.parentStepSeq.parentGroup;
     if (!group.ccVisibility) {
       $("#" + this.id)
         .parent()

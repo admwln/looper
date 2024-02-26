@@ -1,3 +1,4 @@
+import Group from "./Group.js";
 import { getProject, setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class Instrument {
@@ -11,13 +12,16 @@ export default class Instrument {
     this.muted = false;
     this.parentSection = parentSection;
     this.sectionId = sectionId;
-    const project = getProject();
-    // Find section object in project.sections array by id
-
     // Add instrument to section.instruments array
     //this.parentSection.instruments.push(this);
     this.displayInstrument(this.parentSection.id);
     console.log(`Instrument "${this.name}" created`);
+  }
+
+  newGroup() {
+    const group = new Group(this, this.id);
+    this.groups.push(group);
+    return group;
   }
 
   displayInstrument(sectionId) {
