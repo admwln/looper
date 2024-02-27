@@ -58,29 +58,30 @@ export function nextChar(c) {
   return String.fromCharCode(c.charCodeAt(0) + 1);
 }
 
-export function findAllNestedProps(obj, propName) {
-  let results = [];
-  if (obj.hasOwnProperty(propName)) {
-    results.push(obj[propName]);
-  }
-  for (let i = 0; i < Object.keys(obj).length; i++) {
-    if (typeof obj[Object.keys(obj)[i]] === "object") {
-      results = results.concat(
-        findAllNestedProps(obj[Object.keys(obj)[i]], propName)
-      );
-    }
-  }
-  return results;
-}
+// export function findAllNestedProps(obj, propName) {
+//   console.log("findAllNestedProps called", obj, propName);
+//   let results = [];
+//   if (obj.hasOwnProperty(propName)) {
+//     results.push(obj[propName]);
+//   }
+//   for (let i = 0; i < Object.keys(obj).length; i++) {
+//     if (typeof obj[Object.keys(obj)[i]] === "object") {
+//       results = results.concat(
+//         findAllNestedProps(obj[Object.keys(obj)[i]], propName)
+//       );
+//     }
+//   }
+//   return results;
+// }
 
-export function findNestedProp(haystack, id) {
-  let object = null;
-  for (let i = 0; i < haystack.length; i++) {
-    object = haystack[i].find((object) => object.id === id);
-    if (object) break;
-  }
-  return object;
-}
+// export function findNestedProp(haystack, id) {
+//   let object = null;
+//   for (let i = 0; i < haystack.length; i++) {
+//     object = haystack[i].find((object) => object.id === id);
+//     if (object) break;
+//   }
+//   return object;
+// }
 
 // Maybe make getNoteName() and getPixelValue() a method of Step or some
 // kind of globally accessible function. This would mean that each step would
@@ -106,4 +107,36 @@ let noteMap = new Map([
 
 export function getNoteName(pixelValue) {
   return noteMap.get(pixelValue);
+}
+
+export function findSelectedObject(array) {
+  let object;
+  array.forEach((item) => {
+    if (item.selected) {
+      object = item;
+    }
+  });
+  return object;
+}
+
+export function findObjectById(array, id) {
+  let needle;
+  array.forEach((object) => {
+    if (object.id == id) {
+      needle = object;
+    }
+  });
+  return needle;
+}
+
+export function findGroupOnClick(element) {
+  const instrumentId = $(element).closest(".instrument").attr("id");
+  const groupId = $(element).closest(".group").attr("id");
+  const sections = getProject().sections;
+  const section = findSelectedObject(sections);
+  const instruments = section.instruments;
+  const instrument = findObjectById(instruments, instrumentId);
+  const groups = instrument.groups;
+  const group = findObjectById(groups, groupId);
+  return group;
 }

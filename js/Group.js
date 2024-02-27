@@ -6,16 +6,13 @@ import NoteStep from "./NoteStep.js";
 import ControllerStep from "./ControllerStep.js";
 import DotIndicator from "./DotIndicator.js";
 import {
-  getProject,
   setIdCounter,
   getIdCounter,
   getStepWidth,
-  findAllNestedProps,
-  findNestedProp,
 } from "./helper-functions.js";
 
 export default class Group {
-  constructor(instrumentId, measureLength) {
+  constructor(parentInstrument, instrumentId) {
     this.id = "grp" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     // Groups default to midi channel 1 on their respective instrument's output
@@ -29,21 +26,32 @@ export default class Group {
     this.measureLength = 16; // NB! Should be updated dynamically
     this.groupLength = 16; // NB! Should be updated dynamically
     this.dotIndicator = new DotIndicator(this);
+    this.parentInstrument = parentInstrument;
     this.instrumentId = instrumentId;
-    const instruments = findAllNestedProps(getProject(), "instruments");
-    const instrument = findNestedProp(instruments, instrumentId);
-    this.sectionId = instrument.sectionId;
+    //this.sectionId = this.parentInstrument.parentSection.id;
     // Add group to instrument
-    instrument.groups.push(this);
+    //instrument.groups.push(this);
 
-    this.displayGroup(instrumentId);
-    new StepNoSeq(this.id, measureLength);
-    new StepSeq(this.id, measureLength);
+    this.displayGroup();
+    this.newStepNoSeq(this.measureLength);
+    this.newStepSeq();
     console.log(`Group created`);
   }
 
-  displayGroup(instrumentId) {
-    $("#" + instrumentId).append(
+  newStepNoSeq(length) {
+    const stepNoSeq = new StepNoSeq(this, this.id, length);
+    this.sequences.push(stepNoSeq);
+    return stepNoSeq;
+  }
+
+  newStepSeq() {
+    const stepSeq = new StepSeq(this);
+    this.sequences.push(stepSeq);
+    return stepSeq;
+  }
+
+  displayGroup() {
+    $("#" + this.parentInstrument.id).append(
       `
       <section class='group' id='${this.id}'>
         <div class='scroll-container'></div>
@@ -100,31 +108,38 @@ export default class Group {
     for (let i = 1; i <= stepsToAdd; i++) {
       // There is always just one StepNoSeq per group, add one StepNo to it
       const stepNoSeqId = this.sequences[0].id;
-      const newStepNo = new StepNo("16n", 84, stepCount + i, stepNoSeqId);
-      //this.sequences[0].steps.push(newStepNo);
+      const newStepNo = new StepNo("16n", 84, stepCount + i, this.sequences[0]);
       newStepNo.displayStepNo(stepNoSeqId);
 
       // How many sequences of the kind StepSeq are there in this group?
       const stepSeqs = this.sequences.filter(
         (sequence) => sequence.constructor.name === "StepSeq"
       ).length;
+
       for (let j = 0; j < stepSeqs; j++) {
-        // For each step sequence, add a noteStep
-        const stepSeqId = this.sequences[j + 1].id;
-        const newNoteStep = new NoteStep("16n", 84, 1, 80, stepSeqId);
-        // Find the stepSeq object in project by using stepSeqId
-        const sequences = findAllNestedProps(getProject(), "sequences");
-        const stepSeq = findNestedProp(sequences, stepSeqId);
-        // Push newNoteStep into stepSeq.noteSteps
-        newNoteStep.pushNoteStep(stepSeq);
+        // For each stepSeq, add a noteStep
+        const newNoteStep = new NoteStep(
+          "16n",
+          84,
+          1,
+          80,
+          this.sequences[j + 1]
+        );
+        // Push newNoteStep into current StepSeq.noteSteps
+        this.sequences[j + 1].noteSteps.push(newNoteStep);
         // Show newNoteStep in DOM
-        newNoteStep.displayNoteStep(stepSeqId);
+        newNoteStep.displayNoteStep();
+
         // For each step sequence, add a controllerStep
-        const newControllerStep = new ControllerStep("16n", 84, stepSeqId);
-        // Push newControllerStep into stepSeq.controllerSteps
-        newControllerStep.pushControllerStep(stepSeq);
+        const newControllerStep = new ControllerStep(
+          "16n",
+          84,
+          this.sequences[j + 1]
+        );
+        // Push newControllerStep into current StepSeq.controllerSteps
+        this.sequences[j + 1].controllerSteps.push(newControllerStep);
         // Show newControllerStep in DOM
-        newControllerStep.displayControllerStep(stepSeqId, this.id);
+        newControllerStep.displayControllerStep();
       }
     }
     // Update dot indicator
@@ -140,9 +155,6 @@ export default class Group {
     // this in order to avoid negative values
     stepsToDelete > stepCount ? (stepsToDelete = stepCount) : null;
 
-    // Shorten groupLength by x number of steps
-    this.groupLength -= stepsToDelete;
-
     // How many sequences of the kind StepSeq are there in this group?
     const stepSeqs = this.sequences.filter(
       (sequence) => sequence.constructor.name === "StepSeq"
@@ -155,12 +167,11 @@ export default class Group {
         const noteStepCount = this.sequences[j + 1].noteSteps.length;
         // For each step sequence, remove a noteStep
         // +1 to skip the first sequence, which is always a StepNoSeq
-        const stepSeqId = this.sequences[j + 1].id;
-        // Find the stepSeq object in project by using stepSeqId
-        const sequences = findAllNestedProps(getProject(), "sequences");
-        const stepSeq = findNestedProp(sequences, stepSeqId);
+
+        const stepSeq = this.sequences[j + 1];
         // Delete last noteStep from stepSeq.noteSteps
-        const noteStepToRemove = stepSeq.noteSteps[noteStepCount - 1];
+        const noteStepToRemove =
+          this.sequences[j + 1].noteSteps[noteStepCount - 1];
 
         // Get controllerStep to remove
         // Get controllerStep count of the current stepSeq
@@ -180,18 +191,21 @@ export default class Group {
         }
 
         // Delete last noteStep from stepSeq.noteSteps
-        noteStepToRemove.deleteNoteStep(stepSeqId);
+        noteStepToRemove.deleteNoteStep();
         // Delete last controllerStep from stepSeq.controllerSteps
-        controllerStepToRemove.deleteControllerStep(stepSeqId);
-
-        // There is always just one StepNoSeq per group, remove one StepNo from it
-        const stepNoSeqId = this.sequences[0].id;
-        // Get last stepNo in stepNoSeq
-        const stepNoToRemove = this.sequences[0].steps[stepCount - i];
-        stepNoToRemove.deleteStepNo(stepNoSeqId);
+        controllerStepToRemove.deleteControllerStep();
       }
     }
 
+    // Remove stepNo(s)
+    for (let k = 0; k < stepsToDelete; k++) {
+      // There is always just one StepNoSeq per group, remove one StepNo from it
+      // Get last stepNo in stepNoSeq
+      this.sequences[0].popStepNo();
+    }
+
+    // Shorten groupLength by x number of steps
+    this.groupLength -= stepsToDelete;
     // Update dot indicator
     this.dotIndicator.extendShorten(this);
     this.dotIndicator.displayDots();
@@ -222,12 +236,7 @@ export default class Group {
   }
 
   initDynamicInterval(stepNo, min, max) {
-    const dynamicInterval = new DynamicInterval(
-      stepNo,
-      min,
-      max,
-      this.instrumentId
-    );
+    const dynamicInterval = new DynamicInterval(stepNo, min, max, this);
     this.dynamicInterval = dynamicInterval;
     this.dynamicInterval.groupId = this.id;
     this.dynamicInterval.harvestSteps(this);
@@ -235,21 +244,18 @@ export default class Group {
 
   // Get section that this group belongs to
   getSection() {
-    const sectionId = this.sectionId;
-    // Get section object in project by using sectionId
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
+    const section = this.parentInstrument.parentSection;
     return section;
   }
 
   makeMaster() {
     this.masterGroup = true;
     // Find all other groups in this section
-    const section = this.getSection();
-    const instruments = section.instruments;
+    const section = this.parentInstrument.parentSection;
+    const sectionInstruments = section.instruments;
     // Get all groups in this section
     const groups = [];
-    instruments.forEach((instrument) => {
+    sectionInstruments.forEach((instrument) => {
       groups.push(...instrument.groups);
     });
     // Set all other groups to masterGroup = false

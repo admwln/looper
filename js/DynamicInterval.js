@@ -5,12 +5,10 @@ import {
   getProject,
   getStepWidth,
   setMasterTurnaround,
-  findAllNestedProps,
-  findNestedProp,
 } from "./helper-functions.js";
 
 export default class DynamicInterval {
-  constructor(stepNo, min, max, instrumentId) {
+  constructor(stepNo, min, max, parentGroup) {
     this.id = "din" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     this.stepNo = stepNo;
@@ -18,7 +16,7 @@ export default class DynamicInterval {
     this.max = max;
     this.steps = [];
     this.groupId = "";
-    this.instrumentId = instrumentId;
+    this.parentGroup = parentGroup;
   }
 
   play(time) {
@@ -29,8 +27,7 @@ export default class DynamicInterval {
       return;
     }
 
-    const instruments = findAllNestedProps(getProject(), "instruments");
-    const instrument = findNestedProp(instruments, this.instrumentId);
+    const instrument = this.parentGroup.parentInstrument;
     const midiOut = instrument.midiOut;
     const output = WebMidi.getOutputByName(midiOut);
     //console.log("Playing", this.steps);

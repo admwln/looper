@@ -100,8 +100,9 @@ export default class Project {
 
   newSection() {
     const name = getSectionName();
-    new Section(name);
+    const section = new Section(name);
     // Increment automatic section name by one character
     setSectionName(nextChar(getSectionName()));
+    return section;
   }
 }

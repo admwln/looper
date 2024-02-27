@@ -1,7 +1,8 @@
+import Group from "./Group.js";
 import { getProject, setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class Instrument {
-  constructor(name, sectionId) {
+  constructor(name, parentSection, sectionId) {
     this.id = "ins" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     this.name = name;
@@ -9,16 +10,18 @@ export default class Instrument {
     this.midiChannel = 1;
     this.groups = [];
     this.muted = false;
+    this.parentSection = parentSection;
     this.sectionId = sectionId;
-    const project = getProject();
-    // Find section object in project.sections array by id
-    const section = project.sections.find(
-      (section) => section.id === sectionId
-    );
     // Add instrument to section.instruments array
-    section.instruments.push(this);
-    this.displayInstrument(sectionId);
+    //this.parentSection.instruments.push(this);
+    this.displayInstrument(this.parentSection.id);
     console.log(`Instrument "${this.name}" created`);
+  }
+
+  newGroup() {
+    const group = new Group(this, this.id);
+    this.groups.push(group);
+    return group;
   }
 
   displayInstrument(sectionId) {

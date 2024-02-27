@@ -1,7 +1,7 @@
 import {
   getProject,
-  findAllNestedProps,
-  findNestedProp,
+  findObjectById,
+  findSelectedObject,
 } from "./helper-functions.js";
 
 export default class HeadingEditor {
@@ -38,9 +38,7 @@ export default class HeadingEditor {
       if (object.property == "section") {
         let sectionId = $("#heading-input").parent().parent().attr("id");
         sectionId = sectionId.split("-")[0];
-        const section = getProject().sections.find(
-          (section) => section.id === sectionId
-        );
+        const section = findObjectById(getProject().sections, sectionId);
         $("#heading-input").replaceWith(
           `<h2 class="section-heading" id="${sectionId}-heading">${newText}</h2>`
         );
@@ -48,9 +46,7 @@ export default class HeadingEditor {
       }
 
       if (object.property == "instrument") {
-        const section = getProject().sections.find(
-          (section) => section.selected === true
-        );
+        const section = findSelectedObject(getProject().sections);
         let instrumentId = $("#heading-input").parent().parent().attr("id");
         $("#heading-input").replaceWith(
           `<h3 class="instrument-heading">${newText}</h3>`
@@ -58,9 +54,7 @@ export default class HeadingEditor {
 
         const instruments = section.instruments;
         // Find instrument object in section.instruments array by id
-        const instrument = instruments.find(
-          (instrument) => instrument.id === instrumentId
-        );
+        const instrument = findObjectById(instruments, instrumentId);
         instrument.name = newText;
       }
     });

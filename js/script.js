@@ -2,18 +2,14 @@
 import HeadingEditor from "./HeadingEditor.js";
 import Project from "./Project.js";
 import Player from "./Player.js";
-import Instrument from "./Instrument.js";
-import Group from "./Group.js";
-import StepSeq from "./StepSeq.js";
 
 import {
   getProject,
-  getSectionName,
-  setSectionName,
   getLoopOn,
   setLoopOn,
-  findAllNestedProps,
-  findNestedProp,
+  findGroupOnClick,
+  findObjectById,
+  findSelectedObject,
 } from "./helper-functions.js";
 
 // Global variables
@@ -88,54 +84,56 @@ $(document).ready(function () {
   });
 
   // Click section tab
-  $(document).on("click", ".section-tab", function () {
+  $(document).on("click", ".section-tab:not(#add-section-tab)", function () {
+    // Return if loop is playing
+    if (getLoopOn()) return;
     let sectionId = $(this).attr("id").split("-")[0];
-    // Find section object in project
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
+    const sections = getProject().sections;
+    const section = findObjectById(sections, sectionId);
     section.selectSection();
   });
 
   // Add instrument
   $(document).on("click", "#add-instrument", function () {
-    const sectionId = $(this).closest(".section").attr("id");
-    const name = "Instrument";
-    const instrument = new Instrument(name, sectionId);
-    $("#" + sectionId + " .instrument-name").val("");
+    //const sectionId = $(this).closest(".section").attr("id");
+    const sections = getProject().sections;
+    let selectedSection = findSelectedObject(sections);
+    const instrument = selectedSection.newInstrument();
     // Add group to instrument
-    const newGroup = new Group(instrument.id, measureLength);
-    newGroup.makeMaster();
+    const group = instrument.newGroup();
+    group.makeMaster();
   });
 
   // Add group
   $(document).on("click", ".add-group", function () {
     const instrumentId = $(this).closest(".instrument").attr("id");
-    const newGroup = new Group(instrumentId, measureLength);
-    newGroup.makeMaster();
+    // Find instruments in selected section
+    const sections = getProject().sections;
+    const section = findSelectedObject(sections);
+    const instruments = section.instruments;
+    const instrument = findObjectById(instruments, instrumentId);
+    // Add group to instrument
+    const group = instrument.newGroup();
+    group.makeMaster();
   });
 
   // Change master group
   $(document).on("change", ".master-group-radio", function () {
-    const groupId = $(this).val();
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
     group.makeMaster();
   });
 
   // Add step sequence to group
   $(document).on("click", ".add-step-seq", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    const sequenceLength = $("#" + groupId + " .step-no-seq > .step").length;
-    new StepSeq(groupId, sequenceLength);
+    const group = findGroupOnClick(this);
+    group.newStepSeq();
   });
 
   // Delete last step sequence from group
   // Replace this with unique button for deleting each step sequence
   $(document).on("click", ".delete-step-seq", function () {
     const groupId = $(this).closest(".group").attr("id");
-    // Find group object in project
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
     // Find index of last seq
     const seqIndex = $("#" + groupId + " > div > div.step-seq").length;
     group.deleteLastSeq(seqIndex);
@@ -151,9 +149,8 @@ $(document).ready(function () {
       const groupId = $(this).closest(".group").attr("id");
       // How many steps are there in this group?
       const stepCount = $("#" + groupId + " .step-no-seq > .step").length;
-      // Find group object in project
-      const groups = findAllNestedProps(getProject(), "groups");
-      const group = findNestedProp(groups, groupId);
+
+      const group = findGroupOnClick(this);
 
       // Call method to extend group by one step or bar
       if (buttonClass == "add-step") group.extendGroup(1, stepCount);
@@ -166,10 +163,7 @@ $(document).ready(function () {
 
   // Scrollgroup arrows
   $(document).on("click", "button.scroll-group", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    // Get group object
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
 
     if ($(this).hasClass("right")) {
       // If currentDot already is at the end of the sequence, return
@@ -187,10 +181,7 @@ $(document).ready(function () {
 
   // Dot indicator dots
   $(document).on("click", ".dot", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    // Find group object by id
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
+    const group = findGroupOnClick(this);
     // Get index of clicked dot, and of current dot
     const clickedDotIndex = $(this).index();
     const currentDotIndex = group.dotIndicator.currentDot;
@@ -229,16 +220,30 @@ $(document).ready(function () {
     // Get class of parent to $(this)
     const parentSeqType = $(this).parent().attr("class");
 
-    // Both StepNos and NoteSteps are nested in StepSeqs
+    // Both NoteSteps and ControllerSteps are nested in StepSeqs
     // To find the correct step object, we need to determine the type of the parent
-    let steps;
+    let steps = [];
+    const group = findGroupOnClick(this);
+    const sequences = group.sequences;
     if (parentSeqType == "note-seq") {
-      steps = findAllNestedProps(getProject(), "noteSteps");
+      // Push group's note steps to steps[]
+      for (let i = 1; i < sequences.length; i++) {
+        sequences[i].noteSteps.forEach((step) => {
+          steps.push(step);
+        });
+      }
     }
+
     if (parentSeqType == "controller-seq") {
-      steps = findAllNestedProps(getProject(), "controllerSteps");
+      // Push group's controller steps to steps[]
+      for (let i = 1; i < sequences.length; i++) {
+        sequences[i].controllerSteps.forEach((step) => {
+          steps.push(step);
+        });
+      }
     }
-    const step = findNestedProp(steps, stepId);
+
+    const step = findObjectById(steps, stepId);
 
     // Pencil
     if (editMode == "pencil") {
@@ -272,16 +277,15 @@ $(document).ready(function () {
     if (editMode == "join") {
       // Get index of clicked step, relative to its siblings
       const stepIndex = $(this).index();
-      const stepSeqId = $(this).parent().parent().attr("id");
-      join(stepIndex, stepSeqId);
+      join(stepIndex);
     }
 
     function join(stepIndex, stepSeqId) {
       if (parentSeqType == "note-seq") {
-        step.joinNoteStep(stepIndex, stepSeqId);
+        step.joinNoteStep(stepIndex);
       }
       if (parentSeqType == "controller-seq") {
-        step.joinControllerStep(stepIndex, stepSeqId);
+        step.joinControllerStep(stepIndex);
       }
     }
   });
@@ -298,9 +302,19 @@ $(document).ready(function () {
   // Note step buttons
   $(document).on("click", ".note-step-btn", function () {
     const noteStepId = $(this).closest(".step").attr("id");
-    // Find noteStep object in project
-    const noteSteps = findAllNestedProps(getProject(), "noteSteps");
-    const noteStep = findNestedProp(noteSteps, noteStepId);
+
+    let steps = [];
+    const group = findGroupOnClick(this);
+    const sequences = group.sequences;
+
+    // Push group's note steps to steps[]
+    for (let i = 1; i < sequences.length; i++) {
+      sequences[i].noteSteps.forEach((step) => {
+        steps.push(step);
+      });
+    }
+
+    const noteStep = findObjectById(steps, noteStepId);
 
     // Velocity
     if ($(this).hasClass("velocity-btn")) {
@@ -320,12 +334,7 @@ $(document).ready(function () {
 
   // Toggle CC visibility button
   $(document).on("click", ".toggle-cc", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    const controllerSeqs = $("#" + groupId + " .controller-seq");
-    // Find group object in project
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
-
+    const group = findGroupOnClick(this);
     group.toggleCcVisibility();
   });
 
@@ -337,9 +346,8 @@ $(document).ready(function () {
     let sectionId = $(this).closest(".section-tab").attr("id");
     sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
     // Find section object in project
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
-    console.log("section to queue", section);
+    const sections = getProject().sections;
+    const section = findObjectById(sections, sectionId);
     section.queue();
   });
 

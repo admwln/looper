@@ -1,18 +1,12 @@
 import Step from "./Step.js";
-import {
-  getProject,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
 
 export default class StepNo extends Step {
-  constructor(noteName, pixelValue, stepNo, stepNoSeqId) {
+  constructor(noteName, pixelValue, stepNo, parentStepNoSeq) {
     super(noteName, pixelValue);
     this.stepNo = stepNo;
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepNoSeq = findNestedProp(sequences, stepNoSeqId);
+    this.parentStepNoSeq = parentStepNoSeq;
     // Add step to stepNoSeq
-    stepNoSeq.steps.push(this);
+    parentStepNoSeq.steps.push(this);
   }
 
   displayStepNo(stepNoSeqId) {
@@ -22,11 +16,9 @@ export default class StepNo extends Step {
   }
 
   // Remove stepNo from parent stepNoSeq
-  deleteStepNo(stepNoSeqId) {
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepNoSeq = findNestedProp(sequences, stepNoSeqId);
-    const stepNoIndex = stepNoSeq.steps.indexOf(this);
-    stepNoSeq.steps.splice(stepNoIndex, 1);
+  deleteStepNo() {
+    const stepNoSeq = this.parentStepNoSeq;
+    stepNoSeq.pop();
     $("#" + this.id).remove();
   }
 }
