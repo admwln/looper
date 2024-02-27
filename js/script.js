@@ -85,6 +85,8 @@ $(document).ready(function () {
 
   // Click section tab
   $(document).on("click", ".section-tab:not(#add-section-tab)", function () {
+    // Return if loop is playing
+    if (getLoopOn()) return;
     let sectionId = $(this).attr("id").split("-")[0];
     const sections = getProject().sections;
     const section = findObjectById(sections, sectionId);
@@ -313,7 +315,6 @@ $(document).ready(function () {
     }
 
     const noteStep = findObjectById(steps, noteStepId);
-    console.log("noteStep", noteStep);
 
     // Velocity
     if ($(this).hasClass("velocity-btn")) {
@@ -347,7 +348,6 @@ $(document).ready(function () {
     // Find section object in project
     const sections = getProject().sections;
     const section = findObjectById(sections, sectionId);
-    console.log("section to queue", section);
     section.queue();
   });
 
