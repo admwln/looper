@@ -120,7 +120,7 @@ export function findSelectedObject(array) {
 }
 
 export function findObjectById(array, id) {
-  console.log("findObjById, array: ", array, " id:", id);
+  //console.log("findObjById, array: ", array, " id:", id);
   let needle;
   array.forEach((object) => {
     if (object.id == id) {

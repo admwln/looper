@@ -51,12 +51,7 @@ export default class ControllerStep extends Step {
 
   // Splice this into right place in stepSeq.noteSteps, and add into DOM
   insertControllerStep(originalStepId, i) {
-    const stepSeqId = $("#" + originalStepId)
-      .parent()
-      .parent()
-      .attr("id");
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepSeq = this.parentStepSeq;
     // Original step index
     const stepIndex = stepSeq.controllerSteps.findIndex(
       (step) => step.id == originalStepId
@@ -66,15 +61,18 @@ export default class ControllerStep extends Step {
     // Add this into DOM
     // i needs to be subtracted by
     $(
-      "#" + stepSeqId + " .controller-seq .step:eq(" + (stepIndex + i - 1) + ")"
+      "#" +
+        stepSeq.id +
+        " .controller-seq .step:eq(" +
+        (stepIndex + i - 1) +
+        ")"
     ).after(
       `<div id="${this.id}" class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;"></div>`
     );
   }
 
   joinControllerStep(stepIndex, stepSeqId) {
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepSeq = this.parentStepSeq;
 
     // Get pixel value of subsequent step
     const nextStepPixelValue =
@@ -118,12 +116,7 @@ export default class ControllerStep extends Step {
   // Update msFromLoopStart for single controllerStep
   updateMsFromLoopStart() {
     // Find index of this controllerStep in stepSeq.controllerSteps
-    const stepSeqId = $("#" + this.id)
-      .parent()
-      .parent()
-      .attr("id");
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepSeq = this.parentStepSeq;
     const controllerStepIndex = stepSeq.controllerSteps.findIndex(
       (controllerStep) => controllerStep.id == this.id
     );

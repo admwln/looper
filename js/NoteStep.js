@@ -46,7 +46,8 @@ export default class NoteStep extends Step {
         this.noteName,
         this.pixelValue,
         this.pitch,
-        this.velocity
+        this.velocity,
+        this.parentStepSeq
       );
       newStep.state = this.state;
       newStep.insertNoteStep(this.id, i);
