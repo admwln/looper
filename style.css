@@ -112,7 +112,7 @@ button {
 }
 
 button:hover {
-  color: hotpink;
+  color: rgb(45, 119, 176);
 }
 
 label {
@@ -229,6 +229,11 @@ div.section-tab.selected {
 
 .dot:hover {
   color: var(--links);
+}
+
+/* Mute group */
+.muted {
+  color: hotpink;
 }
 
 .step-no-seq,

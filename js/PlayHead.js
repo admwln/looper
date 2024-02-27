@@ -20,12 +20,11 @@ export default class PlayHead {
   }
 
   play(time) {
-    if (!getLoopOn()) {
-      return;
-    }
-    if (this.steps.length === 0) {
-      return;
-    }
+    if (!getLoopOn()) return;
+    if (this.steps.length === 0) return;
+    let muted = false;
+    if (this.parentGroup.muted) muted = true;
+    if (this.parentGroup.parentInstrument.muted) muted = true;
 
     const instrument = this.parentGroup.parentInstrument;
     const midiOut = instrument.midiOut;
@@ -36,12 +35,12 @@ export default class PlayHead {
     this.steps.forEach((step) => {
       // Check if step is a noteStep or a controllerStep
       if (step.constructor.name === "NoteStep") {
-        step.playMidiNote(time, output);
+        step.playMidiNote(time, output, muted);
       }
 
       if (step.constructor.name === "ControllerStep") {
         console.log("Playing controller step", step);
-        //step.playMidiCc(time);
+        //step.playMidiCc(time, output, muted);
       }
     });
   }

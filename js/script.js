@@ -104,6 +104,23 @@ $(document).ready(function () {
     group.makeMaster();
   });
 
+  // Mute instrument
+  $(document).on("click", ".mute-instrument", function () {
+    // Get instrumentId and instrument object
+    const instrumentId = $(this).closest(".instrument").attr("id");
+    const instruments = findSelectedObject(getProject().sections).instruments;
+    const instrument = findObjectById(instruments, instrumentId);
+    if ($(this).hasClass("muted")) {
+      $(this).removeClass("muted");
+      $("#" + instrumentId + " .group").css("opacity", "1");
+      instrument.unmute();
+      return;
+    }
+    $(this).addClass("muted");
+    $("#" + instrumentId + " .group").css("opacity", "0.5");
+    instrument.mute();
+  });
+
   // Add group
   $(document).on("click", ".add-group", function () {
     const instrumentId = $(this).closest(".instrument").attr("id");
@@ -203,6 +220,22 @@ $(document).ready(function () {
     for (let i = 0; i < diff; i++) {
       group.scrollLeft(measureWidth, true);
     }
+  });
+
+  // Mute group
+  $(document).on("click", ".mute-group", function () {
+    // Get groupId
+    const groupId = $(this).closest(".group").attr("id");
+    const group = findGroupOnClick(this);
+    if ($(this).hasClass("muted")) {
+      $(this).removeClass("muted");
+      $("#" + groupId + " .scroll-container").css("opacity", "1");
+      group.unmute();
+      return;
+    }
+    $(this).addClass("muted");
+    $("#" + groupId + " .scroll-container").css("opacity", "0.5");
+    group.mute();
   });
 
   // Edit
