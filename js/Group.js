@@ -58,6 +58,7 @@ export default class Group {
             <button class='scroll-group right'><i class='fa-solid fa-chevron-right'></i></button>
           </div>
           <div>
+            <button class='mute-group' style="margin-right:24px"><i class='fa-solid fa-volume-mute'></i></button>
             <button class="add-step"><i class='fa-solid fa-plus'></i> Step</button>
             <button class="delete-step" style="margin-right:24px"><i class='fa-solid fa-minus'></i></button>
             <button class="add-bar"><i class='fa-solid fa-plus'></i> Bar</button>
@@ -260,5 +261,13 @@ export default class Group {
         group.masterGroup = false;
       }
     });
+  }
+
+  mute() {
+    this.muted = true;
+  }
+
+  unmute() {
+    this.muted = false;
   }
 }

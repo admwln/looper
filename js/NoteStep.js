@@ -178,14 +178,12 @@ export default class NoteStep extends Step {
     this.msFromLoopStart = this.getMsFromLoopStart(stepSeq, noteStepIndex);
   }
 
-  playMidiNote(time, output) {
+  playMidiNote(time, output, muted) {
     if (!getLoopOn()) {
       return;
     }
 
-    if (this.muted) {
-      return;
-    }
+    if (this.muted) muted = true;
 
     if (time - performance.now() < -5 || time - performance.now() > 5) {
       console.log("Diff target-now " + (time - performance.now()));
@@ -195,14 +193,16 @@ export default class NoteStep extends Step {
     // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
     const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
     const velocity = this.velocity;
-
     const trigger = time + this.msFromIntStart + 20; // + buffer (ms)
 
-    output.channels[1].playNote(pitch + 35, {
-      duration: duration,
-      rawAttack: velocity,
-      time: trigger,
-    });
+    // Only actually play note if not muted
+    if (!muted) {
+      output.channels[1].playNote(pitch + 35, {
+        duration: duration,
+        rawAttack: velocity,
+        time: trigger,
+      });
+    }
     this.animateStep(trigger - parseInt(performance.now()));
     const delay = parseInt(trigger - parseInt(performance.now()));
     if (delay < 5 || delay > 20) {

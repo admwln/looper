@@ -45,6 +45,7 @@ export default class Instrument {
         <option value=''>Select Output</option>
         ${outputOptions}
       </select>
+      <button class='mute-instrument' style='margin-left: 12px;'><i class="fa-solid fa-volume-mute"></i></button>
       <div><button class='add-group'><i class="fa-solid fa-plus"></i> Group</button></div>
       `;
 
@@ -58,5 +59,13 @@ export default class Instrument {
       this.midiOut = e.target.value;
       console.log(`Midi output for ${this.name} changed to ${this.midiOut}`);
     });
+  }
+
+  mute() {
+    this.muted = true;
+  }
+
+  unmute() {
+    this.muted = false;
   }
 }
