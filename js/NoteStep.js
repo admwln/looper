@@ -1,11 +1,5 @@
 import Step from "./Step.js";
-import {
-  getLoopOn,
-  getProject,
-  getNoteName,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
+import { getLoopOn, getNoteName } from "./helper-functions.js";
 
 export default class NoteStep extends Step {
   constructor(noteName, pixelValue, pitch, velocity, parentStepSeq) {
@@ -84,7 +78,7 @@ export default class NoteStep extends Step {
     }
   }
 
-  joinNoteStep(stepIndex, stepSeqId) {
+  joinNoteStep(stepIndex) {
     const stepSeq = this.parentStepSeq;
 
     // Get pixel value of subsequent step
@@ -100,7 +94,7 @@ export default class NoteStep extends Step {
     stepSeq.noteSteps.splice(stepIndex + 1, 1);
     // Remove subsequent step from DOM
     $(
-      "#" + stepSeqId + " .note-seq .step:eq(" + (stepIndex + 1) + ")"
+      "#" + stepSeq.id + " .note-seq .step:eq(" + (stepIndex + 1) + ")"
     ).remove();
   }
 

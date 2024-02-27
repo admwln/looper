@@ -58,30 +58,30 @@ export function nextChar(c) {
   return String.fromCharCode(c.charCodeAt(0) + 1);
 }
 
-export function findAllNestedProps(obj, propName) {
-  console.log("findAllNestedProps called", obj, propName);
-  let results = [];
-  if (obj.hasOwnProperty(propName)) {
-    results.push(obj[propName]);
-  }
-  for (let i = 0; i < Object.keys(obj).length; i++) {
-    if (typeof obj[Object.keys(obj)[i]] === "object") {
-      results = results.concat(
-        findAllNestedProps(obj[Object.keys(obj)[i]], propName)
-      );
-    }
-  }
-  return results;
-}
+// export function findAllNestedProps(obj, propName) {
+//   console.log("findAllNestedProps called", obj, propName);
+//   let results = [];
+//   if (obj.hasOwnProperty(propName)) {
+//     results.push(obj[propName]);
+//   }
+//   for (let i = 0; i < Object.keys(obj).length; i++) {
+//     if (typeof obj[Object.keys(obj)[i]] === "object") {
+//       results = results.concat(
+//         findAllNestedProps(obj[Object.keys(obj)[i]], propName)
+//       );
+//     }
+//   }
+//   return results;
+// }
 
-export function findNestedProp(haystack, id) {
-  let object = null;
-  for (let i = 0; i < haystack.length; i++) {
-    object = haystack[i].find((object) => object.id === id);
-    if (object) break;
-  }
-  return object;
-}
+// export function findNestedProp(haystack, id) {
+//   let object = null;
+//   for (let i = 0; i < haystack.length; i++) {
+//     object = haystack[i].find((object) => object.id === id);
+//     if (object) break;
+//   }
+//   return object;
+// }
 
 // Maybe make getNoteName() and getPixelValue() a method of Step or some
 // kind of globally accessible function. This would mean that each step would
@@ -120,7 +120,6 @@ export function findSelectedObject(array) {
 }
 
 export function findObjectById(array, id) {
-  //console.log("findObjById, array: ", array, " id:", id);
   let needle;
   array.forEach((object) => {
     if (object.id == id) {

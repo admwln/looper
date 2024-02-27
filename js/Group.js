@@ -6,12 +6,9 @@ import NoteStep from "./NoteStep.js";
 import ControllerStep from "./ControllerStep.js";
 import DotIndicator from "./DotIndicator.js";
 import {
-  getProject,
   setIdCounter,
   getIdCounter,
   getStepWidth,
-  findAllNestedProps,
-  findNestedProp,
 } from "./helper-functions.js";
 
 export default class Group {
@@ -239,12 +236,7 @@ export default class Group {
   }
 
   initDynamicInterval(stepNo, min, max) {
-    const dynamicInterval = new DynamicInterval(
-      stepNo,
-      min,
-      max,
-      this.instrumentId
-    );
+    const dynamicInterval = new DynamicInterval(stepNo, min, max, this);
     this.dynamicInterval = dynamicInterval;
     this.dynamicInterval.groupId = this.id;
     this.dynamicInterval.harvestSteps(this);
@@ -252,10 +244,6 @@ export default class Group {
 
   // Get section that this group belongs to
   getSection() {
-    // const sectionId = this.sectionId;
-    // // Get section object in project by using sectionId
-    // const sections = findAllNestedProps(getProject(), "sections");
-    // const section = findNestedProp(sections, sectionId);
     const section = this.parentInstrument.parentSection;
     return section;
   }

@@ -1,12 +1,6 @@
 import ControllerStep from "./ControllerStep.js";
 import NoteStep from "./NoteStep.js";
-import {
-  getProject,
-  setIdCounter,
-  getIdCounter,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
+import { setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class StepSeq {
   constructor(parentGroup) {

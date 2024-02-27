@@ -2,18 +2,11 @@
 import HeadingEditor from "./HeadingEditor.js";
 import Project from "./Project.js";
 import Player from "./Player.js";
-import Instrument from "./Instrument.js";
-import Group from "./Group.js";
-import StepSeq from "./StepSeq.js";
 
 import {
   getProject,
-  getSectionName,
-  setSectionName,
   getLoopOn,
   setLoopOn,
-  findAllNestedProps,
-  findNestedProp,
   findGroupOnClick,
   findObjectById,
   findSelectedObject,
@@ -352,8 +345,8 @@ $(document).ready(function () {
     let sectionId = $(this).closest(".section-tab").attr("id");
     sectionId = sectionId.slice(0, -4); // Remove "-tab" from id
     // Find section object in project
-    const sections = findAllNestedProps(getProject(), "sections");
-    const section = findNestedProp(sections, sectionId);
+    const sections = getProject().sections;
+    const section = findObjectById(sections, sectionId);
     console.log("section to queue", section);
     section.queue();
   });

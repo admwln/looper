@@ -1,9 +1,4 @@
 import Step from "./Step.js";
-import {
-  getProject,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
 
 export default class StepNo extends Step {
   constructor(noteName, pixelValue, stepNo, parentStepNoSeq) {

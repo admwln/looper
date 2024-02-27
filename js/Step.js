@@ -1,10 +1,4 @@
-import {
-  getProject,
-  setIdCounter,
-  getIdCounter,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
+import { setIdCounter, getIdCounter } from "./helper-functions.js";
 
 export default class Step {
   constructor(noteName, pixelValue) {
@@ -34,15 +28,6 @@ export default class Step {
   updateStep() {
     $("#" + this.id).css("width", this.pixelValue);
     $("#" + this.id).attr("data", this.noteName);
-  }
-
-  findGroup() {
-    const groupId = $("#" + this.id)
-      .closest(".group")
-      .attr("id");
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
-    return group;
   }
 
   getMsFromIntStart(stepNo) {
