@@ -371,6 +371,12 @@ $(document).ready(function () {
     group.toggleCcVisibility();
   });
 
+  // Keyboard panel
+
+  $(document).on("click", "#show-keyboard-panel", function () {
+    $(".keyboard-panel").toggleClass("show");
+  });
+
   // Queue section button
   $(document).on("click", ".queue-section", function () {
     // Only if loop is playing
