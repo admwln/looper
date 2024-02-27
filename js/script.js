@@ -308,9 +308,20 @@ $(document).ready(function () {
   // Note step buttons
   $(document).on("click", ".note-step-btn", function () {
     const noteStepId = $(this).closest(".step").attr("id");
-    // Find noteStep object in project
-    const noteSteps = findAllNestedProps(getProject(), "noteSteps");
-    const noteStep = findNestedProp(noteSteps, noteStepId);
+
+    let steps = [];
+    const group = findGroupOnClick(this);
+    const sequences = group.sequences;
+
+    // Push group's note steps to steps[]
+    for (let i = 1; i < sequences.length; i++) {
+      sequences[i].noteSteps.forEach((step) => {
+        steps.push(step);
+      });
+    }
+
+    const noteStep = findObjectById(steps, noteStepId);
+    console.log("noteStep", noteStep);
 
     // Velocity
     if ($(this).hasClass("velocity-btn")) {
