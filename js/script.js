@@ -238,7 +238,6 @@ $(document).ready(function () {
         });
       }
     }
-    console.log("steps", steps);
 
     if (parentSeqType == "controller-seq") {
       // Push group's controller steps to steps[]
@@ -250,9 +249,7 @@ $(document).ready(function () {
     }
 
     const step = findObjectById(steps, stepId);
-    console.log("step", step);
-    // Continue here!!!
-    return;
+
     // Pencil
     if (editMode == "pencil") {
       if (parentSeqType == "note-seq") {

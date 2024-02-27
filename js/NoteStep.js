@@ -60,12 +60,7 @@ export default class NoteStep extends Step {
 
   // Splice this into right place in stepSeq.noteSteps, and add into DOM
   insertNoteStep(originalStepId, i) {
-    const stepSeqId = $("#" + originalStepId)
-      .parent()
-      .parent()
-      .attr("id");
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepSeq = this.parentStepSeq;
     // Original step index
     const stepIndex = stepSeq.noteSteps.findIndex(
       (step) => step.id == originalStepId
@@ -75,7 +70,7 @@ export default class NoteStep extends Step {
     // Add this into DOM
     // i needs to be subtracted by 1 to account for the original step, which is still in the DOM
     $(
-      "#" + stepSeqId + " .note-seq .step:eq(" + (stepIndex + i - 1) + ")"
+      "#" + stepSeq.id + " .note-seq .step:eq(" + (stepIndex + i - 1) + ")"
     ).after(
       `
       <div id="${this.id}" class="step ${this.state}" data="${this.noteName}" style="width:${this.pixelValue}px;">
@@ -89,8 +84,7 @@ export default class NoteStep extends Step {
   }
 
   joinNoteStep(stepIndex, stepSeqId) {
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepSeq = this.parentStepSeq;
 
     // Get pixel value of subsequent step
     const nextStep = stepSeq.noteSteps[stepIndex + 1];
@@ -182,16 +176,10 @@ export default class NoteStep extends Step {
   // Update msFromLoopStart for single noteStep
   updateMsFromLoopStart() {
     // Find index of this noteStep in stepSeq.noteSteps
-    const stepSeqId = $("#" + this.id)
-      .parent()
-      .parent()
-      .attr("id");
-    const sequences = findAllNestedProps(getProject(), "sequences");
-    const stepSeq = findNestedProp(sequences, stepSeqId);
+    const stepSeq = this.parentStepSeq;
     const noteStepIndex = stepSeq.noteSteps.findIndex(
       (noteStep) => noteStep.id == this.id
     );
-
     this.msFromLoopStart = this.getMsFromLoopStart(stepSeq, noteStepIndex);
   }
 
