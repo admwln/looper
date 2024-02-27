@@ -225,17 +225,34 @@ $(document).ready(function () {
     // Get class of parent to $(this)
     const parentSeqType = $(this).parent().attr("class");
 
-    // Both StepNos and NoteSteps are nested in StepSeqs
+    // Both NoteSteps and ControllerSteps are nested in StepSeqs
     // To find the correct step object, we need to determine the type of the parent
-    let steps;
+    let steps = [];
+    const group = findGroupOnClick(this);
+    const sequences = group.sequences;
     if (parentSeqType == "note-seq") {
-      steps = findAllNestedProps(getProject(), "noteSteps");
+      // Push group's note steps to steps[]
+      for (let i = 1; i < sequences.length; i++) {
+        sequences[i].noteSteps.forEach((step) => {
+          steps.push(step);
+        });
+      }
     }
-    if (parentSeqType == "controller-seq") {
-      steps = findAllNestedProps(getProject(), "controllerSteps");
-    }
-    const step = findNestedProp(steps, stepId);
+    console.log("steps", steps);
 
+    if (parentSeqType == "controller-seq") {
+      // Push group's controller steps to steps[]
+      for (let i = 1; i < sequences.length; i++) {
+        sequences[i].controllerSteps.forEach((step) => {
+          steps.push(step);
+        });
+      }
+    }
+
+    const step = findObjectById(steps, stepId);
+    console.log("step", step);
+    // Continue here!!!
+    return;
     // Pencil
     if (editMode == "pencil") {
       if (parentSeqType == "note-seq") {
