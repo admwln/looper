@@ -7,7 +7,7 @@ import {
   setMasterTurnaround,
 } from "./helper-functions.js";
 
-export default class DynamicInterval {
+export default class PlayHead {
   constructor(stepNo, min, max, parentGroup) {
     this.id = "din" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
@@ -31,8 +31,8 @@ export default class DynamicInterval {
     const midiOut = instrument.midiOut;
     const output = WebMidi.getOutputByName(midiOut);
     //console.log("Playing", this.steps);
-    console.log("Playing dynamic interval", this);
-    // Play each noteStep in dynamicInterval
+    console.log("Playing play head", this);
+    // Play each noteStep in playHead
     this.steps.forEach((step) => {
       // Check if step is a noteStep or a controllerStep
       if (step.constructor.name === "NoteStep") {
@@ -51,7 +51,7 @@ export default class DynamicInterval {
   }
 
   reset(group) {
-    console.log("Resetting dynamic interval", this);
+    console.log("Resetting play head", this);
     this.min = 0;
     this.max = parseInt(Tone.Time("16n").toMilliseconds()) - 1;
     this.stepNo = 1;
@@ -88,8 +88,8 @@ export default class DynamicInterval {
     }
 
     // This is where the end of the current loop is detected
-    // If the new stepNo is greater than the stepCount, reset the dynamicInterval
-    // or if a new section is queued, reset all current dynamicIntervals and select the new section
+    // If the new stepNo is greater than the stepCount, reset the playHead
+    // or if a new section is queued, reset all current playHeads and select the new section
     if (newStepNo > stepCount) {
       // END OF LOOP!
 
@@ -100,8 +100,8 @@ export default class DynamicInterval {
         const selectedGroups = project.getSelectedGroups();
 
         selectedGroups.forEach((group) => {
-          // Reset dynamicInterval of each group in the current section
-          group.dynamicInterval.reset(group);
+          // Reset playHead of each group in the current section
+          group.playHead.reset(group);
         });
 
         // Find the section object that has property queued set to true
@@ -127,8 +127,8 @@ export default class DynamicInterval {
     this.emptySteps();
     this.harvestSteps(group);
 
-    // Could we trigger/queue updated dynamicInterval as soon as it has been updated?
-    // this.play() but pass along value for toneCounter as it stood when dynamicInterval for previous stepNo
+    // Could we trigger/queue updated playHead as soon as it has been updated?
+    // this.play() but pass along value for toneCounter as it stood when playHead for previous stepNo
     // played
   }
 

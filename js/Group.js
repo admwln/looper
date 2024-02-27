@@ -1,4 +1,4 @@
-import DynamicInterval from "./DynamicInterval.js";
+import PlayHead from "./PlayHead.js";
 import StepNoSeq from "./StepNoSeq.js";
 import StepSeq from "./StepSeq.js";
 import StepNo from "./StepNo.js";
@@ -12,7 +12,7 @@ import {
 } from "./helper-functions.js";
 
 export default class Group {
-  constructor(parentInstrument, instrumentId) {
+  constructor(parentInstrument) {
     this.id = "grp" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     // Groups default to midi channel 1 on their respective instrument's output
@@ -20,17 +20,13 @@ export default class Group {
     this.sequences = [];
     this.ccVisibility = false;
     this.muted = false;
-    this.dynamicInterval = {};
+    this.playHead = {};
     this.masterGroup = false;
     this.autoScroll = true;
     this.measureLength = 16; // NB! Should be updated dynamically
     this.groupLength = 16; // NB! Should be updated dynamically
     this.dotIndicator = new DotIndicator(this);
     this.parentInstrument = parentInstrument;
-    this.instrumentId = instrumentId;
-    //this.sectionId = this.parentInstrument.parentSection.id;
-    // Add group to instrument
-    //instrument.groups.push(this);
 
     this.displayGroup();
     this.newStepNoSeq(this.measureLength);
@@ -235,11 +231,11 @@ export default class Group {
     }
   }
 
-  initDynamicInterval(stepNo, min, max) {
-    const dynamicInterval = new DynamicInterval(stepNo, min, max, this);
-    this.dynamicInterval = dynamicInterval;
-    this.dynamicInterval.groupId = this.id;
-    this.dynamicInterval.harvestSteps(this);
+  initPlayHead(stepNo, min, max) {
+    const playHead = new PlayHead(stepNo, min, max, this);
+    this.playHead = playHead;
+    this.playHead.groupId = this.id;
+    this.playHead.harvestSteps(this);
   }
 
   // Get section that this group belongs to

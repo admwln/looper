@@ -78,14 +78,10 @@ export default class Player {
 
     // Get all groups in entire project
     this.setAllGroups(getProject().getAllGroups());
-    // Create a new DynamicInterval for each group
+    // Create a new PlayHead for each group
     this.getAllGroups().forEach((group) => {
-      // Init dynamicInterval for each group
-      group.initDynamicInterval(
-        1,
-        0,
-        parseInt(Tone.Time("16n").toMilliseconds()) - 1
-      ); // -1ms to avoid overlap with next min
+      // Init playHead for each group
+      group.initPlayHead(1, 0, parseInt(Tone.Time("16n").toMilliseconds()) - 1); // -1ms to avoid overlap with next min
       // Set current dot to 0
       group.dotIndicator.setCurrentDot(0);
       // Scroll all groups all the way to the left
@@ -158,19 +154,19 @@ export default class Player {
       const section = group.getSection();
       // If group's section is not selected, return
       if (section.selected === false) {
-        // The non-selected group's dynamicInterval should not be updated
+        // The non-selected group's playHead should not be updated
         return;
       }
-      // Pass current time to dynamicInterval.play(), instead of player's playbackStartTime
-      group.dynamicInterval.play(target);
-      //console.log("playing dynInt of group", group);
+      // Pass current time to playHead.play(), instead of player's playbackStartTime
+      group.playHead.play(target);
+      //console.log("playing playHead of group", group);
       // Push to groupsToUpdate
       groupsToUpdate.push(group);
     });
     // groupsToUpdate is an array of all groups in the selected section, groups that have been played
     groupsToUpdate.forEach((group) => {
       const stepCount = group.sequences[0].steps.length;
-      group.dynamicInterval.update(stepCount, group);
+      group.playHead.update(stepCount, group);
     });
   }
 

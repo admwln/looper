@@ -19,7 +19,7 @@ export default class Instrument {
   }
 
   newGroup() {
-    const group = new Group(this, this.id);
+    const group = new Group(this);
     this.groups.push(group);
     return group;
   }
