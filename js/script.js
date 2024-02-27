@@ -282,16 +282,15 @@ $(document).ready(function () {
     if (editMode == "join") {
       // Get index of clicked step, relative to its siblings
       const stepIndex = $(this).index();
-      const stepSeqId = $(this).parent().parent().attr("id");
-      join(stepIndex, stepSeqId);
+      join(stepIndex);
     }
 
     function join(stepIndex, stepSeqId) {
       if (parentSeqType == "note-seq") {
-        step.joinNoteStep(stepIndex, stepSeqId);
+        step.joinNoteStep(stepIndex);
       }
       if (parentSeqType == "controller-seq") {
-        step.joinControllerStep(stepIndex, stepSeqId);
+        step.joinControllerStep(stepIndex);
       }
     }
   });
@@ -341,12 +340,7 @@ $(document).ready(function () {
 
   // Toggle CC visibility button
   $(document).on("click", ".toggle-cc", function () {
-    const groupId = $(this).closest(".group").attr("id");
-    const controllerSeqs = $("#" + groupId + " .controller-seq");
-    // Find group object in project
-    const groups = findAllNestedProps(getProject(), "groups");
-    const group = findNestedProp(groups, groupId);
-
+    const group = findGroupOnClick(this);
     group.toggleCcVisibility();
   });
 

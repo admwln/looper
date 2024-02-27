@@ -1,10 +1,5 @@
 import Step from "./Step.js";
-import {
-  getProject,
-  getNoteName,
-  findAllNestedProps,
-  findNestedProp,
-} from "./helper-functions.js";
+import { getNoteName } from "./helper-functions.js";
 
 export default class ControllerStep extends Step {
   constructor(noteName, pixelValue, parentStepSeq) {
@@ -43,7 +38,11 @@ export default class ControllerStep extends Step {
     // Create new step(s)
     for (let i = 1; i < splitBy; i++) {
       // Get id of parent StepSeq
-      const newStep = new ControllerStep(this.noteName, this.pixelValue);
+      const newStep = new ControllerStep(
+        this.noteName,
+        this.pixelValue,
+        this.parentStepSeq
+      );
       newStep.state = this.state;
       newStep.insertControllerStep(this.id, i);
     }
@@ -52,10 +51,12 @@ export default class ControllerStep extends Step {
   // Splice this into right place in stepSeq.noteSteps, and add into DOM
   insertControllerStep(originalStepId, i) {
     const stepSeq = this.parentStepSeq;
+    console.log("stepSeq: ", stepSeq);
     // Original step index
     const stepIndex = stepSeq.controllerSteps.findIndex(
       (step) => step.id == originalStepId
     );
+    console.log("stepIndex: ", stepIndex);
     // i is added to stepIndex to account for the new step(s) that have been added
     stepSeq.controllerSteps.splice(stepIndex + i, 0, this);
     // Add this into DOM
@@ -71,7 +72,7 @@ export default class ControllerStep extends Step {
     );
   }
 
-  joinControllerStep(stepIndex, stepSeqId) {
+  joinControllerStep(stepIndex) {
     const stepSeq = this.parentStepSeq;
 
     // Get pixel value of subsequent step
@@ -87,7 +88,7 @@ export default class ControllerStep extends Step {
     stepSeq.controllerSteps.splice(stepIndex + 1, 1);
     // Remove subsequent step from DOM
     $(
-      "#" + stepSeqId + " .controller-seq .step:eq(" + (stepIndex + 1) + ")"
+      "#" + stepSeq.id + " .controller-seq .step:eq(" + (stepIndex + 1) + ")"
     ).remove();
   }
 
