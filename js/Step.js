@@ -38,7 +38,7 @@ export default class Step {
   }
 
   setMsFromIntStart(stepNo) {
-    // stepNo of dynamicInterval
+    // stepNo of playHead
     const msFromIntStart =
       this.msFromLoopStart - (stepNo - 1) * Tone.Time("16n").toMilliseconds();
     this.msFromIntStart = msFromIntStart;

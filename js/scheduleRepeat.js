@@ -48,18 +48,18 @@
 //         const section = group.getSection();
 //         // If group's section is not selected, return
 //         if (section.selected === false) {
-//           // The non-selected group's dynamicInterval should not be updated
+//           // The non-selected group's playHead should not be updated
 //           return;
 //         }
-//         // Pass time of current repeat to dynamicInterval.play(), instead of Tone.js's time
-//         group.dynamicInterval.play(now);
+//         // Pass time of current repeat to playHead.play(), instead of Tone.js's time
+//         group.playHead.play(now);
 //         // Push to groupsToUpdate
 //         groupsToUpdate.push(group);
 //       });
 //       // GroupsToUpdate is an array of all groups in the selected section, groups that have been played
 //       groupsToUpdate.forEach((group) => {
 //         const stepCount = group.sequences[0].steps.length;
-//         group.dynamicInterval.update(stepCount, group);
+//         group.playHead.update(stepCount, group);
 //       });
 
 //       // Increase playback step counter
