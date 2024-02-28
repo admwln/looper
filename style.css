@@ -31,7 +31,7 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  /* height: 175px; */
+  z-index: 10;
   padding: 12px 24px 0 24px;
   display: flex;
   flex-direction: column;
@@ -395,13 +395,14 @@ div.section-tab.selected {
   width: 100%;
   border-radius: 12px 12px 0 0;
   padding: 0;
-  height: 254px;
-  transform: translateY(240px);
-  transition: transform 150ms ease-in-out;
+  height: 214px;
+  z-index: 10;
+  transform: translateY(200px);
+  transition: transform 100ms ease-out;
 }
 
-.keyboard-panel:hover {
-  transform: translateY(200px);
+.keyboard-panel.hidden:hover {
+  transform: translateY(160px);
 }
 
 .keyboard-panel.show {
@@ -409,7 +410,7 @@ div.section-tab.selected {
 }
 
 .keyboard-top-row {
-  height: 54px;
+  height: 40px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -420,7 +421,15 @@ div.section-tab.selected {
 }
 
 .keyboard-content {
-  height: 200px;
+  height: 174px;
   padding: 0;
   margin: 0;
+}
+
+#keyboard-panel-arrow {
+  transition: transform 100ms ease-out;
+}
+
+.keyboard-panel.show #keyboard-panel-arrow {
+  transform: rotate(180deg);
 }

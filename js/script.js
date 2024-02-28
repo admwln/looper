@@ -372,9 +372,12 @@ $(document).ready(function () {
   });
 
   // Keyboard panel
-
-  $(document).on("click", "#show-keyboard-panel", function () {
-    $(".keyboard-panel").toggleClass("show");
+  $(document).on("click", "#keyboard-panel-arrow", function () {
+    if ($(".keyboard-panel").hasClass("hidden")) {
+      $(".keyboard-panel").removeClass("hidden").addClass("show");
+      return;
+    }
+    $(".keyboard-panel").removeClass("show").addClass("hidden");
   });
 
   // Queue section button
