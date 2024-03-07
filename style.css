@@ -454,18 +454,26 @@ div.section-tab.selected {
   display: inline-block;
   width: 30px;
   height: 150px;
-  background-color: var(--blue-lightgray);
-  border: 1px solid var(--background-blue);
-  border-radius: 6px;
+  background-color: var(--white);
+  border: 1px solid var(--blue-lightgray);
+  border-radius: 0 0 6px 6px;
+}
+
+.key.white.on {
+  background-color: var(--links);
 }
 
 .key.black {
   display: inline-block;
   width: 20px;
   height: 90px;
-  background-color: var(--background-blue);
+  background-color: var(--black);
   border: 1px solid var(--blue-lightgray);
   border-radius: 0 0 3px 3px;
   z-index: 10;
   margin: 0 -10px;
+}
+
+.key.black.on {
+  background-color: var(--links);
 }

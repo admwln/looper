@@ -7,12 +7,12 @@ export default class Key {
     this.midiNote = midiNote;
     this.color = this.getColor(midiNote);
     this.html = this.createHtml();
+    this.on = false;
   }
 
   getColor(midiNote) {
     const black = [1, 3, 6, 8, 10]; // C notes are divisible by 12, so we can use the remainder to determine the color.
     const remainder = midiNote % 12;
-    console.log("remainder", remainder);
     if (black.includes(remainder)) {
       return "black";
     }
@@ -20,8 +20,17 @@ export default class Key {
   }
 
   createHtml() {
-    return `
-      <li class='key ${this.color}' id='${this.id}' data='${this.midiNote}'></li>
-    `;
+    return `<li class='key ${this.color}' id='${this.id}' data='${this.midiNote}'></li>`;
+  }
+
+  toggle() {
+    $(`#${this.id}`).toggleClass("on");
+
+    if (this.on) {
+      this.on = false;
+      return;
+    }
+
+    this.on = true;
   }
 }

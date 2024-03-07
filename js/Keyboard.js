@@ -1,5 +1,9 @@
 import Key from "./Key.js";
-import { setIdCounter, getIdCounter } from "./helper-functions.js";
+import {
+  findObjectById,
+  setIdCounter,
+  getIdCounter,
+} from "./helper-functions.js";
 
 export default class Keyboard {
   constructor(startNote, keyCount) {
@@ -14,6 +18,7 @@ export default class Keyboard {
       this.keys.push(key);
     }
     this.display();
+    this.listen();
   }
 
   display() {
@@ -24,5 +29,15 @@ export default class Keyboard {
       </ul>
       `
     );
+  }
+
+  listen() {
+    const keyboard = this;
+    $(document).on("click", `#${this.id} .key`, function () {
+      const keyId = $(this).attr("id");
+      const key = findObjectById(keyboard.keys, keyId);
+      key.toggle();
+      console.log("key", key);
+    });
   }
 }
