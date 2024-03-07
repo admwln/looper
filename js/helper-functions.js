@@ -68,6 +68,16 @@ export function getCurrentChord() {
   return _currentChord;
 }
 
+let _keyboard = {};
+
+export function setKeyboard(newKeyboard) {
+  _keyboard = newKeyboard;
+}
+
+export function getKeyboard() {
+  return _keyboard;
+}
+
 // export function findAllNestedProps(obj, propName) {
 //   console.log("findAllNestedProps called", obj, propName);
 //   let results = [];

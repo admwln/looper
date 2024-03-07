@@ -1,5 +1,5 @@
 import Step from "./Step.js";
-import { getLoopOn, getNoteName } from "./helper-functions.js";
+import { getCurrentChord, getLoopOn, getNoteName } from "./helper-functions.js";
 
 export default class NoteStep extends Step {
   constructor(noteName, pixelValue, pitch, velocity, parentStepSeq) {
@@ -189,7 +189,8 @@ export default class NoteStep extends Step {
       console.log("Diff target-now " + (time - performance.now()));
     }
 
-    const pitch = this.pitch;
+    const noteIndex = this.pitch - 1;
+    const midiNote = getCurrentChord().notes[noteIndex];
     // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
     const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
     const velocity = this.velocity;
@@ -197,7 +198,7 @@ export default class NoteStep extends Step {
 
     // Only actually play note if not muted
     if (!muted) {
-      output.channels[1].playNote(pitch + 35, {
+      output.channels[1].playNote(midiNote, {
         duration: duration,
         rawAttack: velocity,
         time: trigger,

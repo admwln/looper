@@ -449,10 +449,16 @@ div.section-tab.selected {
   list-style: none;
   cursor: pointer;
   border-radius: 0 0 3px 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--white);
 }
 
 .key.white {
-  display: inline-block;
   width: 30px;
   height: 150px;
   background-color: var(--white);
@@ -464,7 +470,6 @@ div.section-tab.selected {
 }
 
 .key.black {
-  display: inline-block;
   width: 20px;
   height: 90px;
   background-color: var(--black);

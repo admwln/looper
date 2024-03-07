@@ -14,7 +14,7 @@ export default class Keyboard {
     this.keys = [];
     // Keys array will contain Key objects, each with a midiNote property.
     for (let i = 0; i < keyCount; i++) {
-      const key = new Key(startNote + i);
+      const key = new Key(startNote + i, this);
       this.keys.push(key);
     }
     this.display();

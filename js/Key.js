@@ -5,13 +5,14 @@ import {
 } from "./helper-functions.js";
 
 export default class Key {
-  constructor(midiNote) {
+  constructor(midiNote, parentKeyboard) {
     this.id = "key" + (getIdCounter() + 1);
     setIdCounter(getIdCounter() + 1);
     this.midiNote = midiNote;
     this.color = this.getColor(midiNote);
     this.html = this.createHtml();
     this.on = false;
+    this.parentKeyboard = parentKeyboard;
   }
 
   getColor(midiNote) {
@@ -24,7 +25,7 @@ export default class Key {
   }
 
   createHtml() {
-    return `<li class='key ${this.color}' id='${this.id}' data='${this.midiNote}'></li>`;
+    return `<li class='key ${this.color}' id='${this.id}' data='${this.midiNote}'><span class="key-no"></span></li>`;
   }
 
   toggle() {
@@ -33,6 +34,7 @@ export default class Key {
     if (this.on) {
       this.on = false;
       getCurrentChord().removeNote(this.midiNote);
+
       return;
     }
     this.on = true;

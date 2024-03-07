@@ -10,6 +10,7 @@ import {
   getLoopOn,
   setLoopOn,
   setCurrentChord,
+  setKeyboard,
   findGroupOnClick,
   findObjectById,
   findSelectedObject,
@@ -384,7 +385,7 @@ $(document).ready(function () {
   });
 
   // Load keyboard
-  new Keyboard(36, 85);
+  setKeyboard(new Keyboard(36, 85));
   setCurrentChord(new Chord("Current"));
 
   // Queue section button
