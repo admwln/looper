@@ -58,6 +58,26 @@ export function nextChar(c) {
   return String.fromCharCode(c.charCodeAt(0) + 1);
 }
 
+let _currentChord = {};
+
+export function setCurrentChord(chord) {
+  _currentChord = chord;
+}
+
+export function getCurrentChord() {
+  return _currentChord;
+}
+
+let _keyboard = {};
+
+export function setKeyboard(newKeyboard) {
+  _keyboard = newKeyboard;
+}
+
+export function getKeyboard() {
+  return _keyboard;
+}
+
 // export function findAllNestedProps(obj, propName) {
 //   console.log("findAllNestedProps called", obj, propName);
 //   let results = [];

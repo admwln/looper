@@ -433,3 +433,51 @@ div.section-tab.selected {
 .keyboard-panel.show #keyboard-panel-arrow {
   transform: rotate(180deg);
 }
+
+/* Keyboard keys */
+
+.keyboard {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0;
+  padding: 0 24px;
+}
+
+.key {
+  list-style: none;
+  cursor: pointer;
+  border-radius: 0 0 3px 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--white);
+}
+
+.key.white {
+  width: 30px;
+  height: 150px;
+  background-color: var(--white);
+  border: 1px solid var(--blue-lightgray);
+}
+
+.key.white.on {
+  background-color: var(--links);
+}
+
+.key.black {
+  width: 20px;
+  height: 90px;
+  background-color: var(--black);
+  border: 1px solid var(--blue-lightgray);
+  z-index: 10;
+  margin: 0 -10px;
+}
+
+.key.black.on {
+  background-color: var(--links);
+}

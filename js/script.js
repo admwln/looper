@@ -1,5 +1,7 @@
 // Import modules and variables
 import HeadingEditor from "./HeadingEditor.js";
+import Chord from "./Chord.js";
+import Keyboard from "./Keyboard.js";
 import Project from "./Project.js";
 import Player from "./Player.js";
 
@@ -7,6 +9,8 @@ import {
   getProject,
   getLoopOn,
   setLoopOn,
+  setCurrentChord,
+  setKeyboard,
   findGroupOnClick,
   findObjectById,
   findSelectedObject,
@@ -379,6 +383,10 @@ $(document).ready(function () {
     }
     $(".keyboard-panel").removeClass("show").addClass("hidden");
   });
+
+  // Load keyboard
+  setKeyboard(new Keyboard(36, 85));
+  setCurrentChord(new Chord("Current"));
 
   // Queue section button
   $(document).on("click", ".queue-section", function () {

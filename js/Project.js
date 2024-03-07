@@ -13,6 +13,7 @@ export default class Project {
     this.sections = [];
     this.eventSeq = []; // new EventSeq() for chords, switching sections, etc.
     this.bpm = 120;
+    this.chords = []; // Not yet implemented
     this.displayProject();
     setProject(this);
     console.log(`Project "${this.name}" created`);
@@ -104,5 +105,14 @@ export default class Project {
     // Increment automatic section name by one character
     setSectionName(nextChar(getSectionName()));
     return section;
+  }
+
+  addChord(chord) {
+    this.chords.push(chord);
+  }
+
+  removeChord(chord) {
+    const index = this.chords.indexOf(chord);
+    this.chords.splice(index, 1);
   }
 }
