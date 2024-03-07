@@ -1,4 +1,8 @@
-import { setIdCounter, getIdCounter } from "./helper-functions.js";
+import {
+  setIdCounter,
+  getIdCounter,
+  getCurrentChord,
+} from "./helper-functions.js";
 
 export default class Key {
   constructor(midiNote) {
@@ -28,9 +32,10 @@ export default class Key {
 
     if (this.on) {
       this.on = false;
+      getCurrentChord().removeNote(this.midiNote);
       return;
     }
-
     this.on = true;
+    getCurrentChord().addNote(this.midiNote);
   }
 }

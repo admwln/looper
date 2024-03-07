@@ -448,6 +448,7 @@ div.section-tab.selected {
 .key {
   list-style: none;
   cursor: pointer;
+  border-radius: 0 0 3px 3px;
 }
 
 .key.white {
@@ -456,7 +457,6 @@ div.section-tab.selected {
   height: 150px;
   background-color: var(--white);
   border: 1px solid var(--blue-lightgray);
-  border-radius: 0 0 6px 6px;
 }
 
 .key.white.on {
@@ -469,7 +469,6 @@ div.section-tab.selected {
   height: 90px;
   background-color: var(--black);
   border: 1px solid var(--blue-lightgray);
-  border-radius: 0 0 3px 3px;
   z-index: 10;
   margin: 0 -10px;
 }

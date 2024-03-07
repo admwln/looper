@@ -37,7 +37,6 @@ export default class Keyboard {
       const keyId = $(this).attr("id");
       const key = findObjectById(keyboard.keys, keyId);
       key.toggle();
-      console.log("key", key);
     });
   }
 }
