@@ -67,35 +67,50 @@ export default class Keyboard {
     const chordName = prompt("Enter chord name");
     const chord = new Chord(chordName);
     // Add all notes from current chord to new chord
-    chord.notes = getCurrentChord().notes;
+    // Make copy of current chord notes
+    const currentChordNotes = getCurrentChord().notes.slice();
+    currentChordNotes.forEach((note) => {
+      chord.addNote(note);
+    });
     // Push to project chords array
     getProject().chords.push(chord);
     // Update chord list
     this.updateChordList();
+    console.log("chord saved", chord);
   }
 
   deleteChord() {
+    this.clear();
     const chordId = getCurrentChord().id;
     const chords = getProject().chords;
     const index = chords.findIndex((chord) => chord.id === chordId);
     chords.splice(index, 1);
     this.updateChordList();
-    this.clear();
   }
 
   selectChord(chord) {
     this.clear();
-    console.log("selecting chord", chord);
-    // chord.notes.forEach((note) => {
-    //   const key = findObjectById(this.keys, note);
-    //   key.toggle();
-    // });
+    console.log("selected chord", chord);
+    // Set current chord to selected chord
+    const currentChord = getCurrentChord();
+    currentChord.notes = chord.notes;
+    currentChord.name = chord.name;
+    console.log("current chord", currentChord);
+    // Update keyboard
+    this.keys.forEach((key) => {
+      if (currentChord.notes.includes(key.midiNote)) {
+        key.on = true;
+        $(`#${key.id}`).addClass("on");
+      }
+    });
+    currentChord.updateKeyNos();
   }
 
   clear() {
     this.keys.forEach((key) => {
       if (key.on) {
-        key.toggle();
+        key.on = false;
+        $(`#${key.id}`).removeClass("on");
       }
     });
   }
