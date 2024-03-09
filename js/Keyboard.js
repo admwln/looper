@@ -54,9 +54,8 @@ export default class Keyboard {
     // Promt user for chord name
     const chordName = prompt("Enter chord name");
     const chord = new Chord(chordName);
-    getCurrentChord().notes.forEach((note) => {
-      chord.addNote(note);
-    });
+    // Add all notes from current chord to new chord
+    chord.notes = getCurrentChord().notes;
     // Push to project chords array
     getProject().chords.push(chord);
     console.log("saved chord", chord);
