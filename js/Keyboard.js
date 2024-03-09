@@ -71,15 +71,18 @@ export default class Keyboard {
     getProject().chords.push(chord);
     this.updateChordList();
     this.selectChordButton($(`#${chord.id} .select-chord`));
+    //Update current chord id and name
+    getCurrentChord().id = chord.id;
+    getCurrentChord().name = chord.name;
   }
 
   deleteChord() {
     this.clear();
     // Remove all notes from current chord
     getCurrentChord().notes = [];
-    const chordName = getCurrentChord().name;
+    const chordId = getCurrentChord().id;
     const chords = getProject().chords;
-    const index = chords.findIndex((chord) => chord.name === chordName);
+    const index = chords.findIndex((chord) => chord.id === chordId);
     chords.splice(index, 1);
     this.updateChordList();
     getCurrentChord().updateKeyNos();
@@ -98,7 +101,9 @@ export default class Keyboard {
     selectedChordNotes.forEach((note) => {
       currentChord.notes.push(note);
     });
+    // Update current chord id and name
     currentChord.name = chord.name;
+    currentChord.id = chord.id;
     // Update keyboard
     this.keys.forEach((key) => {
       if (currentChord.notes.includes(key.midiNote)) {
