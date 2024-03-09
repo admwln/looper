@@ -1,4 +1,3 @@
-import Chord from "./Chord.js";
 import Key from "./Key.js";
 
 import {
@@ -7,6 +6,7 @@ import {
   setIdCounter,
   getIdCounter,
   getCurrentChord,
+  getKeyboard,
 } from "./helper-functions.js";
 
 export default class Keyboard {
@@ -46,77 +46,21 @@ export default class Keyboard {
 
     // Listen for save chord button
     $(document).on("click", "#save-chord", function () {
-      keyboard.saveChord();
+      getCurrentChord().save();
     });
 
     // Listen for delete chord button
     $(document).on("click", "#delete-chord", function () {
-      keyboard.deleteChord();
+      getCurrentChord().delete();
     });
 
     // Listen for select chord button
     $(document).on("click", ".select-chord", function () {
-      keyboard.selectChord(this);
-      keyboard.selectChordButton(this);
+      const chordId = $(this).parent().attr("id");
+      const chord = findObjectById(getProject().chords, chordId);
+      chord.select();
+      chord.selectButton();
     });
-  }
-
-  saveChord() {
-    const chordName = prompt("Enter chord name");
-    const chord = new Chord(chordName);
-    const currentChordNotes = [...getCurrentChord().notes]; // Using spread operator for shallow copy
-    currentChordNotes.forEach((note) => {
-      chord.notes.push(note);
-    });
-    getProject().chords.push(chord);
-    this.updateChordList();
-    this.selectChordButton($(`#${chord.id} .select-chord`));
-    //Update current chord id and name
-    getCurrentChord().id = chord.id;
-    getCurrentChord().name = chord.name;
-  }
-
-  deleteChord() {
-    this.clear();
-    // Remove all notes from current chord
-    getCurrentChord().notes = [];
-    const chordId = getCurrentChord().id;
-    const chords = getProject().chords;
-    const index = chords.findIndex((chord) => chord.id === chordId);
-    chords.splice(index, 1);
-    this.updateChordList();
-    getCurrentChord().updateKeyNos();
-    getCurrentChord().name = "Current";
-  }
-
-  selectChord(element) {
-    const chordId = $(element).parent().attr("id");
-    const chord = findObjectById(getProject().chords, chordId);
-    this.clear();
-    // Set current chord to selected chord
-    const currentChord = getCurrentChord();
-    currentChord.notes = [];
-    // Copy of selected chord notes
-    const selectedChordNotes = [...chord.notes];
-    selectedChordNotes.forEach((note) => {
-      currentChord.notes.push(note);
-    });
-    // Update current chord id and name
-    currentChord.name = chord.name;
-    currentChord.id = chord.id;
-    // Update keyboard
-    this.keys.forEach((key) => {
-      if (currentChord.notes.includes(key.midiNote)) {
-        key.on = true;
-        $(`#${key.id}`).addClass("on");
-      }
-    });
-    currentChord.updateKeyNos();
-  }
-
-  selectChordButton(element) {
-    $(element).parent().addClass("selected");
-    $(element).parent().siblings().removeClass("selected");
   }
 
   clear() {
