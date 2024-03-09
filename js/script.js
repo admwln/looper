@@ -9,6 +9,7 @@ import {
   getProject,
   getLoopOn,
   setLoopOn,
+  getCurrentChord,
   setCurrentChord,
   setKeyboard,
   findGroupOnClick,
@@ -401,9 +402,10 @@ $(document).ready(function () {
     section.queue();
   });
 
-  // Console log project object
+  // Console log project object and current chord
   $(document).on("click", "#log-project", function () {
     console.log(getProject());
+    console.log(getCurrentChord());
   });
 
   // Play button

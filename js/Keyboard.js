@@ -63,39 +63,40 @@ export default class Keyboard {
   }
 
   saveChord() {
-    // Promt user for chord name
     const chordName = prompt("Enter chord name");
     const chord = new Chord(chordName);
-    // Add all notes from current chord to new chord
-    // Make copy of current chord notes
-    const currentChordNotes = getCurrentChord().notes.slice();
+    const currentChordNotes = [...getCurrentChord().notes]; // Using spread operator for shallow copy
     currentChordNotes.forEach((note) => {
-      chord.addNote(note);
+      chord.notes.push(note);
     });
-    // Push to project chords array
     getProject().chords.push(chord);
-    // Update chord list
     this.updateChordList();
-    console.log("chord saved", chord);
   }
 
   deleteChord() {
     this.clear();
-    const chordId = getCurrentChord().id;
+    // Remove all notes from current chord
+    getCurrentChord().notes = [];
+    const chordName = getCurrentChord().name;
     const chords = getProject().chords;
-    const index = chords.findIndex((chord) => chord.id === chordId);
+    const index = chords.findIndex((chord) => chord.name === chordName);
     chords.splice(index, 1);
     this.updateChordList();
+    getCurrentChord().updateKeyNos();
+    getCurrentChord().name = "Current";
   }
 
   selectChord(chord) {
     this.clear();
-    console.log("selected chord", chord);
     // Set current chord to selected chord
     const currentChord = getCurrentChord();
-    currentChord.notes = chord.notes;
+    currentChord.notes = [];
+    // Copy of selected chord notes
+    const selectedChordNotes = [...chord.notes];
+    selectedChordNotes.forEach((note) => {
+      currentChord.notes.push(note);
+    });
     currentChord.name = chord.name;
-    console.log("current chord", currentChord);
     // Update keyboard
     this.keys.forEach((key) => {
       if (currentChord.notes.includes(key.midiNote)) {
