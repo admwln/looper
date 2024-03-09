@@ -416,7 +416,7 @@ div.section-tab.selected {
   justify-content: flex-start;
   align-items: center;
   gap: 12px;
-  padding: 0 24px;
+  padding: 12px 24px 0 24px;
   cursor: pointer;
 }
 
@@ -480,4 +480,17 @@ div.section-tab.selected {
 
 .key.black.on {
   background-color: var(--links);
+}
+
+/* Keyboard select chords */
+
+.chord > button {
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.chord.selected > button {
+  background-color: var(--links);
+  color: var(--blue-lightgray);
 }

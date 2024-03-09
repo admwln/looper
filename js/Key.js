@@ -34,9 +34,9 @@ export default class Key {
     if (this.on) {
       this.on = false;
       getCurrentChord().removeNote(this.midiNote);
-
       return;
     }
+
     this.on = true;
     getCurrentChord().addNote(this.midiNote);
   }
