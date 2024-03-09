@@ -1,8 +1,12 @@
+import Chord from "./Chord.js";
 import Key from "./Key.js";
+
 import {
+  getProject,
   findObjectById,
   setIdCounter,
   getIdCounter,
+  getCurrentChord,
 } from "./helper-functions.js";
 
 export default class Keyboard {
@@ -33,10 +37,28 @@ export default class Keyboard {
 
   listen() {
     const keyboard = this;
-    $(document).on("click", `#${this.id} .key`, function () {
+    // Listen for keyboard key clicks
+    $(document).on("click", `.key`, function () {
       const keyId = $(this).attr("id");
       const key = findObjectById(keyboard.keys, keyId);
       key.toggle();
     });
+
+    // Listen for save chord button click
+    $(document).on("click", "#save-chord", function () {
+      keyboard.saveChord();
+    });
+  }
+
+  saveChord() {
+    // Promt user for chord name
+    const chordName = prompt("Enter chord name");
+    const chord = new Chord(chordName);
+    getCurrentChord().notes.forEach((note) => {
+      chord.addNote(note);
+    });
+    // Push to project chords array
+    getProject().chords.push(chord);
+    console.log("saved chord", chord);
   }
 }
