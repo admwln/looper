@@ -56,9 +56,8 @@ export default class Keyboard {
 
     // Listen for select chord button
     $(document).on("click", ".select-chord", function () {
-      const chordId = $(this).parent().attr("id");
-      const chord = findObjectById(getProject().chords, chordId);
-      keyboard.selectChord(chord);
+      keyboard.selectChord(this);
+      keyboard.selectChordButton(this);
     });
   }
 
@@ -71,6 +70,7 @@ export default class Keyboard {
     });
     getProject().chords.push(chord);
     this.updateChordList();
+    this.selectChordButton($(`#${chord.id} .select-chord`));
   }
 
   deleteChord() {
@@ -86,7 +86,9 @@ export default class Keyboard {
     getCurrentChord().name = "Current";
   }
 
-  selectChord(chord) {
+  selectChord(element) {
+    const chordId = $(element).parent().attr("id");
+    const chord = findObjectById(getProject().chords, chordId);
     this.clear();
     // Set current chord to selected chord
     const currentChord = getCurrentChord();
@@ -105,6 +107,11 @@ export default class Keyboard {
       }
     });
     currentChord.updateKeyNos();
+  }
+
+  selectChordButton(element) {
+    $(element).parent().addClass("selected");
+    $(element).parent().siblings().removeClass("selected");
   }
 
   clear() {
