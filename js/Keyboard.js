@@ -37,16 +37,28 @@ export default class Keyboard {
 
   listen() {
     const keyboard = this;
-    // Listen for keyboard key clicks
+    // Listen for keyboard keys
     $(document).on("click", `.key`, function () {
       const keyId = $(this).attr("id");
       const key = findObjectById(keyboard.keys, keyId);
       key.toggle();
     });
 
-    // Listen for save chord button click
+    // Listen for save chord button
     $(document).on("click", "#save-chord", function () {
       keyboard.saveChord();
+    });
+
+    // Listen for delete chord button
+    $(document).on("click", "#delete-chord", function () {
+      keyboard.deleteChord();
+    });
+
+    // Listen for select chord button
+    $(document).on("click", ".select-chord", function () {
+      const chordId = $(this).parent().attr("id");
+      const chord = findObjectById(getProject().chords, chordId);
+      keyboard.selectChord(chord);
     });
   }
 
@@ -58,6 +70,45 @@ export default class Keyboard {
     chord.notes = getCurrentChord().notes;
     // Push to project chords array
     getProject().chords.push(chord);
-    console.log("saved chord", chord);
+    // Update chord list
+    this.updateChordList();
+  }
+
+  deleteChord() {
+    const chordId = getCurrentChord().id;
+    const chords = getProject().chords;
+    const index = chords.findIndex((chord) => chord.id === chordId);
+    chords.splice(index, 1);
+    this.updateChordList();
+    this.clear();
+  }
+
+  selectChord(chord) {
+    this.clear();
+    console.log("selecting chord", chord);
+    // chord.notes.forEach((note) => {
+    //   const key = findObjectById(this.keys, note);
+    //   key.toggle();
+    // });
+  }
+
+  clear() {
+    this.keys.forEach((key) => {
+      if (key.on) {
+        key.toggle();
+      }
+    });
+  }
+
+  updateChordList() {
+    const chords = getProject().chords;
+    $(".chord-list").empty();
+    chords.forEach((chord) => {
+      $(".chord-list").append(
+        `<div class='chord' id='${chord.id}'>
+          <button class="select-chord">${chord.name}</button>
+        </div>`
+      );
+    });
   }
 }
