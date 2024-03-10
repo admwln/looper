@@ -409,7 +409,8 @@ div.section-tab.selected {
   transform: translateY(0px);
 }
 
-.keyboard-top-row {
+.keyboard-top-row,
+.keyboard-bottom-row {
   height: 40px;
   display: flex;
   flex-direction: row;
@@ -421,7 +422,7 @@ div.section-tab.selected {
 }
 
 .keyboard-content {
-  height: 174px;
+  height: 110px;
   padding: 0;
   margin: 0;
 }
@@ -460,7 +461,7 @@ div.section-tab.selected {
 
 .key.white {
   width: 30px;
-  height: 150px;
+  height: 110px;
   background-color: var(--white);
   border: 1px solid var(--blue-lightgray);
 }
@@ -471,7 +472,7 @@ div.section-tab.selected {
 
 .key.black {
   width: 20px;
-  height: 90px;
+  height: 70px;
   background-color: var(--black);
   border: 1px solid var(--blue-lightgray);
   z-index: 10;
@@ -493,4 +494,11 @@ div.section-tab.selected {
 .chord.selected > button {
   background-color: var(--links);
   color: var(--blue-lightgray);
+}
+
+/* Keyboard edit chords */
+.keyboard-bottom-row > button {
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-weight: bold;
 }
