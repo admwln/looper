@@ -83,4 +83,16 @@ export default class Keyboard {
       );
     });
   }
+
+  displayCurrentChord() {
+    const currentChord = getCurrentChord();
+    this.clear();
+    this.keys.forEach((key) => {
+      if (currentChord.notes.includes(key.midiNote)) {
+        key.on = true;
+        $(`#${key.id}`).addClass("on");
+      }
+    });
+    currentChord.updateKeyNos();
+  }
 }

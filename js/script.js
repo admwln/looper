@@ -386,8 +386,9 @@ $(document).ready(function () {
   });
 
   // Load keyboard
-  setKeyboard(new Keyboard(36, 85));
+  setKeyboard(new Keyboard(36, 77));
   setCurrentChord(new Chord("Current"));
+  getCurrentChord().listen();
 
   // Queue section button
   $(document).on("click", ".queue-section", function () {
