@@ -195,30 +195,27 @@ export default class Chord {
   }
 
   open() {
-    // Check if the chord to be opened includes any notes that are even octaves apart, if so, return
-    for (let i = 0; i < this.notes.length; i++) {
-      for (let j = i + 1; j < this.notes.length; j++) {
-        if (Math.abs(this.notes[i] - this.notes[j]) % 12 === 0) {
-          alert("Chord includes octaves - cannot be opened");
-          return;
-        }
-      }
-    }
+    let openedChordNotes = [];
+    let lastNote = this.notes[this.notes.length - 1];
 
-    let openedChord = [];
     // First push every other note as is to opened chord
     for (let i = 0; i < this.notes.length; i += 2) {
       const myOpenedNote = this.notes[i];
-      openedChord.push(myOpenedNote);
+      openedChordNotes.push(myOpenedNote);
     }
 
-    //Then, starting with second note of chord, push every other note transposed by +12 to opened chord
+    //Then, starting with second note of chord, transpose every other note by
+    // sufficient octaves to make it higher than last note
     for (let i = 1; i < this.notes.length; i += 2) {
-      const myOpenedNote = this.notes[i] + 12;
-      openedChord.push(myOpenedNote);
+      let myOpenedNote = this.notes[i];
+      while (myOpenedNote <= lastNote) {
+        myOpenedNote += 12;
+      }
+      lastNote = myOpenedNote;
+      openedChordNotes.push(myOpenedNote);
     }
 
-    this.notes = openedChord;
+    this.notes = openedChordNotes;
     this.sortNotes();
     getKeyboard().displayCurrentChord();
   }
@@ -228,25 +225,20 @@ export default class Chord {
     const lastNote = this.notes[this.notes.length - 1];
     const interval = lastNote - firstNote;
     let expandedNote;
-    let expandedChord = [];
+    let expandedChordNotes = [];
 
-    if (interval >= 12) {
-      for (let i = 0; i < this.notes.length; i++) {
-        expandedNote = this.notes[i] + 24;
-        expandedChord.push(expandedNote);
+    for (let i = 0; i < this.notes.length; i++) {
+      expandedNote = this.notes[i];
+      while (expandedNote <= lastNote) {
+        if (interval > 12) expandedNote += 24;
+        if (interval <= 12) expandedNote += 12;
       }
-    } else {
-      for (let i = 0; i < this.notes.length; i++) {
-        expandedNote = this.notes[i] + 12;
-        expandedChord.push(expandedNote);
-      }
+      expandedChordNotes.push(expandedNote);
     }
-
     // Add expanded chord notes to end of this.notes array
-    expandedChord.forEach((note) => {
+    expandedChordNotes.forEach((note) => {
       this.notes.push(note);
     });
-
     this.sortNotes();
     getKeyboard().displayCurrentChord();
   }
