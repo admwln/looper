@@ -181,6 +181,18 @@ div.section-tab.selected {
   margin: 6px 0;
 }
 
+.instrument-tool-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+
+.lock-chord-btn.locked {
+  color: hotpink;
+}
+
 .group {
   margin: 24px 0;
   background-color: var(--background-blue);
@@ -417,8 +429,7 @@ div.section-tab.selected {
   justify-content: flex-start;
   align-items: center;
   gap: 12px;
-  padding: 16px 24px 0 24px;
-  cursor: pointer;
+  padding: 28px 24px;
 }
 
 .keyboard-content {
@@ -444,6 +455,7 @@ div.section-tab.selected {
   align-items: flex-start;
   gap: 0;
   padding: 0 24px;
+  margin: 0;
 }
 
 .key {

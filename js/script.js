@@ -99,7 +99,7 @@ $(document).ready(function () {
   });
 
   // Add instrument
-  $(document).on("click", "#add-instrument", function () {
+  $(document).on("click", ".add-instrument", function () {
     //const sectionId = $(this).closest(".section").attr("id");
     const sections = getProject().sections;
     let selectedSection = findSelectedObject(sections);

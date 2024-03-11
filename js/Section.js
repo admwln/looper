@@ -26,7 +26,7 @@ export default class Section {
       `
       <section class="section" id='${this.id}'>
         <div>
-          <button id='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button>
+          <button class='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button>
         </div>
       </section>
       `

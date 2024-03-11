@@ -190,7 +190,17 @@ export default class NoteStep extends Step {
     }
 
     const noteIndex = this.pitch - 1;
-    const midiNote = getCurrentChord().notes[noteIndex];
+
+    // Get midi note from current chord or instrument's locked chord
+    let midiNote;
+    if (this.parentStepSeq.parentGroup.parentInstrument.lockedChord == null) {
+      midiNote = getCurrentChord().notes[noteIndex];
+    } else {
+      midiNote =
+        this.parentStepSeq.parentGroup.parentInstrument.lockedChord.notes[
+          noteIndex
+        ];
+    }
     // 99% of note duration to avoid overlap, parseInt to avoid floating point errors
     const duration = parseInt(Tone.Time(this.noteName).toMilliseconds() * 0.99);
     const velocity = this.velocity;
