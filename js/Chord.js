@@ -158,54 +158,24 @@ export default class Chord {
   }
   invertDown() {
     const firstNote = this.notes[0];
-    const lastNote = this.notes[this.notes.length - 1];
-    const interval = lastNote - firstNote;
-
+    let lastNote = this.notes[this.notes.length - 1];
     this.notes.pop();
-
-    if (interval >= 48) {
-      this.notes.unshift(lastNote - 60);
+    while (lastNote >= firstNote) {
+      lastNote -= 12;
     }
-    if (interval >= 36) {
-      this.notes.unshift(lastNote - 48);
-    }
-    if (interval >= 24) {
-      this.notes.unshift(lastNote - 36);
-    }
-    if (interval >= 12) {
-      this.notes.unshift(lastNote - 24);
-    }
-    if (interval < 12) {
-      this.notes.unshift(lastNote - 12);
-    }
-
+    this.notes.unshift(lastNote);
     this.sortNotes();
     getKeyboard().displayCurrentChord();
   }
 
   invertUp() {
-    const firstNote = this.notes[0];
+    let firstNote = this.notes[0];
     const lastNote = this.notes[this.notes.length - 1];
-    const interval = lastNote - firstNote;
-
     this.notes.shift();
-
-    if (interval >= 48) {
-      this.notes.push(lastNote + 60);
+    while (lastNote >= firstNote) {
+      firstNote += 12;
     }
-    if (interval >= 36) {
-      this.notes.push(lastNote + 48);
-    }
-    if (interval >= 24) {
-      this.notes.push(firstNote + 36);
-    }
-    if (interval >= 12) {
-      this.notes.push(firstNote + 24);
-    }
-    if (interval < 12) {
-      this.notes.push(firstNote + 12);
-    }
-
+    this.notes.push(firstNote);
     this.sortNotes();
     getKeyboard().displayCurrentChord();
   }
@@ -215,27 +185,11 @@ export default class Chord {
     let secondNote = this.notes[1];
     // Remove second note from this.notes
     this.notes.splice(1, 1);
-    // Depending on interval between first and second note, transpose second note down by factor of 12
-    const interval = secondNote - firstNote;
-
-    if (interval >= 48) {
-      secondNote = secondNote - 60;
+    while (secondNote >= firstNote) {
+      secondNote -= 12;
     }
-    if (interval >= 36) {
-      secondNote = secondNote - 48;
-    }
-    if (interval >= 24) {
-      secondNote = secondNote - 36;
-    }
-    if (interval >= 12) {
-      secondNote = secondNote - 24;
-    }
-    if (interval < 12) {
-      secondNote = secondNote - 12;
-    }
-
     // Push new second note to this.notes, then sort notes
-    this.notes.push(secondNote);
+    this.notes.unshift(secondNote);
     this.sortNotes();
     getKeyboard().displayCurrentChord();
   }
