@@ -417,7 +417,7 @@ div.section-tab.selected {
   justify-content: flex-start;
   align-items: center;
   gap: 12px;
-  padding: 12px 24px 0 24px;
+  padding: 16px 24px 0 24px;
   cursor: pointer;
 }
 
