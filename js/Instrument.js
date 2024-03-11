@@ -1,5 +1,10 @@
 import Group from "./Group.js";
-import { getProject, setIdCounter, getIdCounter } from "./helper-functions.js";
+import {
+  getProject,
+  getCurrentChord,
+  setIdCounter,
+  getIdCounter,
+} from "./helper-functions.js";
 
 export default class Instrument {
   constructor(name, parentSection, sectionId) {
@@ -12,9 +17,9 @@ export default class Instrument {
     this.muted = false;
     this.parentSection = parentSection;
     this.sectionId = sectionId;
-    // Add instrument to section.instruments array
-    //this.parentSection.instruments.push(this);
+    this.lockedChord = null;
     this.displayInstrument(this.parentSection.id);
+    this.listen();
     console.log(`Instrument "${this.name}" created`);
   }
 
@@ -25,14 +30,23 @@ export default class Instrument {
   }
 
   displayInstrument(sectionId) {
+    // Remove .add-instrument button from section
+    $("#" + sectionId + " .add-instrument").remove();
+
     $("#" + sectionId).append(
       `
       <section class="instrument" id='${this.id}'>
-        <div class='heading-container'>
-          <h3 class="instrument-heading">${this.name}</h3>
-          <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
+        <div class='instrument-tool-row'>
+          <div class='heading-container'>
+            <h3 class="instrument-heading">${this.name}</h3>
+            <button class='edit-heading'><i class="fa-solid fa-pencil"></i></button>
+          </div>
         </div>
-      </section>`
+      </section>
+      <div>
+        <button class='add-instrument'><i class="fa-solid fa-plus"></i> Instrument</button>
+      </div>
+      `
     );
 
     // Display midi output options in select dropdown
@@ -46,10 +60,15 @@ export default class Instrument {
         ${outputOptions}
       </select>
       <button class='mute-instrument' style='margin-left: 12px;'><i class="fa-solid fa-volume-mute"></i></button>
-      <div><button class='add-group'><i class="fa-solid fa-plus"></i> Group</button></div>
+      <div>
+        <button class='add-group'><i class="fa-solid fa-plus"></i> Group</button>
+      </div>
+      <div class="lock-chord">
+        <button class='lock-chord-btn'><i class="fa-solid fa-lock"></i></button> <span class='locked-chord-name'></span>
+      </div>
       `;
 
-    $("#" + this.id).append(selectOutputs);
+    $("#" + this.id + " .instrument-tool-row").append(selectOutputs);
 
     // Select this.midiOut in dropdown as default
     $("#" + this.id + " .outputs").val(this.midiOut);
@@ -67,5 +86,34 @@ export default class Instrument {
 
   unmute() {
     this.muted = false;
+  }
+
+  listen() {
+    $("#" + this.id + " .lock-chord-btn").on("click", () => {
+      const currentChord = getCurrentChord();
+      if (currentChord && !this.lockedChord) {
+        this.lockChord();
+        return;
+      }
+      this.unlockChord();
+    });
+  }
+
+  lockChord() {
+    const currentChord = getCurrentChord();
+    // Find chord in project chords by id
+    const projectChords = getProject().chords;
+    const lockedChord = projectChords.find(
+      (chord) => chord.id === currentChord.id
+    );
+    this.lockedChord = lockedChord;
+    $("#" + this.id + " .locked-chord-name").text(lockedChord.name);
+    $("#" + this.id + " .lock-chord-btn").toggleClass("locked");
+  }
+
+  unlockChord() {
+    this.lockedChord = null;
+    $("#" + this.id + " .locked-chord-name").text("");
+    $("#" + this.id + " .lock-chord-btn").toggleClass("locked");
   }
 }

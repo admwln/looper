@@ -47,7 +47,11 @@ export default class HeadingEditor {
 
       if (object.property == "instrument") {
         const section = findSelectedObject(getProject().sections);
-        let instrumentId = $("#heading-input").parent().parent().attr("id");
+        let instrumentId = $("#heading-input")
+          .parent()
+          .parent()
+          .parent()
+          .attr("id");
         $("#heading-input").replaceWith(
           `<h3 class="instrument-heading">${newText}</h3>`
         );
