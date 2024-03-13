@@ -162,11 +162,14 @@ export default class NoteStep extends Step {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
       (noteStep, index) => index < noteStepIndex
     );
+    // Should offset always be relative to 16n?
+    const offset =
+      this.offset * 0.01 * Tone.Time(this.noteName).toMilliseconds();
     let time = 0;
     precedingNoteSteps.forEach((noteStep) => {
       time += Tone.Time(noteStep.noteName).toMilliseconds();
     });
-    return Math.round(parseFloat(time)); // Rounding to avoid floating point errors
+    return Math.round(parseFloat(time + offset)); // Rounding to avoid floating point errors
   }
 
   // Update msFromLoopStart for single noteStep
