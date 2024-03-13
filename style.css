@@ -58,6 +58,26 @@ header {
   align-items: flex-start;
 }
 
+.top-row .edit-note-step {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+}
+.top-row .edit-note-step > div:nth-child(1) {
+  width: 60px;
+}
+
+.top-row .edit-note-step > div {
+  width: 125px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+}
+
 .heading-container {
   display: flex;
   flex-direction: row;
@@ -273,6 +293,10 @@ div.section-tab.selected {
   height: 84px;
   border: 1px solid var(--blue-lightgray);
   cursor: pointer;
+}
+
+.step.editing {
+  border: 1px solid var(--links);
 }
 
 .step.off {

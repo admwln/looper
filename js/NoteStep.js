@@ -10,6 +10,7 @@ export default class NoteStep extends Step {
     this.velocityRange = [40, 80, 127];
     this.forks = [];
     this.msFromLoopStart = 0;
+    this.offset = 0;
     this.muted = false;
     this.parentStepSeq = parentStepSeq;
   }
@@ -229,6 +230,74 @@ export default class NoteStep extends Step {
           $(this).animate({ opacity: 1 }, stepDuration * 0.05);
         });
       });
+    });
+  }
+
+  // Edit noteStep
+  edit() {
+    $(".edit-note-step").remove();
+    // Remove editing class from all steps
+    $(".step").removeClass("editing");
+
+    if (this.state == "off") return;
+
+    // Change step border color
+    $("#" + this.id).addClass("editing");
+
+    // Edit form in DOM
+    const html = `
+      <div class='edit-note-step'>
+        <div>
+          <i class="fa-solid fa-music"></i>
+          <input class='pitch' type='number' value='${this.pitch}' min='1' style='width: 40px;'>
+        </div>
+        <div>
+          <i class="fa-solid fa-chart-simple"></i>
+          <input class='velocity' type='range' min='0' max='127' value='${this.velocity}' style='width: 60px;'>
+          <span class='velocity-span'>${this.velocity}</span>
+        </div>
+        <div>
+          <i class="fa-regular fa-clock"></i>
+          <input class='offset' type='range' min='-50' max='50' value='${this.offset}' style='width: 60px;'>
+          <span class='offset-span'>${this.offset}</span>
+        </div>
+      </div>
+    `;
+    $(".top-row").append(html);
+
+    // Event listeners
+    $(".pitch").on("input", (e) => {
+      this.pitch = parseInt(e.target.value);
+      $("#" + this.id + " .pitch-no").text(this.pitch);
+    });
+
+    $(".velocity").on("input", (e) => {
+      this.velocity = parseInt(e.target.value);
+      $("#" + this.id).css(
+        "background-color",
+        "rgba(14, 27, 37," + this.velocity / 127 + ")"
+      );
+      $(".velocity-span").text(this.velocity);
+    });
+
+    $(".offset").on("input", (e) => {
+      this.offset = parseInt(e.target.value);
+      $(".offset-span").text(this.offset);
+    });
+
+    // Remove edit form when clicking outside of it
+    $(document).on("click", (e) => {
+      if (
+        $(e.target).hasClass("edit-note-step") ||
+        $(e.target).parent().parent().hasClass("edit-note-step") ||
+        $(e.target).hasClass("note-step-btn") ||
+        $(e.target).parent().hasClass("note-step-btn") ||
+        $(e.target).hasClass("step")
+      ) {
+        return;
+      }
+      $(".edit-note-step").remove();
+      $(".step").removeClass("editing");
     });
   }
 }
