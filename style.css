@@ -12,6 +12,7 @@
   --links: rgb(65, 173, 255);
   --white: rgb(219, 219, 219);
   --red: #ff0000;
+  --foam: rgb(134, 217, 202);
 }
 
 * {
@@ -296,7 +297,7 @@ div.section-tab.selected {
 }
 
 .step.editing {
-  border: 1px solid var(--links);
+  border-bottom: 1px solid var(--foam);
 }
 
 .step.off {

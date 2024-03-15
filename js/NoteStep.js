@@ -7,7 +7,7 @@ export default class NoteStep extends Step {
     this.pitch = pitch;
     this.state = "off";
     this.velocity = velocity;
-    this.velocityRange = [40, 80, 127];
+    this.velocityRange = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
     this.forks = [];
     this.msFromLoopStart = 0;
     this.offset = 0;
@@ -111,12 +111,7 @@ export default class NoteStep extends Step {
   }
 
   displayActiveNoteStep() {
-    const velocity = this.velocity;
-    let opacity = velocity / 127;
-    $("#" + this.id).css(
-      "background-color",
-      "rgba(14, 27, 37," + opacity + ")"
-    );
+    this.displayVelocity();
     const html = `
       <div>
         <button class="note-step-btn velocity-btn"><i class="fa-solid fa-plus"></i></button>
@@ -151,9 +146,18 @@ export default class NoteStep extends Step {
     const currentIndex = this.velocityRange.indexOf(this.velocity);
     const nextIndex = (currentIndex + 1) % this.velocityRange.length;
     this.velocity = this.velocityRange[nextIndex];
+    this.displayVelocity();
+  }
+
+  displayVelocity() {
+    let percent = Math.round(this.velocity * 100);
     $("#" + this.id).css(
-      "background-color",
-      "rgba(14, 27, 37," + this.velocity / 127 + ")"
+      "background",
+      "linear-gradient(to top, rgba(14, 27, 37, 1) 0%, rgba(14, 27, 37, 1) " +
+        percent +
+        "%,transparent " +
+        percent +
+        "%)"
     );
   }
 
@@ -214,7 +218,7 @@ export default class NoteStep extends Step {
     if (!muted) {
       output.channels[1].playNote(midiNote, {
         duration: duration,
-        rawAttack: velocity,
+        attack: velocity,
         time: trigger,
       });
     }
@@ -252,16 +256,22 @@ export default class NoteStep extends Step {
       <div class='edit-note-step'>
         <div>
           <i class="fa-solid fa-music"></i>
-          <input class='pitch' type='number' value='${this.pitch}' min='1' style='width: 40px;'>
+          <input class='pitch' type='number' value='${
+            this.pitch
+          }' min='1' style='width: 40px;'>
         </div>
         <div>
           <i class="fa-solid fa-chart-simple"></i>
-          <input class='velocity' type='range' min='0' max='127' value='${this.velocity}' style='width: 60px;'>
-          <span class='velocity-span'>${this.velocity}</span>
+          <input class='velocity' type='range' min='0' max='100' value='${
+            this.velocity * 100
+          }' style='width: 60px;'>
+          <span class='velocity-span'>${this.velocity * 100}</span>
         </div>
         <div>
           <i class="fa-regular fa-clock"></i>
-          <input class='offset' type='range' min='-50' max='50' value='${this.offset}' style='width: 60px;'>
+          <input class='offset' type='range' min='-50' max='50' value='${
+            this.offset
+          }' style='width: 60px;'>
           <span class='offset-span'>${this.offset}</span>
         </div>
       </div>
@@ -275,12 +285,9 @@ export default class NoteStep extends Step {
     });
 
     $(".velocity").on("input", (e) => {
-      this.velocity = parseInt(e.target.value);
-      $("#" + this.id).css(
-        "background-color",
-        "rgba(14, 27, 37," + this.velocity / 127 + ")"
-      );
-      $(".velocity-span").text(this.velocity);
+      this.velocity = e.target.value * 0.01;
+      this.displayVelocity();
+      $(".velocity-span").text(e.target.value);
     });
 
     $(".offset").on("input", (e) => {

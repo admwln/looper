@@ -119,7 +119,7 @@ export default class Group {
           "16n",
           84,
           1,
-          80,
+          0.8,
           this.sequences[j + 1]
         );
         // Push newNoteStep into current StepSeq.noteSteps
