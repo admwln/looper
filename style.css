@@ -301,7 +301,7 @@ div.section-tab.selected {
 }
 
 .step.off {
-  background-color: transparent;
+  background: transparent;
 }
 
 .step.on {

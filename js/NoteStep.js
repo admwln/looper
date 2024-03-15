@@ -127,7 +127,7 @@ export default class NoteStep extends Step {
 
   removeActiveNoteStep() {
     $("#" + this.id + " > div").remove();
-    $("#" + this.id).css("background-color", "transparent");
+    $("#" + this.id).css("background", "transparent");
   }
 
   pitchUp() {
