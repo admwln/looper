@@ -22,7 +22,7 @@ export default class NoteStep extends Step {
   displayNoteStep() {
     $("#" + this.parentStepSeq.id + " .note-seq").append(
       `
-      <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
+      <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">
       </div>
       `
     );
@@ -113,7 +113,7 @@ export default class NoteStep extends Step {
   displayActiveNoteStep() {
     this.displayVelocity();
     const html = `
-      <div>
+      <div class="note-step-btns">
         <button class="note-step-btn velocity-btn"><i class="fa-solid fa-plus"></i></button>
         <div>
           <button class="note-step-btn pitch-up"><i class="fa-solid fa-chevron-up"></i></button>
@@ -121,6 +121,7 @@ export default class NoteStep extends Step {
         </div>
         <span class="pitch-no">${this.pitch}</span>
       </div>
+      <div class="offset-indicator" style="width: ${this.offset}%"></div>
       `;
     $("#" + this.id).append(html);
   }
@@ -269,7 +270,7 @@ export default class NoteStep extends Step {
         </div>
         <div>
           <i class="fa-regular fa-clock"></i>
-          <input class='offset' type='range' min='-50' max='50' value='${
+          <input class='offset' type='range' min='0' max='50' value='${
             this.offset
           }' style='width: 60px;'>
           <span class='offset-span'>${this.offset}</span>
@@ -292,6 +293,7 @@ export default class NoteStep extends Step {
 
     $(".offset").on("input", (e) => {
       this.offset = parseInt(e.target.value);
+      $("#" + this.id + " .offset-indicator").css("width", this.offset + "%");
       $(".offset-span").text(this.offset);
     });
 
@@ -302,7 +304,8 @@ export default class NoteStep extends Step {
         $(e.target).parent().parent().hasClass("edit-note-step") ||
         $(e.target).hasClass("note-step-btn") ||
         $(e.target).parent().hasClass("note-step-btn") ||
-        $(e.target).hasClass("step")
+        $(e.target).hasClass("step") ||
+        $(e.target).parent().hasClass("step")
       ) {
         return;
       }

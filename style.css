@@ -336,13 +336,23 @@ div.section-tab.selected {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  position: relative;
+  z-index: 0;
+}
+
+.note-seq > .step > .offset-indicator {
+  position: absolute;
+  width: 0%;
+  height: 100%;
+  background-color: var(--background-blue);
+  opacity: 1;
 }
 
 .note-seq > .step.playing {
   border-bottom: 5px solid hotpink;
 }
 
-.note-seq > .step > div {
+.note-seq > .step > .note-step-btns {
   height: 81px;
   width: 19px;
   display: flex;
@@ -350,6 +360,7 @@ div.section-tab.selected {
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
+  z-index: 5;
 }
 
 .pitch-up,
