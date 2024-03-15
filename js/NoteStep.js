@@ -266,14 +266,14 @@ export default class NoteStep extends Step {
           <input class='velocity' type='range' min='0' max='100' value='${
             this.velocity * 100
           }' style='width: 60px;'>
-          <span class='velocity-span'>${this.velocity * 100}</span>
+          <span class='velocity-span'>${this.velocity * 100}%</span>
         </div>
         <div>
           <i class="fa-regular fa-clock"></i>
           <input class='offset' type='range' min='0' max='50' value='${
             this.offset
           }' style='width: 60px;'>
-          <span class='offset-span'>${this.offset}</span>
+          <span class='offset-span'>+${this.offset}</span>
         </div>
       </div>
     `;
@@ -288,13 +288,13 @@ export default class NoteStep extends Step {
     $(".velocity").on("input", (e) => {
       this.velocity = e.target.value * 0.01;
       this.displayVelocity();
-      $(".velocity-span").text(e.target.value);
+      $(".velocity-span").text(`${e.target.value}%`);
     });
 
     $(".offset").on("input", (e) => {
       this.offset = parseInt(e.target.value);
       $("#" + this.id + " .offset-indicator").css("width", this.offset + "%");
-      $(".offset-span").text(this.offset);
+      $(".offset-span").text(`+${this.offset}`);
     });
 
     // Remove edit form when clicking outside of it

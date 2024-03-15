@@ -71,7 +71,7 @@ header {
 }
 
 .top-row .edit-note-step > div {
-  width: 125px;
+  width: 150px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
