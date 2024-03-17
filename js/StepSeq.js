@@ -28,7 +28,7 @@ export default class StepSeq {
     );
 
     for (let i = 1; i <= sequenceLength; i++) {
-      const noteStep = new NoteStep("16n", 84, 1, 80, this);
+      const noteStep = new NoteStep("16n", 84, 1, 0.8, this);
       noteStep.pushNoteStep();
       noteStep.displayNoteStep();
       const controllerStep = new ControllerStep("16n", 84, this);

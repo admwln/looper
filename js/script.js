@@ -253,7 +253,6 @@ $(document).ready(function () {
   // Not if noteStepBtnHover is true
   $(document).on("click", ".step-seq .step", function () {
     if (noteStepBtnHover) return;
-
     const stepId = $(this).attr("id");
     // Get class of parent to $(this)
     const parentSeqType = $(this).parent().attr("class");
@@ -295,6 +294,7 @@ $(document).ready(function () {
       }
       // Toggle step state
       step.toggleState();
+      step.edit();
     }
 
     // Split
@@ -325,6 +325,11 @@ $(document).ready(function () {
       if (parentSeqType == "controller-seq") {
         step.joinControllerStep(stepIndex);
       }
+    }
+
+    // Select wand
+    if (editMode == "select") {
+      step.edit();
     }
   });
 
@@ -357,16 +362,19 @@ $(document).ready(function () {
     // Velocity
     if ($(this).hasClass("velocity-btn")) {
       noteStep.changeVelocity();
+      noteStep.edit();
     }
 
     // Pitch up
     if ($(this).hasClass("pitch-up")) {
       noteStep.pitchUp();
+      noteStep.edit();
     }
 
     // Pitch down
     if ($(this).hasClass("pitch-down")) {
       noteStep.pitchDown();
+      noteStep.edit();
     }
   });
 

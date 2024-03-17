@@ -7,9 +7,10 @@ export default class NoteStep extends Step {
     this.pitch = pitch;
     this.state = "off";
     this.velocity = velocity;
-    this.velocityRange = [40, 80, 127];
+    this.velocityRange = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
     this.forks = [];
     this.msFromLoopStart = 0;
+    this.offset = 0;
     this.muted = false;
     this.parentStepSeq = parentStepSeq;
   }
@@ -21,7 +22,7 @@ export default class NoteStep extends Step {
   displayNoteStep() {
     $("#" + this.parentStepSeq.id + " .note-seq").append(
       `
-      <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">  
+      <div id="${this.id}" class="step off" data="${this.noteName}" style="width:${this.pixelValue}px;">
       </div>
       `
     );
@@ -110,14 +111,9 @@ export default class NoteStep extends Step {
   }
 
   displayActiveNoteStep() {
-    const velocity = this.velocity;
-    let opacity = velocity / 127;
-    $("#" + this.id).css(
-      "background-color",
-      "rgba(14, 27, 37," + opacity + ")"
-    );
+    this.displayVelocity();
     const html = `
-      <div>
+      <div class="note-step-btns">
         <button class="note-step-btn velocity-btn"><i class="fa-solid fa-plus"></i></button>
         <div>
           <button class="note-step-btn pitch-up"><i class="fa-solid fa-chevron-up"></i></button>
@@ -125,13 +121,14 @@ export default class NoteStep extends Step {
         </div>
         <span class="pitch-no">${this.pitch}</span>
       </div>
+      <div class="offset-indicator" style="width: ${this.offset}%"></div>
       `;
     $("#" + this.id).append(html);
   }
 
   removeActiveNoteStep() {
     $("#" + this.id + " > div").remove();
-    $("#" + this.id).css("background-color", "transparent");
+    $("#" + this.id).css("background", "transparent");
   }
 
   pitchUp() {
@@ -150,9 +147,18 @@ export default class NoteStep extends Step {
     const currentIndex = this.velocityRange.indexOf(this.velocity);
     const nextIndex = (currentIndex + 1) % this.velocityRange.length;
     this.velocity = this.velocityRange[nextIndex];
+    this.displayVelocity();
+  }
+
+  displayVelocity() {
+    let percent = Math.round(this.velocity * 100);
     $("#" + this.id).css(
-      "background-color",
-      "rgba(14, 27, 37," + this.velocity / 127 + ")"
+      "background",
+      "linear-gradient(to top, rgba(14, 27, 37, 1) 0%, rgba(14, 27, 37, 1) " +
+        percent +
+        "%,transparent " +
+        percent +
+        "%)"
     );
   }
 
@@ -161,11 +167,14 @@ export default class NoteStep extends Step {
     const precedingNoteSteps = stepSeq.noteSteps.filter(
       (noteStep, index) => index < noteStepIndex
     );
+    // Should offset always be relative to 16n?
+    const offset =
+      this.offset * 0.01 * Tone.Time(this.noteName).toMilliseconds();
     let time = 0;
     precedingNoteSteps.forEach((noteStep) => {
       time += Tone.Time(noteStep.noteName).toMilliseconds();
     });
-    return Math.round(parseFloat(time)); // Rounding to avoid floating point errors
+    return Math.round(parseFloat(time + offset)); // Rounding to avoid floating point errors
   }
 
   // Update msFromLoopStart for single noteStep
@@ -210,7 +219,7 @@ export default class NoteStep extends Step {
     if (!muted) {
       output.channels[1].playNote(midiNote, {
         duration: duration,
-        rawAttack: velocity,
+        attack: velocity,
         time: trigger,
       });
     }
@@ -229,6 +238,79 @@ export default class NoteStep extends Step {
           $(this).animate({ opacity: 1 }, stepDuration * 0.05);
         });
       });
+    });
+  }
+
+  // Edit noteStep
+  edit() {
+    $(".edit-note-step").remove();
+    // Remove editing class from all steps
+    $(".step").removeClass("editing");
+
+    if (this.state == "off") return;
+
+    // Change step border color
+    $("#" + this.id).addClass("editing");
+
+    // Edit form in DOM
+    const html = `
+      <div class='edit-note-step'>
+        <div>
+          <i class="fa-solid fa-music"></i>
+          <input class='pitch' type='number' value='${
+            this.pitch
+          }' min='1' style='width: 40px;'>
+        </div>
+        <div>
+          <i class="fa-solid fa-chart-simple"></i>
+          <input class='velocity' type='range' min='0' max='100' value='${
+            this.velocity * 100
+          }' style='width: 60px;'>
+          <span class='velocity-span'>${this.velocity * 100}%</span>
+        </div>
+        <div>
+          <i class="fa-regular fa-clock"></i>
+          <input class='offset' type='range' min='0' max='50' value='${
+            this.offset
+          }' style='width: 60px;'>
+          <span class='offset-span'>+${this.offset}</span>
+        </div>
+      </div>
+    `;
+    $(".top-row").append(html);
+
+    // Event listeners
+    $(".pitch").on("input", (e) => {
+      this.pitch = parseInt(e.target.value);
+      $("#" + this.id + " .pitch-no").text(this.pitch);
+    });
+
+    $(".velocity").on("input", (e) => {
+      this.velocity = e.target.value * 0.01;
+      this.displayVelocity();
+      $(".velocity-span").text(`${e.target.value}%`);
+    });
+
+    $(".offset").on("input", (e) => {
+      this.offset = parseInt(e.target.value);
+      $("#" + this.id + " .offset-indicator").css("width", this.offset + "%");
+      $(".offset-span").text(`+${this.offset}`);
+    });
+
+    // Remove edit form when clicking outside of it
+    $(document).on("click", (e) => {
+      if (
+        $(e.target).hasClass("edit-note-step") ||
+        $(e.target).parent().parent().hasClass("edit-note-step") ||
+        $(e.target).hasClass("note-step-btn") ||
+        $(e.target).parent().hasClass("note-step-btn") ||
+        $(e.target).hasClass("step") ||
+        $(e.target).parent().hasClass("step")
+      ) {
+        return;
+      }
+      $(".edit-note-step").remove();
+      $(".step").removeClass("editing");
     });
   }
 }
