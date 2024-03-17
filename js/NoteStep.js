@@ -114,12 +114,12 @@ export default class NoteStep extends Step {
     this.displayVelocity();
     const html = `
       <div class="note-step-btns">
-        <button class="note-step-btn velocity-btn"><i class="fa-solid fa-plus"></i></button>
-        <div>
-          <button class="note-step-btn pitch-up"><i class="fa-solid fa-chevron-up"></i></button>
-          <button class="note-step-btn pitch-down"><i class="fa-solid fa-chevron-down"></i></button>
-        </div>
-        <span class="pitch-no">${this.pitch}</span>
+      <div>
+        <button class="note-step-btn velocity-up"><i class="fa-solid fa-plus"></i></button>
+        <button class="note-step-btn velocity-down"><i class="fa-solid fa-minus"></i></button>
+      </div>
+        <button class="note-step-btn offset-up"><i class="fa-solid fa-chevron-right"></i></button>
+        <button class="note-step-btn pitch-no">${this.pitch}</button>
       </div>
       <div class="offset-indicator" style="width: ${this.offset}%"></div>
       `;
@@ -131,23 +131,56 @@ export default class NoteStep extends Step {
     $("#" + this.id).css("background", "transparent");
   }
 
+  // pitchUp() {
+  //   this.pitch++;
+  //   $("#" + this.id + " .pitch-no").text(this.pitch);
+  // }
+
   pitchUp() {
-    this.pitch++;
+    const currentChordLength = getCurrentChord().notes.length;
+    if (this.pitch < currentChordLength) {
+      this.pitch++;
+    } else {
+      this.pitch = 1;
+    }
     $("#" + this.id + " .pitch-no").text(this.pitch);
   }
 
-  pitchDown() {
-    if (this.pitch > 1) {
-      this.pitch--;
-      $("#" + this.id + " .pitch-no").text(this.pitch);
-    }
-  }
+  // pitchDown() {
+  //   if (this.pitch > 1) {
+  //     this.pitch--;
+  //     $("#" + this.id + " .pitch-no").text(this.pitch);
+  //   }
+  // }
 
-  changeVelocity() {
+  velocityUp() {
     const currentIndex = this.velocityRange.indexOf(this.velocity);
     const nextIndex = (currentIndex + 1) % this.velocityRange.length;
     this.velocity = this.velocityRange[nextIndex];
     this.displayVelocity();
+  }
+
+  velocityDown() {
+    const currentIndex = this.velocityRange.indexOf(this.velocity);
+    let prevIndex = currentIndex - 1;
+    if (prevIndex < 0) {
+      prevIndex = this.velocityRange.length - 1;
+    }
+    this.velocity = this.velocityRange[prevIndex];
+    this.displayVelocity();
+  }
+
+  offsetUp() {
+    const offsetRange = [0, 4, 8, 12, 16, 24, 32, 40, 48, 50];
+    const currentIndex = offsetRange.indexOf(this.offset);
+    const nextIndex = (currentIndex + 1) % offsetRange.length;
+    this.offset = offsetRange[nextIndex];
+    $(".offset-span").text(`+${this.offset}`);
+    this.displayOffset();
+  }
+
+  displayOffset() {
+    $("#" + this.id + " .offset-indicator").css("width", this.offset + "%");
   }
 
   displayVelocity() {
@@ -293,8 +326,8 @@ export default class NoteStep extends Step {
 
     $(".offset").on("input", (e) => {
       this.offset = parseInt(e.target.value);
-      $("#" + this.id + " .offset-indicator").css("width", this.offset + "%");
       $(".offset-span").text(`+${this.offset}`);
+      this.displayOffset();
     });
 
     // Remove edit form when clicking outside of it
