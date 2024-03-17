@@ -11,6 +11,7 @@ import {
   setLoopOn,
   getCurrentChord,
   setCurrentChord,
+  getKeyboard,
   setKeyboard,
   findGroupOnClick,
   findObjectById,
@@ -360,20 +361,31 @@ $(document).ready(function () {
     const noteStep = findObjectById(steps, noteStepId);
 
     // Velocity
-    if ($(this).hasClass("velocity-btn")) {
-      noteStep.changeVelocity();
+    if ($(this).hasClass("velocity-up")) {
+      noteStep.velocityUp();
+      noteStep.edit();
+    }
+
+    if ($(this).hasClass("velocity-down")) {
+      noteStep.velocityDown();
       noteStep.edit();
     }
 
     // Pitch up
-    if ($(this).hasClass("pitch-up")) {
+    if ($(this).hasClass("pitch-no")) {
       noteStep.pitchUp();
       noteStep.edit();
     }
 
     // Pitch down
-    if ($(this).hasClass("pitch-down")) {
-      noteStep.pitchDown();
+    // if ($(this).hasClass("pitch-down")) {
+    //   noteStep.pitchDown();
+    //   noteStep.edit();
+    // }
+
+    // Offset up
+    if ($(this).hasClass("offset-up")) {
+      noteStep.offsetUp();
       noteStep.edit();
     }
   });
@@ -397,6 +409,10 @@ $(document).ready(function () {
   setKeyboard(new Keyboard(36, 77));
   setCurrentChord(new Chord("Current"));
   getCurrentChord().listen();
+  const currentChord = getCurrentChord();
+  currentChord.notes = [60, 64, 67, 72]; // C major as default
+  getKeyboard().displayCurrentChord();
+  currentChord.updateKeyNos();
 
   // Queue section button
   $(document).on("click", ".queue-section", function () {

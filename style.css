@@ -363,16 +363,18 @@ div.section-tab.selected {
   z-index: 5;
 }
 
-.pitch-up,
-.pitch-down,
-.velocity-btn {
+.note-step-btns button {
   font-size: 14px;
-  display: none;
   color: var(--white);
 }
 
-.note-seq > .step:hover > div > div > button,
-.note-seq > .step:hover > div > button {
+.velocity-up,
+.velocity-down,
+.offset-up {
+  display: none;
+}
+
+.note-seq > .step:hover > .note-step-btns button {
   display: inline;
 }
 
@@ -387,9 +389,10 @@ div.section-tab.selected {
   background-color: transparent;
 }
 
-.pitch-up:hover,
-.pitch-down:hover,
-.velocity-btn:hover {
+.offset-up:hover,
+.velocity-down:hover,
+.velocity-up:hover,
+.pitch-no:hover {
   color: var(--links);
 }
 
