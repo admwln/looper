@@ -288,9 +288,9 @@ $(document).ready(function () {
       if (parentSeqType == "note-seq") {
         // Check if step is on/off
         if (step.state == "off") {
-          step.displayActiveNoteStep();
+          step.displayActive();
         } else {
-          step.removeActiveNoteStep();
+          step.removeActive();
         }
       }
       // Toggle step state
@@ -372,20 +372,26 @@ $(document).ready(function () {
     }
 
     // Pitch up
-    if ($(this).hasClass("pitch-no")) {
+    if ($(this).hasClass("pitch-up")) {
       noteStep.pitchUp();
       noteStep.edit();
     }
 
     // Pitch down
-    // if ($(this).hasClass("pitch-down")) {
-    //   noteStep.pitchDown();
-    //   noteStep.edit();
-    // }
+    if ($(this).hasClass("pitch-down")) {
+      noteStep.pitchDown();
+      noteStep.edit();
+    }
 
     // Offset up
     if ($(this).hasClass("offset-up")) {
       noteStep.offsetUp();
+      noteStep.edit();
+    }
+
+    // Offset down
+    if ($(this).hasClass("offset-down")) {
+      noteStep.offsetDown();
       noteStep.edit();
     }
   });

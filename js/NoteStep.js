@@ -75,7 +75,7 @@ export default class NoteStep extends Step {
     );
     // If step is on, activate it in DOM
     if (this.state == "on") {
-      this.displayActiveNoteStep();
+      this.displayActive();
     }
   }
 
@@ -110,23 +110,32 @@ export default class NoteStep extends Step {
     $("#" + this.id).remove();
   }
 
-  displayActiveNoteStep() {
+  displayActive() {
     this.displayVelocity();
     const html = `
-      <div class="note-step-btns">
-      <div>
-        <button class="note-step-btn velocity-up"><i class="fa-solid fa-plus"></i></button>
+      <div class="quick-edit">
+      <div style="display:flex;flex-direction:row;gap:6px">
         <button class="note-step-btn velocity-down"><i class="fa-solid fa-minus"></i></button>
+        <button class="note-step-btn velocity-up"><i class="fa-solid fa-plus"></i></button>
       </div>
-        <button class="note-step-btn offset-up"><i class="fa-solid fa-chevron-right"></i></button>
-        <button class="note-step-btn pitch-no">${this.pitch}</button>
+      <div style="display:flex;flex-direction:row;gap:6px">
+        <button class="note-step-btn offset-down"><i class="fa-solid fa-clock-rotate-left"></i></button>
+        <button class="note-step-btn offset-up"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div style="display:flex;flex-direction:row;gap:6px">
+        <span class="pitch-no">${this.pitch}</span>
+        <div style="display:flex;flex-direction:row;gap:2px">  
+          <button class="note-step-btn pitch-down"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="note-step-btn pitch-up"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
       </div>
       <div class="offset-indicator" style="width: ${this.offset}%"></div>
       `;
     $("#" + this.id).append(html);
   }
 
-  removeActiveNoteStep() {
+  removeActive() {
     $("#" + this.id + " > div").remove();
     $("#" + this.id).css("background", "transparent");
   }
@@ -146,12 +155,12 @@ export default class NoteStep extends Step {
     $("#" + this.id + " .pitch-no").text(this.pitch);
   }
 
-  // pitchDown() {
-  //   if (this.pitch > 1) {
-  //     this.pitch--;
-  //     $("#" + this.id + " .pitch-no").text(this.pitch);
-  //   }
-  // }
+  pitchDown() {
+    if (this.pitch > 1) {
+      this.pitch--;
+      $("#" + this.id + " .pitch-no").text(this.pitch);
+    }
+  }
 
   velocityUp() {
     const currentIndex = this.velocityRange.indexOf(this.velocity);
@@ -175,6 +184,18 @@ export default class NoteStep extends Step {
     const currentIndex = offsetRange.indexOf(this.offset);
     const nextIndex = (currentIndex + 1) % offsetRange.length;
     this.offset = offsetRange[nextIndex];
+    $(".offset-span").text(`+${this.offset}`);
+    this.displayOffset();
+  }
+
+  offsetDown() {
+    const offsetRange = [0, 4, 8, 12, 16, 24, 32, 40, 48, 50];
+    const currentIndex = offsetRange.indexOf(this.offset);
+    let prevIndex = currentIndex - 1;
+    if (prevIndex < 0) {
+      prevIndex = offsetRange.length - 1;
+    }
+    this.offset = offsetRange[prevIndex];
     $(".offset-span").text(`+${this.offset}`);
     this.displayOffset();
   }

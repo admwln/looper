@@ -352,9 +352,9 @@ div.section-tab.selected {
   border-bottom: 5px solid hotpink;
 }
 
-.note-seq > .step > .note-step-btns {
+.note-seq > .step > .quick-edit {
   height: 81px;
-  width: 19px;
+  width: 41px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -363,37 +363,32 @@ div.section-tab.selected {
   z-index: 5;
 }
 
-.note-step-btns button {
+.note-seq > .step:hover .quick-edit {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.note-step-btn {
   font-size: 14px;
+  color: transparent;
+}
+
+.note-seq > .step:hover .note-step-btn {
   color: var(--white);
 }
 
-.velocity-up,
-.velocity-down,
-.offset-up {
-  display: none;
+.note-seq > .step .note-step-btn:hover {
+  color: var(--links);
 }
 
-.note-seq > .step:hover > .note-step-btns button {
-  display: inline;
-}
-
-.note-seq > .step:hover > div > div {
+/* .note-seq > .step:hover > div > div {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-}
+} */
 
 .note-seq > .step.off {
   background-color: transparent;
-}
-
-.offset-up:hover,
-.velocity-down:hover,
-.velocity-up:hover,
-.pitch-no:hover {
-  color: var(--links);
 }
 
 .controller-seq > .step {
