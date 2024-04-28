@@ -30,7 +30,7 @@ export default class PlayHead {
     const midiOut = instrument.midiOut;
     const output = WebMidi.getOutputByName(midiOut);
     //console.log("Playing", this.steps);
-    console.log("Playing play head", this);
+    //console.log("Playing play head", this);
     // Play each noteStep in playHead
     this.steps.forEach((step) => {
       // Check if step is a noteStep or a controllerStep
@@ -74,7 +74,7 @@ export default class PlayHead {
         // Determine if the group should be scrolled right or left?
         if (newStepNo >= stepCount) {
           // Scroll all the way to the left
-          console.log("Scrolling all the way to the left");
+          //console.log("Scrolling all the way to the left");
           group.scrollLeft(stepCount * getStepWidth());
         }
         if (newStepNo < stepCount) {
