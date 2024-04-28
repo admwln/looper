@@ -135,14 +135,15 @@ export default class Player {
         this.getPlaybackStartTime();
       // Get difference between nextTarget and now, represents time to next 16th note
       diff = nextTarget - performance.now();
-      // Silent loop with short interval, updates diff and returns when diff is small enough
+      // Silent loop with short interval, updates diff and calls next loop when diff is small enough
       if (diff > 50) {
         this.silentLoop(nextTarget);
+        return;
       }
 
-      // Check that loop is still on
+      // If diff < 50, call loop() with diff and nextTarget
+      // First, check that loop is still on
       if (getLoopOn() === false) return;
-      // Recursive call to loop()
       this.loop(diff, nextTarget);
     }, diff);
   }
@@ -173,7 +174,14 @@ export default class Player {
   silentLoop(nextTarget) {
     setTimeout(() => {
       const diff = nextTarget - performance.now();
-      if (diff < 25) return;
+      // If diff is less than 50ms, call next loop()
+      if (diff < 50) {
+        // Check that loop is still on
+        if (!getLoopOn()) return;
+        this.loop(diff, nextTarget);
+        return;
+      }
+      // If diff is greater than 50ms, call silentLoop() recursively
       this.silentLoop(nextTarget);
     }, 25);
   }
